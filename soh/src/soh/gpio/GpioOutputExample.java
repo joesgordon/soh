@@ -79,6 +79,7 @@ public class GpioOutputExample implements ITask
                 // set shutdown state for this pin
                 pin.setShutdownOptions( true, PinState.LOW,
                     PinPullResistance.OFF );
+                pins.add( pin );
             }
 
             handler.signalPercent( 20 );
