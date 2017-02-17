@@ -36,6 +36,8 @@ import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
+import soh.data.Pi3GpioPin;
+
 /**
  * This example code demonstrates how to setup a listener for GPIO pin state
  * changes on the Raspberry Pi.
@@ -69,7 +71,7 @@ public class GpioInputExample implements ITask
             // provision gpio pin #02 as an input pin with its internal pull
             // down
             // resistor enabled
-            pin = gpio.provisionDigitalInputPin( RaspiPin.GPIO_02,
+            pin = gpio.provisionDigitalInputPin( Pi3GpioPin.GPIO_02.hwPin,
                 PinPullResistance.OFF );
 
             // set shutdown state for this input pin

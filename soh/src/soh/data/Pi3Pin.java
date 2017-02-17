@@ -5,7 +5,7 @@ import org.jutils.INamedItem;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public enum Pinout implements INamedItem
+public enum Pi3Pin implements INamedItem
 {
     PIN_01( 1, PinType.PWR_3V3, "3.3 V",
         "3v3 supply w/ up to ~500 mA current" ),
@@ -64,7 +64,7 @@ public enum Pinout implements INamedItem
      * @param name
      * @param description
      **************************************************************************/
-    private Pinout( int pinout, PinType type, String name, String description )
+    private Pi3Pin( int pinout, PinType type, String name, String description )
     {
         this.pinout = pinout;
         this.type = type;

@@ -3,6 +3,7 @@ package soh.gpio;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jutils.io.LogUtils;
 import org.jutils.task.*;
 
 //START SNIPPET: control-gpio-snippet
@@ -37,6 +38,8 @@ import org.jutils.task.*;
 */
 import com.pi4j.io.gpio.*;
 
+import soh.data.Pi3GpioPin;
+
 /**
  * This example code demonstrates how to perform simple state control of a GPIO
  * pin on the Raspberry Pi.
@@ -61,9 +64,11 @@ public class GpioOutputExample implements ITask
 
         // create gpio controller
         GpioController gpio = GpioFactory.getInstance();
-        Pin [] gpios = new Pin[] { RaspiPin.GPIO_21, RaspiPin.GPIO_22,
-            RaspiPin.GPIO_23, RaspiPin.GPIO_24, RaspiPin.GPIO_25,
-            RaspiPin.GPIO_26, RaspiPin.GPIO_27 };
+        Pin [] gpios = new Pin[] { Pi3GpioPin.GPIO_05.hwPin,
+            Pi3GpioPin.GPIO_06.hwPin, Pi3GpioPin.GPIO_13.hwPin,
+            Pi3GpioPin.GPIO_19.hwPin, Pi3GpioPin.GPIO_26.hwPin,
+            Pi3GpioPin.GPIO_12.hwPin, Pi3GpioPin.GPIO_16.hwPin,
+            Pi3GpioPin.GPIO_20.hwPin, Pi3GpioPin.GPIO_21.hwPin };
         List<GpioPinDigitalOutput> pins = new ArrayList<>();
 
         try
@@ -106,6 +111,7 @@ public class GpioOutputExample implements ITask
             // toggle the current state of gpio pin #01 (should turn on)
             for( GpioPinDigitalOutput gpdo : pins )
             {
+                LogUtils.printDebug( "Toggling %s", gpdo.getName() );
                 gpdo.toggle();
             }
             handler.signalPercent( 60 );

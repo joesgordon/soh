@@ -6,6 +6,8 @@ import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
+import soh.data.Pi3GpioPin;
+
 /*******************************************************************************
  * 
  ******************************************************************************/
@@ -53,17 +55,17 @@ public class SohGpio
 
         gpio = GpioFactory.getInstance();
 
-        t1StartPin = provisionPin( gpio, RaspiPin.GPIO_02, "Track 1 Start Pin",
-            startT1 );
+        t1StartPin = provisionPin( gpio, Pi3GpioPin.GPIO_03.hwPin,
+            "Track 1 Start Pin", startT1 );
 
-        t1StopPin = provisionPin( gpio, RaspiPin.GPIO_03, "Track 1 Stop Pin",
-            stopT1 );
+        t1StopPin = provisionPin( gpio, Pi3GpioPin.GPIO_04.hwPin,
+            "Track 1 Stop Pin", stopT1 );
 
-        t2StartPin = provisionPin( gpio, RaspiPin.GPIO_04, "Track 2 Start Pin",
-            startT2 );
+        t2StartPin = provisionPin( gpio, Pi3GpioPin.GPIO_14.hwPin,
+            "Track 2 Start Pin", startT2 );
 
-        t2StopPin = provisionPin( gpio, RaspiPin.GPIO_05, "Track 2 Stop Pin",
-            stopT2 );
+        t2StopPin = provisionPin( gpio, Pi3GpioPin.GPIO_15.hwPin,
+            "Track 2 Stop Pin", stopT2 );
     }
 
     /***************************************************************************
