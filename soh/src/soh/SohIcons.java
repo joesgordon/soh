@@ -8,6 +8,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.jutils.IconLoader;
+import org.jutils.io.LogUtils;
 
 public class SohIcons
 {
@@ -61,5 +62,22 @@ public class SohIcons
     public static Icon getSoh16()
     {
         return loader.getIcon( "fan016.png" );
+    }
+
+    public static Icon getPinoutIcon()
+    {
+        return loader.getIcon( "pi3_pinout2.png" );
+    }
+
+    public static Icon getPinoutIcon_old()
+    {
+        Image img = loader.getImage( "pi3_pinout.png" );
+
+        float scale = 0.401f;
+        int h = Math.round( img.getHeight( null ) * scale );
+        LogUtils.printDebug( "height = %d", h );
+        int w = Math.round( img.getWidth( null ) * scale );
+
+        return getScaledIcon( img, w, h );
     }
 }

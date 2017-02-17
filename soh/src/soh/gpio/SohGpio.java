@@ -53,8 +53,6 @@ public class SohGpio
             return;
         }
 
-        gpio = GpioFactory.getInstance();
-
         t1StartPin = provisionPin( gpio, Pi3GpioPin.GPIO_03.hwPin,
             "Track 1 Start Pin", startT1 );
 

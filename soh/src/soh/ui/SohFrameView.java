@@ -1,6 +1,7 @@
 package soh.ui;
 
 import java.awt.*;
+import java.awt.Dialog.ModalityType;
 import java.awt.event.*;
 
 import javax.swing.*;
@@ -9,6 +10,8 @@ import org.jutils.IconConstants;
 import org.jutils.SwingUtils;
 import org.jutils.io.options.OptionsSerializer;
 import org.jutils.task.TaskView;
+import org.jutils.ui.OkDialogView;
+import org.jutils.ui.OkDialogView.OkDialogButtons;
 import org.jutils.ui.StandardFrameView;
 import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.model.IView;
@@ -17,8 +20,7 @@ import soh.SohIcons;
 import soh.SohMain;
 import soh.data.HoverConfig;
 import soh.data.TrackType;
-import soh.gpio.GpioOutputExample;
-import soh.gpio.SohGpio;
+import soh.gpio.*;
 
 /*******************************************************************************
  * 
@@ -162,6 +164,7 @@ public class SohFrameView implements IView<JFrame>
         JMenuItem exitItem = fileMenu.getItem( 0 );
         int row = 0;
 
+        fileMenu.add( new JMenuItem( createTestIoAction() ), row++ );
         fileMenu.add( new JMenuItem( createTestInputAction() ), row++ );
         fileMenu.add( new JMenuItem( createTestOutputAction() ), row++ );
         fileMenu.add( new JSeparator(), row++ );
@@ -174,24 +177,24 @@ public class SohFrameView implements IView<JFrame>
     /***************************************************************************
      * @return
      **************************************************************************/
-    private Action createTestInputAction()
+    private Action createTestIoAction()
     {
-        // ActionListener listener = ( e ) -> {
-        // fauxGpioMenuItem.setEnabled( false );
-        // TaskView.startAndShow( getView(), new GpioInputExample(),
-        // "Testing Input" );
-        // };
-
-        return new ActionAdapter( ( e ) -> showInputScreen(), "Test Input",
-            IconConstants.getIcon( IconConstants.IMPORT_16 ) );
+        return new ActionAdapter( ( e ) -> showInputScreen(), "Test I/O",
+            IconConstants.getIcon( IconConstants.CHECK_16 ) );
     }
 
     /***************************************************************************
-     * 
+     * @return
      **************************************************************************/
-    private void showInputScreen()
+    private Action createTestInputAction()
     {
-        PinTestView view = new PinTestView();
+        ActionListener listener = ( e ) -> {
+            fauxGpioMenuItem.setEnabled( false );
+            TaskView.startAndShow( getView(), new GpioInputExample(),
+                "Testing Input" );
+        };
+        return new ActionAdapter( listener, "Test Input",
+            IconConstants.getIcon( IconConstants.IMPORT_16 ) );
     }
 
     /***************************************************************************
@@ -207,6 +210,19 @@ public class SohFrameView implements IView<JFrame>
 
         return new ActionAdapter( listener, "Test Output",
             IconConstants.getIcon( IconConstants.EXPORT_16 ) );
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void showInputScreen()
+    {
+        PinTestView view = new PinTestView();
+        JScrollPane pane = new JScrollPane( view.getView() );
+        OkDialogView okView = new OkDialogView( getView(), pane,
+            ModalityType.DOCUMENT_MODAL, OkDialogButtons.OK_ONLY );
+
+        okView.show( "I/O Test", new Dimension( 500, 800 ) );
     }
 
     /***************************************************************************
@@ -268,6 +284,7 @@ public class SohFrameView implements IView<JFrame>
 
             try
             {
+                SohGpio.startup();
                 SohGpio.connect( startT1, stopT1, startT2, stopT2 );
             }
             catch( IllegalStateException ex )
