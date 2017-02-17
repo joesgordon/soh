@@ -8,7 +8,7 @@ import com.pi4j.io.gpio.RaspiPin;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public enum  Pi3GpioPin implements INamedItem
+public enum Pi3GpioPin implements INamedItem
 {
     GPIO_02( 2, Pi3Pin.PIN_03, RaspiPin.GPIO_08 ),
     GPIO_03( 3, Pi3Pin.PIN_05, RaspiPin.GPIO_09 ),
@@ -63,5 +63,22 @@ public enum  Pi3GpioPin implements INamedItem
     public String getName()
     {
         return String.format( "GPIO %02d", gpioNum );
+    }
+
+    /***************************************************************************
+     * @param pin
+     * @return
+     **************************************************************************/
+    public static Pi3GpioPin getPin( Pi3Pin pin )
+    {
+        for( Pi3GpioPin p : values() )
+        {
+            if( p.pin == pin )
+            {
+                return p;
+            }
+        }
+
+        return null;
     }
 }

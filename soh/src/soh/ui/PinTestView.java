@@ -2,17 +2,25 @@ package soh.ui;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
 
+import org.jutils.INamedItem;
+import org.jutils.SwingUtils;
+import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.fields.ComboFormField;
 import org.jutils.ui.model.IView;
 
+import com.pi4j.io.gpio.PinPullResistance;
+import com.pi4j.io.gpio.PinState;
+
 import soh.SohIcons;
+import soh.data.Pi3GpioPin;
 import soh.data.Pi3Pin;
 
 /*******************************************************************************
@@ -35,6 +43,65 @@ public class PinTestView implements IView<JComponent>
      * @return
      **************************************************************************/
     private JPanel createView()
+    {
+        JPanel panel = new JPanel( new BorderLayout() );
+
+        JScrollPane pane = new JScrollPane( createTestView() );
+
+        panel.add( createToolbar(), BorderLayout.NORTH );
+        panel.add( pane, BorderLayout.CENTER );
+
+        return panel;
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    private Component createToolbar()
+    {
+        JToolBar toolbar = new JToolBar();
+        Action action;
+        JButton button;
+
+        SwingUtils.setToolbarDefaults( toolbar );
+
+        // toolbar.setRollover( false );
+
+        action = createProvAllAction();
+        button = SwingUtils.addActionToToolbar( toolbar, action );
+        button.setText( action.getValue( Action.NAME ).toString() );
+
+        action = createUnprovAllAction();
+        button = SwingUtils.addActionToToolbar( toolbar, action );
+        button.setText( action.getValue( Action.NAME ).toString() );
+
+        return toolbar;
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    private Action createProvAllAction()
+    {
+        // TODO Auto-generated method stub
+        return new ActionAdapter( ( e ) -> {
+        }, "Provision All", null );
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    private Action createUnprovAllAction()
+    {
+        // TODO Auto-generated method stub
+        return new ActionAdapter( ( e ) -> {
+        }, "Unprovision All", null );
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    private JPanel createTestView()
     {
         JPanel panel = new JPanel( new GridBagLayout() );
         JComponent imgPane = new JLabel( SohIcons.getPinoutIcon() );
@@ -112,9 +179,13 @@ public class PinTestView implements IView<JComponent>
         GridBagConstraints constraints;
         int alignment = isLeft ? GridBagConstraints.EAST
             : GridBagConstraints.WEST;
-        Integer [] idxs = new Integer[] { 0, 1, 2, 3 };
+        List<Integer> indexes = new ArrayList<>();
         int idx = 0;
-        List<Integer> indexes = new ArrayList<>( Arrays.asList( idxs ) );
+
+        for( int i = 0; i < 4; i++ )
+        {
+            indexes.add( i );
+        }
 
         if( isLeft )
         {
@@ -123,9 +194,9 @@ public class PinTestView implements IView<JComponent>
 
         // ----------------------------------------------------------------------
 
-        JLabel pinoutLabel = new RotLabel( String.format( "%02d", pin.pinout ),
-            90 );
-        pinoutLabel = new JLabel( String.format( "%02d", pin.pinout ) );
+        // JLabel pinoutLabel = new RotLabel( String.format( "%02d", pin.pinout
+        // ), 90 );
+        JLabel pinoutLabel = new JLabel( String.format( "%02d", pin.pinout ) );
         pinoutLabel.setVerticalAlignment( SwingConstants.CENTER );
 
         constraints = new GridBagConstraints( indexes.get( idx++ ), 0, 1, 1,
@@ -151,15 +222,22 @@ public class PinTestView implements IView<JComponent>
         panel.add( pinLabel, constraints );
 
         // ----------------------------------------------------------------------
+        {
+            Component comp = Box.createHorizontalStrut( 0 );
+            if( Pi3GpioPin.getPin( pin ) != null )
+            {
+                ComboFormField<IoDirection> dirField = new ComboFormField<>( "",
+                    IoDirection.values() );
 
-        ComboFormField<IoDirection> dirField = new ComboFormField<>( "",
-            IoDirection.values() );
+                dirField.setValue( IoDirection.UNALLOCATED );
 
-        constraints = new GridBagConstraints( indexes.get( idx++ ), 0, 1, 1,
-            0.0, 0.0, alignment, GridBagConstraints.NONE,
-            new Insets( 0, 4, 0, 4 ), 0, 0 );
-        panel.add( dirField.getView(), constraints );
-
+                comp = dirField.getView();
+            }
+            constraints = new GridBagConstraints( indexes.get( idx++ ), 0, 1, 1,
+                0.0, 0.0, alignment, GridBagConstraints.NONE,
+                new Insets( 0, 4, 0, 4 ), 0, 0 );
+            panel.add( comp, constraints );
+        }
         // ----------------------------------------------------------------------
 
         constraints = new GridBagConstraints( indexes.get( idx++ ), 0, 1, 1,
@@ -223,5 +301,70 @@ public class PinTestView implements IView<JComponent>
         UNALLOCATED,
         INPUT,
         OUTPUT;
+    }
+
+    private static enum PinRes implements INamedItem
+    {
+        OFF( PinPullResistance.OFF ),
+        PULL_UP( PinPullResistance.PULL_UP ),
+        PULL_DOWN( PinPullResistance.PULL_DOWN );
+
+        private final PinPullResistance res;
+
+        private PinRes( PinPullResistance res )
+        {
+            this.res = res;
+        }
+
+        @Override
+        public String getName()
+        {
+            return res.getName();
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private static enum PinLevel implements INamedItem
+    {
+        HIGH( PinState.HIGH ),
+        LOW( PinState.LOW );
+
+        private final PinState state;
+
+        private PinLevel( PinState state )
+        {
+            this.state = state;
+        }
+
+        @Override
+        public String getName()
+        {
+            return state.getName();
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private static final class PinData
+    {
+        public final Pi3Pin pinout;
+        public final Pi3GpioPin gpio;
+        public IoDirection direction;
+        public PinRes pullRes;
+        public PinLevel defaultLevel;
+        public boolean provisioned;
+
+        public PinData( Pi3Pin pinout )
+        {
+            this.pinout = pinout;
+            this.gpio = Pi3GpioPin.getPin( pinout );
+            this.direction = IoDirection.INPUT;
+            this.pullRes = PinRes.PULL_UP;
+            this.defaultLevel = PinLevel.LOW;
+            this.provisioned = false;
+        }
     }
 }

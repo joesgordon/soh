@@ -213,19 +213,6 @@ public class SohFrameView implements IView<JFrame>
     }
 
     /***************************************************************************
-     * 
-     **************************************************************************/
-    private void showInputScreen()
-    {
-        PinTestView view = new PinTestView();
-        JScrollPane pane = new JScrollPane( view.getView() );
-        OkDialogView okView = new OkDialogView( getView(), pane,
-            ModalityType.DOCUMENT_MODAL, OkDialogButtons.OK_ONLY );
-
-        okView.show( "I/O Test", new Dimension( 500, 800 ) );
-    }
-
-    /***************************************************************************
      * @return
      **************************************************************************/
     private JCheckBoxMenuItem createMockGpioMenuItem()
@@ -258,6 +245,29 @@ public class SohFrameView implements IView<JFrame>
         menu.add( action );
 
         return menu;
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void showInputScreen()
+    {
+        PinTestView view = new PinTestView();
+        OkDialogView okView = new OkDialogView( getView(), view.getView(),
+            ModalityType.DOCUMENT_MODAL, OkDialogButtons.OK_ONLY );
+
+        try
+        {
+            SohGpio.startup();
+        }
+        catch( IllegalStateException ex )
+        {
+            SwingUtils.showErrorMessage( getView(), "Setup Error",
+                "Pi4j library was not found" );
+            return;
+        }
+
+        okView.show( "I/O Test", new Dimension( 600, 800 ) );
     }
 
     /***************************************************************************
