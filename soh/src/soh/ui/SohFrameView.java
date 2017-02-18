@@ -53,11 +53,10 @@ public class SohFrameView implements IView<JFrame>
 
         frameView.getView().addWindowListener( new SohWindowListener( this ) );
         frameView.setContent( configView.getView() );
-        // frameView.setContent( competitionView.getView() );
         frameView.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE );
         // frameView.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        frameView.setSize( 500, 500 );
-        frameView.getView().setExtendedState( JFrame.MAXIMIZED_BOTH );
+        frameView.setSize( 1280, 800 );
+        // frameView.getView().setExtendedState( JFrame.MAXIMIZED_BOTH );
         frameView.getView().setIconImages( SohIcons.getSohIcons() );
 
         // setFullScreen( frameView.getView() );
@@ -252,7 +251,7 @@ public class SohFrameView implements IView<JFrame>
      **************************************************************************/
     private void showInputScreen()
     {
-        PinTestView view = new PinTestView();
+        PinsTestView view = new PinsTestView();
         OkDialogView okView = new OkDialogView( getView(), view.getView(),
             ModalityType.DOCUMENT_MODAL, OkDialogButtons.OK_ONLY );
 
@@ -267,7 +266,7 @@ public class SohFrameView implements IView<JFrame>
             return;
         }
 
-        okView.show( "I/O Test", new Dimension( 600, 800 ) );
+        okView.show( "I/O Test", new Dimension( 700, 800 ) );
     }
 
     /***************************************************************************

@@ -59,9 +59,29 @@ public class SohIcons
         return loader.getImages( IconLoader.buildNameList( "fan" ) );
     }
 
+    public static Icon getLevelHigh16()
+    {
+        return loader.getIcon( "level_high.png" );
+    }
+
+    public static Icon getLevelLow16()
+    {
+        return loader.getIcon( "level_low.png" );
+    }
+
     public static Icon getSoh16()
     {
         return loader.getIcon( "fan016.png" );
+    }
+
+    public static Icon getConnect16()
+    {
+        return loader.getIcon( "connect016.png" );
+    }
+
+    public static Icon getDisconnect16()
+    {
+        return loader.getIcon( "disconnect016.png" );
     }
 
     public static Icon getPinoutIcon()
