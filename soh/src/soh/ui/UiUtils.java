@@ -14,9 +14,9 @@ import org.jutils.ui.event.ActionAdapter;
 public final class UiUtils
 {
     /**  */
-    public static final float DEFAULT_FONT_SIZE = 48.0f;
+    public static final float DEFAULT_FONT_SIZE = 24.0f;
     /**  */
-    public static final float SMALL_FONT_SIZE = 24.0f;
+    public static final float SMALL_FONT_SIZE = 20.0f;
     /**  */
     public static final String TEXT_FONT = "Courier New";
     /**  */

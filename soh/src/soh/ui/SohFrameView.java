@@ -600,7 +600,8 @@ public class SohFrameView implements IView<JFrame>
         @Override
         public void windowClosing( WindowEvent e )
         {
-            if( !view.competitionView.getView().isShowing() )
+            if( !view.competitionView.getView().isShowing() ||
+                !view.competitionView.isRunning() )
             {
                 System.exit( 0 );
             }

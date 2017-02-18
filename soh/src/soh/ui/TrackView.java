@@ -71,14 +71,14 @@ public class TrackView implements IView<JComponent>
     public TrackView( String trackName )
     {
         this.teamButton = new JButton( "Welcome Olympians" );
-        this.targetTimeField = UiUtils.createNumLabel( "--.- s", 36 );
-        this.targetLengthField = UiUtils.createNumLabel( "---.- cm", 36 );
+        this.targetTimeField = UiUtils.createNumLabel( "--.- s", 24 );
+        this.targetLengthField = UiUtils.createNumLabel( "---.- cm", 24 );
 
-        this.blankIcon = new ColorIcon( new Color( 10, 10, 10 ), 48 );
-        this.checkIcon = SohIcons.getCheckIcon( 48 );
-        this.xIcon = SohIcons.getXIcon( 48 );
+        this.blankIcon = new ColorIcon( new Color( 20, 20, 20 ), 36 );
+        this.checkIcon = SohIcons.getCheckIcon( 36 );
+        this.xIcon = SohIcons.getXIcon( 36 );
 
-        this.periodField = UiUtils.createNumLabel( "-:--", 124 );
+        this.periodField = UiUtils.createNumLabel( "-:--", 64 );
         this.run1Field = UiUtils.createNumLabel( "--.- s" );
         this.run1Icon = new JLabel( blankIcon );
         this.run2Field = UiUtils.createNumLabel( "--.- s" );
