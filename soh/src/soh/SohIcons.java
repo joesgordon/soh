@@ -10,6 +10,9 @@ import javax.swing.ImageIcon;
 import org.jutils.IconLoader;
 import org.jutils.io.LogUtils;
 
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 public class SohIcons
 {
     private static final IconLoader loader = new IconLoader( SohIcons.class,
@@ -27,7 +30,11 @@ public class SohIcons
 
     public static Icon getBannerImage()
     {
-        return loader.getIcon( "banner.png" );
+        Image img = loader.getImage( "banner.png" );
+        int w = 1200;
+        float scale = w / ( float )img.getWidth( null );
+        int h = Math.round( img.getHeight( null ) * scale );
+        return getScaledIcon( img, w, h );
     }
 
     public static Icon getCheckIcon( int size )

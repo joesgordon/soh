@@ -18,6 +18,7 @@ import org.jutils.ui.StandardFrameView;
 import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.event.FileChooserListener;
 import org.jutils.ui.event.FileChooserListener.IFileSelected;
+import org.jutils.ui.event.FileChooserListener.ILastFile;
 import org.jutils.ui.model.IView;
 
 import com.thoughtworks.xstream.XStreamException;
@@ -103,8 +104,9 @@ public class SohFrameView implements IView<JFrame>
     {
         Icon icon = IconConstants.getIcon( IconConstants.OPEN_FILE_16 );
         IFileSelected ifs = ( f ) -> openFile( f );
+        ILastFile ifl = () -> SohMain.getOptions().getOptions().lastConfigFile;
         FileChooserListener listener = new FileChooserListener( getView(),
-            "Open Configuration", false, ifs );
+            "Open Configuration", false, ifs, ifl );
 
         listener.addExtension( "Hovercraft Config File", "hcfg" );
 
@@ -118,12 +120,11 @@ public class SohFrameView implements IView<JFrame>
     {
         Icon icon = IconConstants.getIcon( IconConstants.SAVE_16 );
         IFileSelected ifs = ( f ) -> saveFile( f );
+        ILastFile ifl = () -> SohMain.getOptions().getOptions().lastConfigFile;
         FileChooserListener listener = new FileChooserListener( getView(),
-            "Save Configuration", true, ifs );
+            "Save Configuration", true, ifs, ifl );
 
         listener.addExtension( "Hovercraft Config File", "hcfg" );
-
-        // TODO add last file
 
         return new ActionAdapter( listener, "Save", icon );
     }
@@ -343,6 +344,10 @@ public class SohFrameView implements IView<JFrame>
         ActionListener listener = ( e ) -> {
             SohGpio.FAUX_CONNECT = !SohGpio.FAUX_CONNECT;
             fauxGpioMenuItem.setSelected( SohGpio.FAUX_CONNECT );
+            OptionsSerializer<SohOptions> options = SohMain.getOptions();
+
+            options.getOptions().useFauxGpio = SohGpio.FAUX_CONNECT;
+            options.write();
             // LogUtils.printDebug( "Faux connect: %s", SohGpio.FAUX_CONNECT );
         };
         // Icon icon = IconConstants.getIcon( IconConstants.EXPORT_16 );
@@ -592,6 +597,7 @@ public class SohFrameView implements IView<JFrame>
             this.view = view;
         }
 
+        @Override
         public void windowClosing( WindowEvent e )
         {
             if( !view.competitionView.getView().isShowing() )

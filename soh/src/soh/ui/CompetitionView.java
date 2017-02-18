@@ -60,7 +60,7 @@ public class CompetitionView implements IView<JComponent>
     /***************************************************************************
      * @return
      **************************************************************************/
-    private Component createHeader()
+    private static Component createHeader()
     {
         JPanel panel = new JPanel( new GridBagLayout() );
         GridBagConstraints constraints;
