@@ -9,7 +9,7 @@ public enum PinLevel implements INamedItem
     HIGH( PinState.HIGH, "High" ),
     LOW( PinState.LOW, "Low" );
 
-    private final PinState state;
+    public final PinState state;
     public final String name;
 
     private PinLevel( PinState state, String name )

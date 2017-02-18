@@ -134,6 +134,10 @@ public class SohFrameView implements IView<JFrame>
      **************************************************************************/
     private void openFile( File file )
     {
+        OptionsSerializer<SohOptions> options = SohMain.getOptions();
+        options.getOptions().lastConfigFile = file;
+        options.write();
+
         try
         {
             HoverConfig config = XStreamUtils.readObjectXStream( file );
@@ -167,6 +171,10 @@ public class SohFrameView implements IView<JFrame>
      **************************************************************************/
     private void saveFile( File file )
     {
+        OptionsSerializer<SohOptions> options = SohMain.getOptions();
+        options.getOptions().lastConfigFile = file;
+        options.write();
+
         HoverConfig config = configView.getData();
 
         try

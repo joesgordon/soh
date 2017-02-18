@@ -208,12 +208,18 @@ public class PinTestSuiteView implements IDataView<PinTestSuite>
 
     private void provisionAll()
     {
-        // TODO Auto-generated method stub
+        for( PinTestView ptv : pinViews )
+        {
+            ptv.provision();
+        }
     }
 
     private void unprovisionAll()
     {
-        // TODO Auto-generated method stub
+        for( PinTestView ptv : pinViews )
+        {
+            ptv.unprovision();
+        }
     }
 
     /***************************************************************************

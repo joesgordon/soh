@@ -10,7 +10,7 @@ public class PinData
     /**  */
     public final Pi3GpioPin gpio;
     /**  */
-    public PinDirection direction;
+    public GpioPinDirection direction;
     /**  */
     public PinResistance pullRes;
     /**  */
@@ -25,7 +25,7 @@ public class PinData
     {
         this.pinout = pinout;
         this.gpio = Pi3GpioPin.getPin( pinout );
-        this.direction = PinDirection.INPUT;
+        this.direction = GpioPinDirection.INPUT;
         this.pullRes = PinResistance.PULL_UP;
         this.defaultLevel = PinLevel.LOW;
         this.provisioned = false;

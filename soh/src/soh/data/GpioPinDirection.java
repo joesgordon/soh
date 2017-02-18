@@ -2,7 +2,7 @@ package soh.data;
 
 import org.jutils.INamedItem;
 
-public enum PinDirection implements INamedItem
+public enum GpioPinDirection implements INamedItem
 {
     UNALLOCATED( "Unallocated" ),
     INPUT( "Input" ),
@@ -10,7 +10,7 @@ public enum PinDirection implements INamedItem
 
     public final String name;
 
-    private PinDirection( String name )
+    private GpioPinDirection( String name )
     {
         this.name = name;
     }

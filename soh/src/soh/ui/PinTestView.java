@@ -11,6 +11,10 @@ import org.jutils.ui.fields.ComboFormField;
 import org.jutils.ui.fields.NamedItemDescriptor;
 import org.jutils.ui.model.IDataView;
 
+import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
+import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+
 import soh.SohIcons;
 import soh.data.*;
 
@@ -26,7 +30,7 @@ public class PinTestView implements IDataView<PinData>
     /**  */
     private final JLabel pinLabel;
     /**  */
-    private final ComboFormField<PinDirection> dirField;
+    private final ComboFormField<GpioPinDirection> dirField;
     /**  */
     private final ComboFormField<PinResistance> pullField;
     /**  */
@@ -46,6 +50,8 @@ public class PinTestView implements IDataView<PinData>
 
     /**  */
     private PinData data;
+    /**  */
+    private GpioPin gpin;
 
     /***************************************************************************
      * @param isLeft
@@ -54,7 +60,7 @@ public class PinTestView implements IDataView<PinData>
     {
         this.pinoutLabel = new JLabel();
         this.pinLabel = new JLabel();
-        this.dirField = new ComboFormField<>( "", PinDirection.values() );
+        this.dirField = new ComboFormField<>( "", GpioPinDirection.values() );
         this.pullField = new ComboFormField<>( "", PinResistance.values(),
             new NamedItemDescriptor<>() );
         this.levelField = new ComboFormField<>( "", PinLevel.values(),
@@ -75,11 +81,13 @@ public class PinTestView implements IDataView<PinData>
     /***************************************************************************
      * @param dir
      **************************************************************************/
-    private void handleDirectionChanged( PinDirection dir )
+    private void handleDirectionChanged( GpioPinDirection dir )
     {
         boolean isGpio = data.gpio != null;
-        pullField.getView().setVisible( isGpio && dir == PinDirection.INPUT );
-        levelField.getView().setVisible( isGpio && dir == PinDirection.OUTPUT );
+        pullField.getView().setVisible(
+            isGpio && dir == GpioPinDirection.INPUT );
+        levelField.getView().setVisible(
+            isGpio && dir == GpioPinDirection.OUTPUT );
     }
 
     /***************************************************************************
@@ -130,7 +138,7 @@ public class PinTestView implements IDataView<PinData>
 
         // ---------------------------------------------------------------------
 
-        dirField.setValue( PinDirection.UNALLOCATED );
+        dirField.setValue( GpioPinDirection.UNALLOCATED );
 
         constraints = new GridBagConstraints( indexes.get( idx++ ), 0, 1, 1,
             0.0, 0.0, alignment, GridBagConstraints.NONE,
@@ -239,6 +247,52 @@ public class PinTestView implements IDataView<PinData>
             default:
                 levelLabel.setIcon( lowIcon );
                 break;
+        }
+    }
+
+    public void provision()
+    {
+        if( !data.provisioned && data.gpio != null &&
+            data.direction != GpioPinDirection.UNALLOCATED )
+        {
+            GpioController gpio = GpioFactory.getInstance();
+
+            if( data.direction == GpioPinDirection.INPUT )
+            {
+                gpin = gpio.provisionDigitalInputPin( data.gpio.hwPin,
+                    data.pullRes.res );
+            }
+            else
+            {
+                gpin = gpio.provisionDigitalOutputPin( data.gpio.hwPin,
+                    data.gpio.getName(), data.defaultLevel.state );
+            }
+
+            GpioPinListenerDigital l = ( e ) -> handlePinStateChanged( e );
+            gpin.addListener( l );
+        }
+    }
+
+    public void unprovision()
+    {
+        if( data.provisioned )
+        {
+            GpioController gpio = GpioFactory.getInstance();
+            gpio.unprovisionPin( gpin );
+        }
+    }
+
+    private void handlePinStateChanged( GpioPinDigitalStateChangeEvent event )
+    {
+        PinState state = event.getState();
+
+        if( state == PinState.HIGH )
+        {
+            levelLabel.setIcon( highIcon );
+        }
+        else
+        {
+            levelLabel.setIcon( lowIcon );
         }
     }
 }
