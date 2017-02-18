@@ -10,32 +10,33 @@ import javax.swing.border.MatteBorder;
 
 import org.jutils.SwingUtils;
 import org.jutils.ui.event.ActionAdapter;
-import org.jutils.ui.model.IView;
+import org.jutils.ui.model.IDataView;
 
 import soh.SohIcons;
-import soh.data.Pi3Pin;
-import soh.data.PinData;
+import soh.data.*;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class PinsTestView implements IView<JComponent>
+public class PinTestSuiteView implements IDataView<PinTestSuite>
 {
     /**  */
     private final JPanel view;
     /**  */
-    private final List<PinData> pins;
-    /**  */
     private final List<PinTestView> pinViews;
+
+    /**  */
+    private PinTestSuite suite;
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public PinsTestView()
+    public PinTestSuiteView()
     {
-        this.pins = createPins();
-        this.pinViews = createPinViews( pins );
+        this.pinViews = createPinViews( createPins() );
         this.view = createView();
+
+        setData( new PinTestSuite() );
     }
 
     /***************************************************************************
@@ -222,5 +223,37 @@ public class PinsTestView implements IView<JComponent>
     public JComponent getView()
     {
         return view;
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    @Override
+    public PinTestSuite getData()
+    {
+        return suite;
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    @Override
+    public void setData( PinTestSuite suite )
+    {
+        this.suite = suite;
+
+        if( suite.pins.size() == pinViews.size() )
+        {
+            for( int i = 0; i < pinViews.size(); i++ )
+            {
+                PinData pin = suite.pins.get( i );
+                PinTestView pv = pinViews.get( i );
+
+                if( pin.gpio != null )
+                {
+                    pv.setData( pin );
+                }
+            }
+        }
     }
 }

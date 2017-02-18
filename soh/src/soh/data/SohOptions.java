@@ -12,6 +12,8 @@ public class SohOptions
     /**  */
     public HoverConfig config;
     /**  */
+    public PinTestSuite testSuite;
+    /**  */
     public File lastConfigFile;
 
     /***************************************************************************
@@ -21,6 +23,7 @@ public class SohOptions
     {
         this.useFauxGpio = false;
         this.config = new HoverConfig();
+        this.testSuite = new PinTestSuite();
         this.lastConfigFile = null;
     }
 
@@ -32,6 +35,8 @@ public class SohOptions
         this.useFauxGpio = options.useFauxGpio;
         this.config = options.config != null ? new HoverConfig( options.config )
             : new HoverConfig();
+        this.testSuite = options.testSuite != null
+            ? new PinTestSuite( options.testSuite ) : new PinTestSuite();
         this.lastConfigFile = options.lastConfigFile;
     }
 }

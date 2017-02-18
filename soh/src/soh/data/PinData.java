@@ -30,4 +30,17 @@ public class PinData
         this.defaultLevel = PinLevel.LOW;
         this.provisioned = false;
     }
+
+    /***************************************************************************
+     * @param pd
+     **************************************************************************/
+    public PinData( PinData pd )
+    {
+        this.pinout = pd.pinout;
+        this.gpio = pd.gpio;
+        this.direction = pd.direction;
+        this.pullRes = pd.pullRes;
+        this.defaultLevel = pd.defaultLevel;
+        this.provisioned = pd.provisioned;
+    }
 }

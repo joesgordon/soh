@@ -288,7 +288,7 @@ public class SohFrameView implements IView<JFrame>
         fileMenu.add( new JMenuItem( openAction ), row++ );
         fileMenu.add( new JMenuItem( saveAction ), row++ );
         fileMenu.add( new JSeparator(), row++ );
-        fileMenu.add( new JMenuItem( createTestIoAction() ), row++ );
+        fileMenu.add( new JMenuItem( createTestSuiteAction() ), row++ );
         fileMenu.add( new JMenuItem( createTestInputAction() ), row++ );
         fileMenu.add( new JMenuItem( createTestOutputAction() ), row++ );
         fileMenu.add( new JSeparator(), row++ );
@@ -301,7 +301,7 @@ public class SohFrameView implements IView<JFrame>
     /***************************************************************************
      * @return
      **************************************************************************/
-    private Action createTestIoAction()
+    private Action createTestSuiteAction()
     {
         return new ActionAdapter( ( e ) -> showInputScreen(), "Test I/O",
             IconConstants.getIcon( IconConstants.CHECK_16 ) );
@@ -380,7 +380,7 @@ public class SohFrameView implements IView<JFrame>
      **************************************************************************/
     private void showInputScreen()
     {
-        PinsTestView view = new PinsTestView();
+        PinTestSuiteView view = new PinTestSuiteView();
         OkDialogView okView = new OkDialogView( getView(), view.getView(),
             ModalityType.DOCUMENT_MODAL, OkDialogButtons.OK_ONLY );
 
@@ -395,7 +395,14 @@ public class SohFrameView implements IView<JFrame>
             return;
         }
 
+        OptionsSerializer<SohOptions> options = SohMain.getOptions();
+
+        view.setData( options.getOptions().testSuite );
+
         okView.show( "I/O Test", new Dimension( 700, 800 ) );
+
+        options.getOptions().testSuite = view.getData();
+        options.write();
     }
 
     /***************************************************************************
