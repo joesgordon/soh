@@ -114,7 +114,7 @@ public class HoverConfigView implements IDataView<HoverConfig>
     /***************************************************************************
      * @return
      **************************************************************************/
-    private Component createHelpPanel()
+    private static Component createHelpPanel()
     {
         StandardFormView form = new StandardFormView();
         JLabel label;

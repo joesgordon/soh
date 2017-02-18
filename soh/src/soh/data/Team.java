@@ -32,4 +32,16 @@ public class Team
         this.time1 = 0;
         this.time2 = 0;
     }
+
+    /***************************************************************************
+     * @param t
+     **************************************************************************/
+    public Team( Team t )
+    {
+        this.schoolCode = t.schoolCode;
+        this.div = t.div;
+        this.failedCount = t.failedCount;
+        this.time1 = t.time1;
+        this.time2 = t.time2;
+    }
 }

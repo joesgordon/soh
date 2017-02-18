@@ -30,6 +30,25 @@ public class HoverConfig
     }
 
     /***************************************************************************
+     * @param config
+     **************************************************************************/
+    public HoverConfig( HoverConfig config )
+    {
+        this.periodTime = config.periodTime;
+        this.divB = new DivisionConfig( config.divB );
+        this.divC = new DivisionConfig( config.divC );
+        this.teams = new ArrayList<>();
+
+        if( config.teams != null )
+        {
+            for( Team t : config.teams )
+            {
+                teams.add( new Team( t ) );
+            }
+        }
+    }
+
+    /***************************************************************************
      * @param d
      * @return
      **************************************************************************/

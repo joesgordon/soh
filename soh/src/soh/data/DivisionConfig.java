@@ -21,4 +21,14 @@ public class DivisionConfig
         this.targetTime = div.defaultTargetTime;
         this.targetLength = 130;
     }
+
+    /***************************************************************************
+     * @param div
+     **************************************************************************/
+    public DivisionConfig( DivisionConfig div )
+    {
+        this.div = div.div;
+        this.targetTime = div.targetTime;
+        this.targetLength = div.targetLength;
+    }
 }

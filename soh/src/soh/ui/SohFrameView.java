@@ -3,23 +3,28 @@ package soh.ui;
 import java.awt.*;
 import java.awt.Dialog.ModalityType;
 import java.awt.event.*;
+import java.io.*;
 
 import javax.swing.*;
 
 import org.jutils.IconConstants;
 import org.jutils.SwingUtils;
+import org.jutils.io.XStreamUtils;
 import org.jutils.io.options.OptionsSerializer;
 import org.jutils.task.TaskView;
 import org.jutils.ui.OkDialogView;
 import org.jutils.ui.OkDialogView.OkDialogButtons;
 import org.jutils.ui.StandardFrameView;
 import org.jutils.ui.event.ActionAdapter;
+import org.jutils.ui.event.FileChooserListener;
+import org.jutils.ui.event.FileChooserListener.IFileSelected;
 import org.jutils.ui.model.IView;
+
+import com.thoughtworks.xstream.XStreamException;
 
 import soh.SohIcons;
 import soh.SohMain;
-import soh.data.HoverConfig;
-import soh.data.TrackType;
+import soh.data.*;
 import soh.gpio.*;
 
 /*******************************************************************************
@@ -38,6 +43,13 @@ public class SohFrameView implements IView<JFrame>
     /**  */
     private final TextZoomer zoomer;
 
+    /**  */
+    private final Action newAction;
+    /**  */
+    private final Action openAction;
+    /**  */
+    private final Action saveAction;
+
     /***************************************************************************
      * 
      **************************************************************************/
@@ -48,6 +60,10 @@ public class SohFrameView implements IView<JFrame>
         this.configView = new HoverConfigView();
         this.competitionView = new CompetitionView();
         this.zoomer = new TextZoomer( competitionView.getView() );
+
+        this.newAction = createNewAction();
+        this.openAction = createOpenAction();
+        this.saveAction = createSaveAction();
 
         createMenubar( frameView.getMenuBar(), frameView.getFileMenu() );
 
@@ -63,9 +79,113 @@ public class SohFrameView implements IView<JFrame>
 
         setupHotkeys();
 
-        OptionsSerializer<HoverConfig> options = SohMain.getOptions();
+        OptionsSerializer<SohOptions> options = SohMain.getOptions();
 
-        configView.setData( options.getOptions() );
+        configView.setData( options.getOptions().config );
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    private Action createNewAction()
+    {
+        Icon icon = IconConstants.getIcon( IconConstants.NEW_FILE_16 );
+        ActionListener listener = ( e ) -> configView.setData(
+            new HoverConfig() );
+
+        return new ActionAdapter( listener, "New", icon );
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    private Action createOpenAction()
+    {
+        Icon icon = IconConstants.getIcon( IconConstants.OPEN_FILE_16 );
+        IFileSelected ifs = ( f ) -> openFile( f );
+        FileChooserListener listener = new FileChooserListener( getView(),
+            "Open Configuration", false, ifs );
+
+        listener.addExtension( "Hovercraft Config File", "hcfg" );
+
+        return new ActionAdapter( listener, "Open", icon );
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    private Action createSaveAction()
+    {
+        Icon icon = IconConstants.getIcon( IconConstants.SAVE_16 );
+        IFileSelected ifs = ( f ) -> saveFile( f );
+        FileChooserListener listener = new FileChooserListener( getView(),
+            "Save Configuration", true, ifs );
+
+        listener.addExtension( "Hovercraft Config File", "hcfg" );
+
+        // TODO add last file
+
+        return new ActionAdapter( listener, "Save", icon );
+    }
+
+    /***************************************************************************
+     * @param file
+     **************************************************************************/
+    private void openFile( File file )
+    {
+        try
+        {
+            HoverConfig config = XStreamUtils.readObjectXStream( file );
+
+            configView.setData( config );
+        }
+        catch( XStreamException ex )
+        {
+            SwingUtils.showErrorMessage( getView(),
+                "Configuration file is not formatted correctly: " +
+                    file.getAbsolutePath(),
+                "File Format Error" );
+        }
+        catch( FileNotFoundException ex )
+        {
+            SwingUtils.showErrorMessage( getView(),
+                "Configuration file not found: " + file.getAbsolutePath(),
+                "File Format Error" );
+        }
+        catch( IOException ex )
+        {
+            SwingUtils.showErrorMessage( getView(),
+                "Configuration file is cannot be read: " +
+                    file.getAbsolutePath(),
+                "File Format Error" );
+        }
+    }
+
+    /***************************************************************************
+     * @param file
+     **************************************************************************/
+    private void saveFile( File file )
+    {
+        HoverConfig config = configView.getData();
+
+        try
+        {
+            XStreamUtils.writeObjectXStream( config, file );
+        }
+        catch( XStreamException ex )
+        {
+            SwingUtils.showErrorMessage( getView(),
+                "Configuration file cannot formatted correctly: " +
+                    ex.getMessage(),
+                "File Format Error" );
+        }
+        catch( IOException ex )
+        {
+            SwingUtils.showErrorMessage( getView(),
+                "Configuration file is cannot be written: " +
+                    file.getAbsolutePath(),
+                "File Format Error" );
+        }
     }
 
     /***************************************************************************
@@ -163,6 +283,10 @@ public class SohFrameView implements IView<JFrame>
         JMenuItem exitItem = fileMenu.getItem( 0 );
         int row = 0;
 
+        fileMenu.add( new JMenuItem( newAction ), row++ );
+        fileMenu.add( new JMenuItem( openAction ), row++ );
+        fileMenu.add( new JMenuItem( saveAction ), row++ );
+        fileMenu.add( new JSeparator(), row++ );
         fileMenu.add( new JMenuItem( createTestIoAction() ), row++ );
         fileMenu.add( new JMenuItem( createTestInputAction() ), row++ );
         fileMenu.add( new JMenuItem( createTestOutputAction() ), row++ );
@@ -278,9 +402,11 @@ public class SohFrameView implements IView<JFrame>
 
         if( show )
         {
-            OptionsSerializer<HoverConfig> options = SohMain.getOptions();
+            OptionsSerializer<SohOptions> options = SohMain.getOptions();
 
-            options.write( configView.getData() );
+            options.getOptions().config = configView.getData();
+
+            options.write();
 
             Runnable startT1 = () -> competitionView.startRun(
                 TrackType.TRACK_1 );
