@@ -1,12 +1,10 @@
 package soh.gpio;
 
-import org.jutils.io.LogUtils;
-
 import com.pi4j.io.gpio.*;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
-import soh.data.Pi3GpioPin;
+import soh.data.*;
 
 /*******************************************************************************
  * 
@@ -15,8 +13,6 @@ public class SohGpio
 {
     /**  */
     public static boolean FAUX_CONNECT = true;
-    /**  */
-    private static final PinPullResistance PHOTOGATE_PULL_RES = PinPullResistance.OFF;
 
     /**  */
     private static GpioController gpio;
@@ -45,24 +41,25 @@ public class SohGpio
     /***************************************************************************
      * 
      **************************************************************************/
-    public static void connect( Runnable startT1, Runnable stopT1,
-        Runnable startT2, Runnable stopT2 ) throws IllegalStateException
+    public static void connect( TrackCfg track1, Runnable startT1,
+        Runnable stopT1, TrackCfg track2, Runnable startT2, Runnable stopT2 )
+        throws IllegalStateException
     {
         if( t1StartPin != null )
         {
             return;
         }
 
-        t1StartPin = provisionPin( gpio, Pi3GpioPin.GPIO_27.hwPin,
+        t1StartPin = provisionPin( gpio, track1.startPin, track1.startRes,
             "Track 1 Start Pin", startT1 );
 
-        t1StopPin = provisionPin( gpio, Pi3GpioPin.GPIO_22.hwPin,
+        t1StopPin = provisionPin( gpio, track1.stopPin, track1.stopRes,
             "Track 1 Stop Pin", stopT1 );
 
-        t2StartPin = provisionPin( gpio, Pi3GpioPin.GPIO_23.hwPin,
+        t2StartPin = provisionPin( gpio, track2.startPin, track2.startRes,
             "Track 2 Start Pin", startT2 );
 
-        t2StopPin = provisionPin( gpio, Pi3GpioPin.GPIO_24.hwPin,
+        t2StopPin = provisionPin( gpio, track2.stopPin, track2.stopRes,
             "Track 2 Stop Pin", stopT2 );
     }
 
@@ -126,10 +123,10 @@ public class SohGpio
      * @return
      **************************************************************************/
     private static GpioPinDigitalInput provisionPin( GpioController gpio,
-        Pin pin, String name, Runnable callback )
+        Pi3GpioPin pin, PinResistance res, String name, Runnable callback )
     {
-        GpioPinDigitalInput inputPin = gpio.provisionDigitalInputPin( pin, name,
-            PHOTOGATE_PULL_RES );
+        GpioPinDigitalInput inputPin = gpio.provisionDigitalInputPin( pin.hwPin,
+            name, res.res );
 
         inputPin.setShutdownOptions( true );
         inputPin.addListener( new PhotogatePinListener( callback ) );
@@ -154,13 +151,14 @@ public class SohGpio
         public void handleGpioPinDigitalStateChangeEvent(
             GpioPinDigitalStateChangeEvent e )
         {
-            GpioPin p = e.getPin();
+            // GpioPin p = e.getPin();
             PinEdge edge = e.getEdge();
 
-            LogUtils.printDebug( "GPIO pin %s (%d) is %s", p.getPin().getName(),
-                p.getPin().getAddress(), edge.getName() );
+            // LogUtils.printDebug( "GPIO pin %s (%d) is %s",
+            // p.getPin().getName(),
+            // p.getPin().getAddress(), edge.getName() );
 
-            if( e.getEdge() == PinEdge.RISING )
+            if( edge == PinEdge.RISING )
             {
                 r.run();
             }

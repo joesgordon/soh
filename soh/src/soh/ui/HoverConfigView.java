@@ -27,6 +27,10 @@ public class HoverConfigView implements IDataView<HoverConfig>
     /**  */
     private final DivisionConfigView divcView;
     /**  */
+    private final TrackCfgView track1View;
+    /**  */
+    private final TrackCfgView track2View;
+    /**  */
     private final TeamsConfigView teamsView;
 
     /**  */
@@ -41,6 +45,10 @@ public class HoverConfigView implements IDataView<HoverConfig>
             null );
         this.divbView = new DivisionConfigView();
         this.divcView = new DivisionConfigView();
+
+        this.track1View = new TrackCfgView();
+        this.track2View = new TrackCfgView();
+
         this.teamsView = new TeamsConfigView();
 
         this.view = createView();
@@ -74,24 +82,38 @@ public class HoverConfigView implements IDataView<HoverConfig>
         teamsPane.getView().setPreferredSize( new Dimension( 600, 200 ) );
         teamsPane.getView().setMinimumSize( new Dimension( 600, 200 ) );
 
-        constraints = new GridBagConstraints( 1, row++, 1, 3, 0.0, 0.0,
+        constraints = new GridBagConstraints( 2, row++, 1, 3, 0.0, 0.0,
             GridBagConstraints.WEST, GridBagConstraints.VERTICAL,
-            new Insets( 10, 10, 12, 10 ), 0, 0 );
+            new Insets( 10, 0, 12, 10 ), 0, 0 );
         panel.add( teamsPane.getView(), constraints );
 
         // ---------------------------------------------------------------------
 
         divbView.getView().setBorder( new TitledBorder( "Division B" ) );
-        constraints = new GridBagConstraints( 0, row++, 1, 1, 0.0, 0.0,
+        constraints = new GridBagConstraints( 0, row, 1, 1, 0.0, 0.0,
             GridBagConstraints.NORTH, GridBagConstraints.NONE,
             new Insets( 0, 10, 10, 10 ), 0, 0 );
         panel.add( divbView.getView(), constraints );
 
+        track1View.getView().setBorder( new TitledBorder( "Track 1" ) );
+        constraints = new GridBagConstraints( 1, row++, 1, 1, 0.0, 0.0,
+            GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
+            new Insets( 0, 0, 10, 10 ), 0, 0 );
+        panel.add( track1View.getView(), constraints );
+
+        // ---------------------------------------------------------------------
+
         divcView.getView().setBorder( new TitledBorder( "Division C" ) );
-        constraints = new GridBagConstraints( 0, row++, 1, 1, 0.0, 0.0,
+        constraints = new GridBagConstraints( 0, row, 1, 1, 0.0, 0.0,
             GridBagConstraints.NORTH, GridBagConstraints.NONE,
             new Insets( 0, 10, 10, 10 ), 0, 0 );
         panel.add( divcView.getView(), constraints );
+
+        track2View.getView().setBorder( new TitledBorder( "Track 2" ) );
+        constraints = new GridBagConstraints( 1, row++, 1, 1, 0.0, 0.0,
+            GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
+            new Insets( 0, 0, 10, 10 ), 0, 0 );
+        panel.add( track2View.getView(), constraints );
 
         // ---------------------------------------------------------------------
 
@@ -119,49 +141,102 @@ public class HoverConfigView implements IDataView<HoverConfig>
      **************************************************************************/
     private static Component createHelpPanel()
     {
-        StandardFormView form = new StandardFormView();
+        JPanel panel = new JPanel( new GridBagLayout() );
         JLabel label;
+        GridBagConstraints constraints;
 
-        int size = 24;
-        String font = "Dialog";
+        String [] startPeriod = { "F1", "F10",
+            "Starts/Pauses the competition period timer" };
 
-        label = UiUtils.createLabel(
-            "F1 - Starts the competition for the Track 1 Team", size, font );
+        String [] failCmd = { "F2", "F11", "Fails a run" };
+
+        String [] clearCmd = { "F3", "F12", "Clears the team info" };
+
+        String [] [] commands = new String[][] { startPeriod, failCmd,
+            clearCmd };
+
+        int row = 0;
+
+        label = createHelpLabel(
+            "F8 - Toggles between the configuration and the competition scream" );
+        constraints = new GridBagConstraints( 0, row++, 3, 1, 1.0, 0.0,
+            GridBagConstraints.WEST, GridBagConstraints.NONE,
+            new Insets( 0, 0, 10, 0 ), 0, 0 );
+        panel.add( label, constraints );
+
+        // ---------------------------------------------------------------------
+
+        label = createHelpLabel( "<html><center>Track 1<br>Key</center></html>",
+            28 );
+        constraints = new GridBagConstraints( 0, row, 1, 1, 0.0, 0.0,
+            GridBagConstraints.CENTER, GridBagConstraints.NONE,
+            new Insets( 0, 0, 0, 10 ), 0, 0 );
+        panel.add( label, constraints );
+
+        label = createHelpLabel( "<html><center>Track 2<br>Key</center></html>",
+            28 );
+        constraints = new GridBagConstraints( 1, row, 1, 1, 0.0, 0.0,
+            GridBagConstraints.CENTER, GridBagConstraints.NONE,
+            new Insets( 0, 0, 0, 10 ), 0, 0 );
+        panel.add( label, constraints );
+
+        label = createHelpLabel( "Description", 28 );
+        constraints = new GridBagConstraints( 2, row++, 1, 1, 1.0, 0.0,
+            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
+            new Insets( 0, 0, 0, 0 ), 0, 0 );
+        panel.add( label, constraints );
+
+        // ---------------------------------------------------------------------
+
+        constraints = new GridBagConstraints( 0, row++, 3, 1, 1.0, 0.0,
+            GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
+            new Insets( 0, 0, 0, 0 ), 0, 0 );
+        panel.add( new JSeparator(), constraints );
+
+        // ---------------------------------------------------------------------
+
+        for( String [] cmd : commands )
+        {
+            label = createHelpLabel( cmd[0] );
+            constraints = new GridBagConstraints( 0, row, 1, 1, 0.0, 0.0,
+                GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                new Insets( 0, 0, 0, 10 ), 0, 0 );
+            panel.add( label, constraints );
+
+            label = createHelpLabel( cmd[1] );
+            constraints = new GridBagConstraints( 1, row, 1, 1, 0.0, 0.0,
+                GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                new Insets( 0, 0, 0, 10 ), 0, 0 );
+            panel.add( label, constraints );
+
+            label = createHelpLabel( cmd[2] );
+            constraints = new GridBagConstraints( 2, row++, 1, 1, 1.0, 0.0,
+                GridBagConstraints.WEST, GridBagConstraints.NONE,
+                new Insets( 0, 0, 0, 0 ), 0, 0 );
+            panel.add( label, constraints );
+        }
+
+        // ---------------------------------------------------------------------
+
+        return panel;
+    }
+
+    private static JLabel createHelpLabel( String text )
+    {
+        return createHelpLabel( text, 24 );
+    }
+
+    private static JLabel createHelpLabel( String text, int size )
+    {
+        JLabel label = UiUtils.createLabel( text, size, "Dialog" );
+
+        Font f = label.getFont().deriveFont( Font.PLAIN );
+
+        label.setFont( f );
+
         label.setForeground( Color.black );
-        form.addField( null, label );
 
-        label = UiUtils.createLabel( "F2 - Fails a run for the Track 1 Team",
-            size, font );
-        label.setForeground( Color.black );
-        form.addField( null, label );
-
-        label = UiUtils.createLabel( "F3 - Clears the team from Track 1", size,
-            font );
-        label.setForeground( Color.black );
-        form.addField( null, label );
-
-        label = UiUtils.createLabel(
-            "F8 - Toggles between the configuration and the competition scream",
-            size, font );
-        label.setForeground( Color.black );
-        form.addField( null, label );
-
-        label = UiUtils.createLabel(
-            "F10 - Starts the competition for the Track 2 Team", size, font );
-        label.setForeground( Color.black );
-        form.addField( null, label );
-
-        label = UiUtils.createLabel( "F11 - Fails a run for the Track 2 Team",
-            size, font );
-        label.setForeground( Color.black );
-        form.addField( null, label );
-
-        label = UiUtils.createLabel( "F12 - Clears the team from Track 2", size,
-            font );
-        label.setForeground( Color.black );
-        form.addField( null, label );
-
-        return form.getView();
+        return label;
     }
 
     /***************************************************************************
@@ -191,8 +266,13 @@ public class HoverConfigView implements IDataView<HoverConfig>
         this.config = data;
 
         periodField.setValue( data.periodTime );
+
         divbView.setData( data.divB );
         divcView.setData( data.divC );
+
+        track1View.setData( data.track1 );
+        track2View.setData( data.track2 );
+
         teamsView.setData( data.teams );
     }
 }

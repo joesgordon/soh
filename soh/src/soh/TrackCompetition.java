@@ -124,12 +124,12 @@ public class TrackCompetition
 
         if( state == TrackState.RUNNING_A )
         {
-            track.runaTime = getRunTime();
+            team.time1 = getRunTime();
             track.state = TrackState.WAITING_B;
         }
         else if( state == TrackState.RUNNING_B )
         {
-            track.runbTime = getRunTime();
+            team.time2 = getRunTime();
             stopPeriod();
             SwingUtilities.invokeLater( () -> edtUpdateTimes() );
         }
@@ -144,11 +144,11 @@ public class TrackCompetition
 
         runWatch.stop();
 
-        if( track.failCnt < 5 )
+        if( team.failedCount < 5 )
         {
-            track.failCnt++;
+            team.failedCount++;
 
-            if( track.failCnt > 4 )
+            if( team.failedCount > 4 )
             {
                 stopPeriod();
                 SwingUtilities.invokeLater( () -> edtUpdateTimes() );
@@ -193,8 +193,8 @@ public class TrackCompetition
     {
         int periodSecs = getPeriodTime();
         int runSecs = getRunTime();
-        int runaSecs = track.runaTime;
-        int runbSecs = track.runbTime;
+        int runaSecs = team.time1;
+        int runbSecs = team.time2;
 
         TrackState state = track.state;
 
@@ -241,7 +241,7 @@ public class TrackCompetition
 
         view.setRunaTime( runaSecs, state.runaComplete );
         view.setRunbTime( runbSecs, state.runbComplete );
-        view.setFailCount( track.failCnt );
+        view.setFailCount( team.failedCount );
     }
 
     /***************************************************************************

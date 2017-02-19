@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.swing.*;
 
-import org.jutils.io.LogUtils;
 import org.jutils.ui.event.updater.ReflectiveUpdater;
 import org.jutils.ui.event.updater.WrappedUpdater;
 import org.jutils.ui.fields.ComboFormField;
@@ -53,9 +52,6 @@ public class PinTestView implements IDataView<PinData>
     private final Icon provisionIcon;
     /**  */
     private final Icon unprovisionIcon;
-
-    // TODO add switch level button.
-    // TODO make it all work.
 
     /**  */
     private PinData data;
@@ -294,7 +290,7 @@ public class PinTestView implements IDataView<PinData>
         {
             GpioController gpio = GpioFactory.getInstance();
 
-            LogUtils.printDebug( "Provisioning %s", data.gpio.getName() );
+            // LogUtils.printDebug( "Provisioning %s", data.gpio.getName() );
 
             if( data.direction == GpioPinDirection.INPUT )
             {
@@ -327,7 +323,7 @@ public class PinTestView implements IDataView<PinData>
         {
             GpioController gpio = GpioFactory.getInstance();
 
-            LogUtils.printDebug( "Unprovisioning %s", data.gpio.getName() );
+            // LogUtils.printDebug( "Unprovisioning %s", data.gpio.getName() );
 
             gpio.unprovisionPin( gpin );
             data.provisioned = false;
@@ -336,6 +332,9 @@ public class PinTestView implements IDataView<PinData>
         }
     }
 
+    /***************************************************************************
+     * @param state
+     **************************************************************************/
     private void setLevelButtonState( PinState state )
     {
         if( state == PinState.HIGH )

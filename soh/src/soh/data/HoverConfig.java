@@ -15,6 +15,10 @@ public class HoverConfig
     /**  */
     public final DivisionConfig divC;
     /**  */
+    public final TrackCfg track1;
+    /**  */
+    public final TrackCfg track2;
+    /**  */
     public final List<Team> teams;
 
     /***************************************************************************
@@ -23,8 +27,12 @@ public class HoverConfig
     public HoverConfig()
     {
         this.periodTime = 8 * 60;
+
         this.divB = new DivisionConfig( Division.DIVISION_B );
         this.divC = new DivisionConfig( Division.DIVISION_C );
+
+        this.track1 = new TrackCfg();
+        this.track2 = new TrackCfg();
 
         this.teams = new ArrayList<>();
     }
@@ -35,8 +43,15 @@ public class HoverConfig
     public HoverConfig( HoverConfig config )
     {
         this.periodTime = config.periodTime;
+
         this.divB = new DivisionConfig( config.divB );
         this.divC = new DivisionConfig( config.divC );
+
+        this.track1 = config.track1 == null ? new TrackCfg()
+            : new TrackCfg( config.track1 );
+        this.track2 = config.track2 == null ? new TrackCfg( true )
+            : new TrackCfg( config.track2 );
+
         this.teams = new ArrayList<>();
 
         if( config.teams != null )

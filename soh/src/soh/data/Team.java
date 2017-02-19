@@ -29,8 +29,8 @@ public class Team
         this.schoolCode = "";
         this.div = Division.DIVISION_B;
         this.failedCount = 0;
-        this.time1 = 0;
-        this.time2 = 0;
+        this.time1 = -1;
+        this.time2 = -1;
     }
 
     /***************************************************************************
@@ -43,5 +43,15 @@ public class Team
         this.failedCount = t.failedCount;
         this.time1 = t.time1;
         this.time2 = t.time2;
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    public void initTrials()
+    {
+        this.failedCount = 0;
+        this.time1 = -1;
+        this.time2 = -1;
     }
 }

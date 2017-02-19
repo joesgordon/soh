@@ -427,9 +427,10 @@ public class SohFrameView implements IView<JFrame>
 
         if( show )
         {
+            HoverConfig config = configView.getData();
             OptionsSerializer<SohOptions> options = SohMain.getOptions();
 
-            options.getOptions().config = configView.getData();
+            options.getOptions().config = config;
 
             options.write();
 
@@ -445,7 +446,8 @@ public class SohFrameView implements IView<JFrame>
             try
             {
                 SohGpio.startup();
-                SohGpio.connect( startT1, stopT1, startT2, stopT2 );
+                SohGpio.connect( config.track1, startT1, stopT1, config.track2,
+                    startT2, stopT2 );
             }
             catch( IllegalStateException ex )
             {

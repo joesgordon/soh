@@ -2,44 +2,109 @@ package soh.ui;
 
 import java.awt.Component;
 import java.awt.Window;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.*;
+
+import org.jutils.IconConstants;
 import org.jutils.SwingUtils;
 import org.jutils.ui.ItemListView;
 import org.jutils.ui.ListView;
 import org.jutils.ui.ListView.IItemListModel;
+import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.model.IDataView;
 
 import soh.data.Team;
 
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 public class TeamsConfigView implements IDataView<List<Team>>
 {
+    /**  */
     private final ItemListView<Team> view;
 
+    /**  */
+    private List<Team> teams;
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
     public TeamsConfigView()
     {
         this.view = new ItemListView<>( new TeamConfigView(),
             new TeamsModel() );
+
+        view.addSeparatorToToolbar();
+        view.addToToolbar( createInitButton() );
+
+        setData( new ArrayList<>() );
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    private JButton createInitButton()
+    {
+        Action action;
+        Icon icon;
+        JButton button;
+
+        icon = IconConstants.getIcon( IconConstants.UNDO_16 );
+        action = new ActionAdapter( ( e ) -> initAll(), "Initialize All",
+            icon );
+        button = new JButton( action );
+
+        button.setToolTipText( button.getText() );
+        button.setText( "" );
+
+        return button;
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void initAll()
+    {
+        for( Team t : teams )
+        {
+            t.initTrials();
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
     @Override
     public Component getView()
     {
         return view.getView();
     }
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     @Override
     public List<Team> getData()
     {
         return view.getData();
     }
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     @Override
     public void setData( List<Team> data )
     {
+        this.teams = data;
+
         view.setData( data );
     }
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     private static final class TeamsModel implements IItemListModel<Team>
     {
         @Override

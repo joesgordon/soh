@@ -3,7 +3,6 @@ package soh.gpio;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jutils.io.LogUtils;
 import org.jutils.task.*;
 
 //START SNIPPET: control-gpio-snippet
@@ -111,7 +110,6 @@ public class GpioOutputExample implements ITask
             // toggle the current state of gpio pin #01 (should turn on)
             for( GpioPinDigitalOutput gpdo : pins )
             {
-                LogUtils.printDebug( "Toggling %s", gpdo.getName() );
                 gpdo.toggle();
             }
             handler.signalPercent( 60 );
