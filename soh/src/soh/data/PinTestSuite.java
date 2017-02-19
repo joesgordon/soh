@@ -41,4 +41,12 @@ public class PinTestSuite
             }
         }
     }
+
+    public void initialize()
+    {
+        for( PinData pd : pins )
+        {
+            pd.provisioned = false;
+        }
+    }
 }

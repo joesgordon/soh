@@ -3,14 +3,16 @@
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-    	<property name="proj_root" location=".." />
+        <property name="proj_root" location=".." />
+        <property name="libs_root" location="../../libs" />
+    	
         <jar destfile="./hovercraft.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="soh.SohMain"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="${proj_root}/bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="${proj_root}/jutils.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${libs_root}/jutils.jar"/>
         </jar>
     </target>
 </project>

@@ -83,6 +83,8 @@ public class PinTestSuiteView implements IDataView<PinTestSuite>
 
         JScrollPane pane = new JScrollPane( createTestView() );
 
+        pane.getVerticalScrollBar().setUnitIncrement( 12 );
+
         panel.add( createToolbar(), BorderLayout.NORTH );
         panel.add( pane, BorderLayout.CENTER );
 
@@ -206,7 +208,7 @@ public class PinTestSuiteView implements IDataView<PinTestSuite>
         return panel;
     }
 
-    private void provisionAll()
+    public void provisionAll()
     {
         for( PinTestView ptv : pinViews )
         {
@@ -214,7 +216,7 @@ public class PinTestSuiteView implements IDataView<PinTestSuite>
         }
     }
 
-    private void unprovisionAll()
+    public void unprovisionAll()
     {
         for( PinTestView ptv : pinViews )
         {

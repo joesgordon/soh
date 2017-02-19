@@ -53,16 +53,16 @@ public class SohGpio
             return;
         }
 
-        t1StartPin = provisionPin( gpio, Pi3GpioPin.GPIO_03.hwPin,
+        t1StartPin = provisionPin( gpio, Pi3GpioPin.GPIO_27.hwPin,
             "Track 1 Start Pin", startT1 );
 
-        t1StopPin = provisionPin( gpio, Pi3GpioPin.GPIO_04.hwPin,
+        t1StopPin = provisionPin( gpio, Pi3GpioPin.GPIO_22.hwPin,
             "Track 1 Stop Pin", stopT1 );
 
-        t2StartPin = provisionPin( gpio, Pi3GpioPin.GPIO_14.hwPin,
+        t2StartPin = provisionPin( gpio, Pi3GpioPin.GPIO_23.hwPin,
             "Track 2 Start Pin", startT2 );
 
-        t2StopPin = provisionPin( gpio, Pi3GpioPin.GPIO_15.hwPin,
+        t2StopPin = provisionPin( gpio, Pi3GpioPin.GPIO_24.hwPin,
             "Track 2 Stop Pin", stopT2 );
     }
 

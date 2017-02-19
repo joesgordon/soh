@@ -7,6 +7,9 @@ import java.util.List;
 
 import javax.swing.*;
 
+import org.jutils.io.LogUtils;
+import org.jutils.ui.event.updater.ReflectiveUpdater;
+import org.jutils.ui.event.updater.WrappedUpdater;
 import org.jutils.ui.fields.ComboFormField;
 import org.jutils.ui.fields.NamedItemDescriptor;
 import org.jutils.ui.model.IDataView;
@@ -38,12 +41,18 @@ public class PinTestView implements IDataView<PinData>
     /**  */
     private final JButton provisionButton;
     /**  */
+    private final JButton levelButton;
+    /**  */
     private final JLabel levelLabel;
 
     /**  */
     private final Icon lowIcon;
     /**  */
     private final Icon highIcon;
+    /**  */
+    private final Icon provisionIcon;
+    /**  */
+    private final Icon unprovisionIcon;
 
     // TODO add switch level button.
     // TODO make it all work.
@@ -60,22 +69,34 @@ public class PinTestView implements IDataView<PinData>
     {
         this.pinoutLabel = new JLabel();
         this.pinLabel = new JLabel();
-        this.dirField = new ComboFormField<>( "", GpioPinDirection.values() );
+        this.dirField = new ComboFormField<>( "", GpioPinDirection.values(),
+            new NamedItemDescriptor<>() );
         this.pullField = new ComboFormField<>( "", PinResistance.values(),
             new NamedItemDescriptor<>() );
         this.levelField = new ComboFormField<>( "", PinLevel.values(),
             new NamedItemDescriptor<>() );
-        this.provisionButton = new JButton( SohIcons.getConnect16() );
+        this.provisionButton = new JButton();
+        this.levelButton = new JButton();
         this.levelLabel = new JLabel( SohIcons.getLevelLow16() );
 
         this.lowIcon = SohIcons.getLevelLow16();
         this.highIcon = SohIcons.getLevelHigh16();
 
+        this.provisionIcon = SohIcons.getConnect16();
+        this.unprovisionIcon = SohIcons.getDisconnect16();
+
         this.view = createView( isLeft );
 
         // setData( new PinData( Pi3Pin.PIN_01 ) );
 
-        dirField.setUpdater( ( d ) -> handleDirectionChanged( d ) );
+        dirField.setUpdater( new WrappedUpdater<>(
+            new ReflectiveUpdater<>( this, "data.direction" ),
+            ( d ) -> handleDirectionChanged( d ) ) );
+        pullField.setUpdater( new ReflectiveUpdater<>( this, "data.pullRes" ) );
+        levelField.setUpdater(
+            new ReflectiveUpdater<>( this, "data.defaultLevel" ) );
+        provisionButton.addActionListener( ( e ) -> toggleProvisioning() );
+        levelButton.addActionListener( ( e ) -> toggleOutputLevel() );
     }
 
     /***************************************************************************
@@ -103,7 +124,7 @@ public class PinTestView implements IDataView<PinData>
         List<Integer> indexes = new ArrayList<>();
         int idx = 0;
 
-        for( int i = 0; i < 9; i++ )
+        for( int i = 0; i < 10; i++ )
         {
             indexes.add( i );
         }
@@ -169,6 +190,13 @@ public class PinTestView implements IDataView<PinData>
         // ---------------------------------------------------------------------
 
         constraints = new GridBagConstraints( indexes.get( idx++ ), 0, 1, 1,
+            0.0, 0.0, alignment, GridBagConstraints.NONE,
+            new Insets( 0, 2, 0, 2 ), 0, 0 );
+        panel.add( levelButton, constraints );
+
+        // ---------------------------------------------------------------------
+
+        constraints = new GridBagConstraints( indexes.get( idx++ ), 0, 1, 1,
             1.0, 0.0, alignment, GridBagConstraints.HORIZONTAL,
             new Insets( 0, 0, 0, 0 ), 0, 0 );
         panel.add( Box.createHorizontalStrut( 0 ), constraints );
@@ -229,10 +257,16 @@ public class PinTestView implements IDataView<PinData>
 
         dirField.getView().setVisible( data.gpio != null );
         provisionButton.setVisible( data.gpio != null );
+        provisionButton.setIcon(
+            data.provisioned ? unprovisionIcon : provisionIcon );
 
         dirField.setEditable( !data.provisioned );
         pullField.setEditable( !data.provisioned );
         levelField.setEditable( !data.provisioned );
+        levelButton.setVisible(
+            data.provisioned && data.direction == GpioPinDirection.OUTPUT );
+
+        setLevelButtonState( data.defaultLevel.state );
 
         switch( data.pinout.type )
         {
@@ -250,12 +284,17 @@ public class PinTestView implements IDataView<PinData>
         }
     }
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     public void provision()
     {
         if( !data.provisioned && data.gpio != null &&
             data.direction != GpioPinDirection.UNALLOCATED )
         {
             GpioController gpio = GpioFactory.getInstance();
+
+            LogUtils.printDebug( "Provisioning %s", data.gpio.getName() );
 
             if( data.direction == GpioPinDirection.INPUT )
             {
@@ -267,24 +306,84 @@ public class PinTestView implements IDataView<PinData>
                 gpin = gpio.provisionDigitalOutputPin( data.gpio.hwPin,
                     data.gpio.getName(), data.defaultLevel.state );
             }
+            data.provisioned = true;
+
+            gpin.setShutdownOptions( true, PinState.LOW,
+                PinPullResistance.OFF );
 
             GpioPinListenerDigital l = ( e ) -> handlePinStateChanged( e );
             gpin.addListener( l );
+
+            setData( data );
         }
     }
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     public void unprovision()
     {
         if( data.provisioned )
         {
             GpioController gpio = GpioFactory.getInstance();
+
+            LogUtils.printDebug( "Unprovisioning %s", data.gpio.getName() );
+
             gpio.unprovisionPin( gpin );
+            data.provisioned = false;
+
+            setData( data );
         }
     }
 
+    private void setLevelButtonState( PinState state )
+    {
+        if( state == PinState.HIGH )
+        {
+            levelButton.setIcon( lowIcon );
+            levelButton.setText( "-> Low" );
+        }
+        else
+        {
+            levelButton.setIcon( highIcon );
+            levelButton.setText( "-> High" );
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void toggleProvisioning()
+    {
+        if( data.provisioned )
+        {
+            unprovision();
+        }
+        else
+        {
+            provision();
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void toggleOutputLevel()
+    {
+        if( gpin instanceof GpioPinDigitalOutput )
+        {
+            ( ( GpioPinDigitalOutput )gpin ).toggle();
+        }
+    }
+
+    /***************************************************************************
+     * @param event
+     **************************************************************************/
     private void handlePinStateChanged( GpioPinDigitalStateChangeEvent event )
     {
         PinState state = event.getState();
+
+        setLevelButtonState( state );
 
         if( state == PinState.HIGH )
         {

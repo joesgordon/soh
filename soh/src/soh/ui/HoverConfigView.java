@@ -62,38 +62,41 @@ public class HoverConfigView implements IDataView<HoverConfig>
 
         // ---------------------------------------------------------------------
 
-        constraints = new GridBagConstraints( 0, row++, 1, 1, 0.0, 0.0,
+        constraints = new GridBagConstraints( 0, row, 1, 1, 0.0, 0.0,
             GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
             new Insets( 10, 10, 10, 10 ), 0, 0 );
         panel.add( createHoverForm(), constraints );
 
         // ---------------------------------------------------------------------
 
+        TitleView teamsPane = new TitleView( "Teams", teamsView.getView() );
+
+        teamsPane.getView().setPreferredSize( new Dimension( 600, 200 ) );
+        teamsPane.getView().setMinimumSize( new Dimension( 600, 200 ) );
+
+        constraints = new GridBagConstraints( 1, row++, 1, 3, 0.0, 0.0,
+            GridBagConstraints.WEST, GridBagConstraints.VERTICAL,
+            new Insets( 10, 10, 12, 10 ), 0, 0 );
+        panel.add( teamsPane.getView(), constraints );
+
+        // ---------------------------------------------------------------------
+
         divbView.getView().setBorder( new TitledBorder( "Division B" ) );
-        constraints = new GridBagConstraints( 0, row, 1, 1, 0.0, 0.0,
-            GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        constraints = new GridBagConstraints( 0, row++, 1, 1, 0.0, 0.0,
+            GridBagConstraints.NORTH, GridBagConstraints.NONE,
             new Insets( 0, 10, 10, 10 ), 0, 0 );
         panel.add( divbView.getView(), constraints );
 
         divcView.getView().setBorder( new TitledBorder( "Division C" ) );
-        constraints = new GridBagConstraints( 1, row++, 1, 1, 0.0, 0.0,
-            GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        constraints = new GridBagConstraints( 0, row++, 1, 1, 0.0, 0.0,
+            GridBagConstraints.NORTH, GridBagConstraints.NONE,
             new Insets( 0, 10, 10, 10 ), 0, 0 );
         panel.add( divcView.getView(), constraints );
 
         // ---------------------------------------------------------------------
 
-        TitleView teamsPane = new TitleView( "Teams", teamsView.getView() );
-
-        constraints = new GridBagConstraints( 0, row++, 2, 1, 0.0, 1.0,
-            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-            new Insets( 10, 10, 10, 10 ), 0, 0 );
-        panel.add( teamsPane.getView(), constraints );
-
-        // ---------------------------------------------------------------------
-
-        constraints = new GridBagConstraints( 0, row++, 3, 1, 1.0, 0.0,
-            GridBagConstraints.WEST, GridBagConstraints.NONE,
+        constraints = new GridBagConstraints( 0, row++, 3, 1, 1.0, 1.0,
+            GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
             new Insets( 0, 10, 10, 10 ), 0, 0 );
         panel.add( createHelpPanel(), constraints );
 

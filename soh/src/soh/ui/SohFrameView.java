@@ -311,7 +311,7 @@ public class SohFrameView implements IView<JFrame>
      **************************************************************************/
     private Action createTestSuiteAction()
     {
-        return new ActionAdapter( ( e ) -> showInputScreen(), "Test I/O",
+        return new ActionAdapter( ( e ) -> showTestSuiteScreen(), "Test I/O",
             IconConstants.getIcon( IconConstants.CHECK_16 ) );
     }
 
@@ -386,7 +386,7 @@ public class SohFrameView implements IView<JFrame>
     /***************************************************************************
      * 
      **************************************************************************/
-    private void showInputScreen()
+    private void showTestSuiteScreen()
     {
         PinTestSuiteView view = new PinTestSuiteView();
         OkDialogView okView = new OkDialogView( getView(), view.getView(),
@@ -404,13 +404,18 @@ public class SohFrameView implements IView<JFrame>
         }
 
         OptionsSerializer<SohOptions> options = SohMain.getOptions();
+        PinTestSuite suite = options.getOptions().testSuite;
 
-        view.setData( options.getOptions().testSuite );
+        suite.initialize();
 
-        okView.show( "I/O Test", new Dimension( 700, 800 ) );
+        view.setData( suite );
+
+        okView.show( "I/O Test", new Dimension( 850, 700 ) );
 
         options.getOptions().testSuite = view.getData();
         options.write();
+
+        view.unprovisionAll();
     }
 
     /***************************************************************************

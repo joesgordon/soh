@@ -9,6 +9,7 @@ import org.jutils.io.options.OptionsSerializer;
 import org.jutils.ui.app.FrameRunner;
 
 import soh.data.SohOptions;
+import soh.gpio.SohGpio;
 
 /*******************************************************************************
  * 
@@ -27,6 +28,10 @@ public class SohMain
      **************************************************************************/
     public static void main( String [] args )
     {
+        OptionsSerializer<SohOptions> options = SohMain.getOptions();
+
+        SohGpio.FAUX_CONNECT = options.getOptions().useFauxGpio;
+
         FrameRunner.invokeLater( new SohApp() );
     }
 

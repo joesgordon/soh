@@ -21,6 +21,6 @@ public enum PinLevel implements INamedItem
     @Override
     public String getName()
     {
-        return state.getName();
+        return name;
     }
 }

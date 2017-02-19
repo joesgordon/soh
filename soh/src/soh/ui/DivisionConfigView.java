@@ -68,7 +68,7 @@ public class DivisionConfigView implements IDataView<DivisionConfig>
     {
         StandardFormView form = new StandardFormView();
 
-        form.addField( divField );
+        // form.addField( divField );
         form.addField( lengthField );
         form.addField( timeField );
         form.addField( mphField );
