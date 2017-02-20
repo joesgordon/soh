@@ -18,7 +18,7 @@ public class SohMain
 {
     /**  */
     private static final File userFile = IOUtils.getUsersFile(
-        "ScienceOlympiad", "soh.xml" );
+        ".ScienceOlympiad", "soh.xml" );
 
     /**  */
     private static OptionsSerializer<SohOptions> options;

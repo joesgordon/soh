@@ -164,6 +164,8 @@ public class SohFrameView implements IView<JFrame>
                     file.getAbsolutePath(),
                 "File Format Error" );
         }
+
+        saveUserConfig();
     }
 
     /***************************************************************************
@@ -195,6 +197,8 @@ public class SohFrameView implements IView<JFrame>
                     file.getAbsolutePath(),
                 "File Format Error" );
         }
+
+        saveUserConfig();
     }
 
     /***************************************************************************
@@ -341,6 +345,17 @@ public class SohFrameView implements IView<JFrame>
         view.unprovisionAll();
     }
 
+    private HoverConfig saveUserConfig()
+    {
+        HoverConfig config = configView.getData();
+        OptionsSerializer<SohOptions> options = SohMain.getOptions();
+
+        options.getOptions().config = config;
+        options.write();
+
+        return config;
+    }
+
     /***************************************************************************
      * @param show
      **************************************************************************/
@@ -348,15 +363,10 @@ public class SohFrameView implements IView<JFrame>
     {
         fauxGpioMenuItem.setEnabled( false );
 
+        HoverConfig config = saveUserConfig();
+
         if( show && competitionView == null )
         {
-            HoverConfig config = configView.getData();
-            OptionsSerializer<SohOptions> options = SohMain.getOptions();
-
-            options.getOptions().config = config;
-
-            options.write();
-
             competitionView = new CompetitionView( config );
 
             Runnable startT1 = () -> competitionView.startRun(
@@ -458,6 +468,7 @@ public class SohFrameView implements IView<JFrame>
             if( view.competitionView == null ||
                 !view.competitionView.isRunning() )
             {
+                view.saveUserConfig();
                 SohGpio.shutdown();
                 System.exit( 0 );
             }
@@ -482,6 +493,7 @@ public class SohFrameView implements IView<JFrame>
             if( view.competitionView == null ||
                 !view.competitionView.isRunning() )
             {
+                view.saveUserConfig();
                 SohGpio.shutdown();
                 System.exit( 0 );
             }
