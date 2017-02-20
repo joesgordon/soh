@@ -4,7 +4,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.jutils.Stopwatch;
-import org.jutils.io.LogUtils;
 
 import soh.data.*;
 import soh.ui.TrackView;
@@ -19,10 +18,6 @@ public class TrackCompetition
     /**  */
     public final HoverConfig config;
     /**  */
-    public final Team team;
-    /**  */
-    public final DivisionConfig division;
-    /**  */
     private final javax.swing.Timer updateTimer;
 
     /**  */
@@ -31,37 +26,41 @@ public class TrackCompetition
     private final Stopwatch runWatch;
 
     /**  */
-    private final Track track;
+    private TrackState state;
+
+    /**  */
+    public Team team;
+    /**  */
+    public int targetTime;
 
     /***************************************************************************
      * @param view
      * @param config
      * @param team
      **************************************************************************/
-    public TrackCompetition( TrackView view, HoverConfig config, Team team )
+    public TrackCompetition( TrackView view, HoverConfig config )
     {
         this.view = view;
         this.config = config;
-        this.team = team;
-        this.division = config.getDivision( team.div );
         this.updateTimer = new Timer( 50, ( e ) -> edtUpdateTimes() );
 
         this.periodWatch = new Stopwatch();
         this.runWatch = new Stopwatch();
 
-        this.track = new Track();
+        this.state = TrackState.UNINTIALIZED;
     }
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public void initializeTrack()
+    public void initializeTrack( Team team )
     {
-        LogUtils.printDebug( "Initializing track " + view.getTrackName() );
+        DivisionConfig div = config.getDivision( team.div );
+        this.team = team;
+        this.targetTime = div.targetTime;
+        this.state = TrackState.INITIALIZED;
 
-        track.reset();
-        SwingUtilities.invokeLater(
-            () -> view.setPeriodTime( config.periodTime ) );
+        // LogUtils.printDebug( "Initializing track " + view.getTrackName() );
     }
 
     /***************************************************************************
@@ -69,10 +68,13 @@ public class TrackCompetition
      **************************************************************************/
     public void startPeriod()
     {
-        LogUtils.printDebug(
-            "Starting period for track " + view.getTrackName() );
+        // LogUtils.printDebug(
+        // "Starting period for track " + view.getTrackName() );
 
-        track.state = TrackState.WAITING_A;
+        SwingUtilities.invokeLater(
+            () -> view.setPeriodTime( config.periodTime ) );
+
+        state = TrackState.WAITING_A;
         periodWatch.start();
         updateTimer.start();
     }
@@ -82,12 +84,33 @@ public class TrackCompetition
      **************************************************************************/
     private void stopPeriod()
     {
-        LogUtils.printDebug(
-            "Stopping period for track " + view.getTrackName() );
+        // LogUtils.printDebug(
+        // "Stopping period for track " + view.getTrackName() );
 
-        track.state = TrackState.FINISHED;
         periodWatch.stop();
         updateTimer.stop();
+
+        state = TrackState.FINISHED;
+        team.finished = true;
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    public void pauseResume()
+    {
+        periodWatch.pauseResume();
+
+        TrackState localState = state;
+
+        if( localState.runaComplete )
+        {
+            state = TrackState.WAITING_B;
+        }
+        else
+        {
+            state = TrackState.WAITING_A;
+        }
     }
 
     /***************************************************************************
@@ -95,19 +118,20 @@ public class TrackCompetition
      **************************************************************************/
     public void startRun()
     {
-        LogUtils.printDebug( "Starting run for track " + view.getTrackName() );
+        // LogUtils.printDebug( "Starting run for track " + view.getTrackName()
+        // );
 
         runWatch.start();
 
-        TrackState state = track.state;
+        TrackState localState = state;
 
-        if( state == TrackState.WAITING_A )
+        if( localState == TrackState.WAITING_A )
         {
-            track.state = TrackState.RUNNING_A;
+            state = TrackState.RUNNING_A;
         }
-        else if( state == TrackState.WAITING_B )
+        else if( localState == TrackState.WAITING_B )
         {
-            track.state = TrackState.RUNNING_B;
+            state = TrackState.RUNNING_B;
         }
     }
 
@@ -116,18 +140,19 @@ public class TrackCompetition
      **************************************************************************/
     public void stopRun()
     {
-        LogUtils.printDebug( "Stopping run for track " + view.getTrackName() );
+        // LogUtils.printDebug( "Stopping run for track " + view.getTrackName()
+        // );
 
         runWatch.stop();
 
-        TrackState state = track.state;
+        TrackState localState = state;
 
-        if( state == TrackState.RUNNING_A )
+        if( localState == TrackState.RUNNING_A )
         {
             team.time1 = getRunTime();
-            track.state = TrackState.WAITING_B;
+            state = TrackState.WAITING_B;
         }
-        else if( state == TrackState.RUNNING_B )
+        else if( localState == TrackState.RUNNING_B )
         {
             team.time2 = getRunTime();
             stopPeriod();
@@ -140,7 +165,8 @@ public class TrackCompetition
      **************************************************************************/
     public void failRun()
     {
-        LogUtils.printDebug( "Failing run for track " + view.getTrackName() );
+        // LogUtils.printDebug( "Failing run for track " + view.getTrackName()
+        // );
 
         runWatch.stop();
 
@@ -155,15 +181,15 @@ public class TrackCompetition
             }
             else
             {
-                TrackState state = track.state;
+                TrackState localState = state;
 
-                if( state == TrackState.RUNNING_A )
+                if( localState == TrackState.RUNNING_A )
                 {
-                    track.state = TrackState.WAITING_A;
+                    state = TrackState.WAITING_A;
                 }
-                else if( state == TrackState.RUNNING_B )
+                else if( localState == TrackState.RUNNING_B )
                 {
-                    track.state = TrackState.WAITING_B;
+                    state = TrackState.WAITING_B;
                 }
             }
         }
@@ -172,10 +198,32 @@ public class TrackCompetition
     /***************************************************************************
      * 
      **************************************************************************/
-    public void stop()
+    public void resetTrial()
+    {
+        runWatch.stop();
+
+        TrackState localState = state;
+
+        if( localState == TrackState.RUNNING_A )
+        {
+            team.time1 = -1;
+            state = TrackState.WAITING_A;
+        }
+        else if( localState == TrackState.RUNNING_B )
+        {
+            team.time2 = -1;
+            state = TrackState.WAITING_B;
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    public void clearTrack()
     {
         updateTimer.stop();
-        track.reset();
+        this.state = TrackState.UNINTIALIZED;
+        this.team = null;
     }
 
     /***************************************************************************
@@ -183,7 +231,7 @@ public class TrackCompetition
      **************************************************************************/
     public TrackState getState()
     {
-        return track.state;
+        return state;
     }
 
     /***************************************************************************
@@ -196,30 +244,30 @@ public class TrackCompetition
         int runaSecs = team.time1;
         int runbSecs = team.time2;
 
-        TrackState state = track.state;
+        TrackState localState = state;
 
-        if( ( state == TrackState.RUNNING_A ||
-            state == TrackState.RUNNING_B ) && runSecs > 0 &&
-            runSecs > ( 3 * division.targetTime ) )
+        if( ( localState == TrackState.RUNNING_A ||
+            localState == TrackState.RUNNING_B ) && runSecs > 0 &&
+            runSecs > ( 3 * targetTime ) )
         {
             failRun();
         }
 
-        state = track.state;
+        localState = state;
 
-        if( periodSecs < 1 && state != TrackState.RUNNING_A &&
-            state != TrackState.RUNNING_B )
+        if( periodSecs < 1 && localState != TrackState.RUNNING_A &&
+            localState != TrackState.RUNNING_B )
         {
             stopPeriod();
         }
 
-        state = track.state;
+        localState = state;
 
-        if( state == TrackState.RUNNING_A )
+        if( localState == TrackState.RUNNING_A )
         {
             runaSecs = runSecs;
         }
-        else if( state == TrackState.RUNNING_B )
+        else if( localState == TrackState.RUNNING_B )
         {
             runbSecs = runSecs;
         }
@@ -228,7 +276,7 @@ public class TrackCompetition
         // view.getTrackName() +
         // " @ " + runaSecs );
 
-        if( state != TrackState.FINISHED )
+        if( localState != TrackState.FINISHED )
         {
             view.setPeriodTime( periodSecs );
             view.setFinished( false );

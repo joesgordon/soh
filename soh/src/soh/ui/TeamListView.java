@@ -20,7 +20,7 @@ import soh.data.Team;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class TeamsConfigView implements IDataView<List<Team>>
+public class TeamListView implements IDataView<List<Team>>
 {
     /**  */
     private final ItemListView<Team> view;
@@ -31,10 +31,9 @@ public class TeamsConfigView implements IDataView<List<Team>>
     /***************************************************************************
      * 
      **************************************************************************/
-    public TeamsConfigView()
+    public TeamListView()
     {
-        this.view = new ItemListView<>( new TeamConfigView(),
-            new TeamsModel() );
+        this.view = new ItemListView<>( new TeamView(), new TeamsModel() );
 
         view.addSeparatorToToolbar();
         view.addToToolbar( createInitButton() );

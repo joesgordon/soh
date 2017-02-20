@@ -10,6 +10,9 @@ import org.jutils.ui.model.IView;
 import soh.data.HoverConfig;
 import soh.data.Team;
 
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 public class TeamsView implements IView<JComponent>
 {
     /** The main component. */
@@ -19,6 +22,9 @@ public class TeamsView implements IView<JComponent>
     /** The component to display the list. */
     private final JList<Team> itemsList;
 
+    /***************************************************************************
+     * @param config
+     **************************************************************************/
     public TeamsView( HoverConfig config )
     {
         this.itemsListModel = new CollectionListModel<>();
@@ -26,9 +32,12 @@ public class TeamsView implements IView<JComponent>
 
         this.view = createView();
 
-        itemsListModel.addAll( config.teams );
+        itemsListModel.addAll( config.getAvailableTeams() );
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
     private JPanel createView()
     {
         JPanel panel = new JPanel( new GridBagLayout() );
@@ -44,17 +53,26 @@ public class TeamsView implements IView<JComponent>
         return panel;
     }
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     @Override
     public JComponent getView()
     {
         return view;
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
     public Team getSelected()
     {
         return itemsList.getSelectedValue();
     }
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     private static final class TeamCellRenderer
         implements ListCellRenderer<Team>
     {

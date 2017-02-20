@@ -31,7 +31,7 @@ public class HoverConfigView implements IDataView<HoverConfig>
     /**  */
     private final TrackCfgView track2View;
     /**  */
-    private final TeamsConfigView teamsView;
+    private final TeamListView teamsView;
 
     /**  */
     private HoverConfig config;
@@ -49,7 +49,7 @@ public class HoverConfigView implements IDataView<HoverConfig>
         this.track1View = new TrackCfgView();
         this.track2View = new TrackCfgView();
 
-        this.teamsView = new TeamsConfigView();
+        this.teamsView = new TeamListView();
 
         this.view = createView();
 
@@ -145,14 +145,16 @@ public class HoverConfigView implements IDataView<HoverConfig>
         JLabel label;
         GridBagConstraints constraints;
 
-        String [] startPeriod = { "F1", "F10",
+        String [] startPeriod = { "F1", "F9",
             "Starts/Pauses the competition period timer" };
 
-        String [] failCmd = { "F2", "F11", "Fails a run" };
+        String [] failCmd = { "F2", "F10", "Fails a run" };
 
-        String [] clearCmd = { "F3", "F12", "Clears the team info" };
+        String [] resetCmd = { "F3", "F11", "Resets a run w/o failing" };
 
-        String [] [] commands = new String[][] { startPeriod, failCmd,
+        String [] clearCmd = { "F4", "F12", "Clears the team info" };
+
+        String [] [] commands = new String[][] { startPeriod, failCmd, resetCmd,
             clearCmd };
 
         int row = 0;
@@ -170,14 +172,14 @@ public class HoverConfigView implements IDataView<HoverConfig>
             28 );
         constraints = new GridBagConstraints( 0, row, 1, 1, 0.0, 0.0,
             GridBagConstraints.CENTER, GridBagConstraints.NONE,
-            new Insets( 0, 0, 0, 10 ), 0, 0 );
+            new Insets( 0, 0, 0, 20 ), 0, 0 );
         panel.add( label, constraints );
 
         label = createHelpLabel( "<html><center>Track 2<br>Key</center></html>",
             28 );
         constraints = new GridBagConstraints( 1, row, 1, 1, 0.0, 0.0,
             GridBagConstraints.CENTER, GridBagConstraints.NONE,
-            new Insets( 0, 0, 0, 10 ), 0, 0 );
+            new Insets( 0, 0, 0, 20 ), 0, 0 );
         panel.add( label, constraints );
 
         label = createHelpLabel( "Description", 28 );
@@ -200,13 +202,13 @@ public class HoverConfigView implements IDataView<HoverConfig>
             label = createHelpLabel( cmd[0] );
             constraints = new GridBagConstraints( 0, row, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets( 0, 0, 0, 10 ), 0, 0 );
+                new Insets( 0, 0, 0, 20 ), 0, 0 );
             panel.add( label, constraints );
 
             label = createHelpLabel( cmd[1] );
             constraints = new GridBagConstraints( 1, row, 1, 1, 0.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
-                new Insets( 0, 0, 0, 10 ), 0, 0 );
+                new Insets( 0, 0, 0, 20 ), 0, 0 );
             panel.add( label, constraints );
 
             label = createHelpLabel( cmd[2] );

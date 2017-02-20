@@ -79,4 +79,22 @@ public class HoverConfig
 
         return null;
     }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    public List<Team> getAvailableTeams()
+    {
+        List<Team> teams = new ArrayList<>();
+
+        for( Team t : this.teams )
+        {
+            if( !t.isFinished() )
+            {
+                teams.add( t );
+            }
+        }
+
+        return teams;
+    }
 }

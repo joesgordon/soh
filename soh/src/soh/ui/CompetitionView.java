@@ -25,12 +25,61 @@ public class CompetitionView implements IView<JComponent>
     /***************************************************************************
      * 
      **************************************************************************/
-    public CompetitionView()
+    public CompetitionView( HoverConfig config )
     {
-        this.track1View = new TrackView( "Track 1" );
-        this.track2View = new TrackView( "Track 2" );
+        this.track1View = new TrackView( "Track 1", config );
+        this.track2View = new TrackView( "Track 2", config );
 
         this.view = createView();
+
+        setupHotkeys();
+    }
+
+    /***************************************************************************
+     * @param comp
+     * @param t
+     * @param startPeriodKey
+     * @param failKey
+     * @param clearKey
+     * @param startRunKey
+     * @param stopRunKey
+     **************************************************************************/
+    private void addHotKeys( JComponent comp, TrackType t,
+        String startPeriodKey, String failKey, String resetKey, String clearKey,
+        String startRunKey, String stopRunKey )
+    {
+        UiUtils.addHotKey( comp, startPeriodKey, ( e ) -> startPeriod( t ) );
+
+        UiUtils.addHotKey( comp, failKey, ( e ) -> failRun( t ) );
+
+        UiUtils.addHotKey( comp, resetKey, ( e ) -> resetTrack( t ) );
+
+        UiUtils.addHotKey( comp, clearKey, ( e ) -> clearTrack( t ) );
+
+        UiUtils.addHotKey( comp, startRunKey, ( e ) -> startRun( t ) );
+
+        UiUtils.addHotKey( comp, stopRunKey, ( e ) -> stopRun( t ) );
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void setupHotkeys()
+    {
+        // addHotKeys( contentPane, TrackType.TRACK_1, "F1", "F2", "F3",
+        // "control 1", "control 2" );
+        addHotKeys( track1View.getView(), TrackType.TRACK_1, "F1", "F2", "F3",
+            "F4", "control 1", "control 2" );
+
+        // addHotKeys( contentPane, TrackType.TRACK_2, "F10", "F11", "F13",
+        // "control 9", "control 0" );
+        addHotKeys( getView(), TrackType.TRACK_2, "F9", "F10", "F11", "F12",
+            "control 9", "control 0" );
+
+        // ks = KeyStroke.getKeyStroke( KeyEvent.VK_0, KeyEvent.CTRL_DOWN_MASK
+        // );
+        // listener = ( e ) -> zoomer.normalize();
+        // UiUtils.addHotKey( competitionView.getView(), ks, listener );
     }
 
     /***************************************************************************
@@ -137,20 +186,16 @@ public class CompetitionView implements IView<JComponent>
     }
 
     /***************************************************************************
-     * @param config
+     * @return
      **************************************************************************/
-    public void setConfig( HoverConfig config )
+    public boolean isRunning()
     {
-        track1View.setConfig( config );
-        track2View.setConfig( config );
-
-        // track1View.setPeriodTime( 59 );
-        // track1View.setRunaTime( 145, true );
-        // track1View.setRunbTime( 63, false );
-        // track1View.setFailCount( 2 );
-        // track1View.setTeamData( config.teams.get( 0 ) );
+        return track1View.isRunning() || track2View.isRunning();
     }
 
+    /***************************************************************************
+     * @param track
+     **************************************************************************/
     public void startPeriod( TrackType track )
     {
         switch( track )
@@ -168,6 +213,9 @@ public class CompetitionView implements IView<JComponent>
         }
     }
 
+    /***************************************************************************
+     * @param track
+     **************************************************************************/
     public void failRun( TrackType track )
     {
         switch( track )
@@ -185,6 +233,29 @@ public class CompetitionView implements IView<JComponent>
         }
     }
 
+    /***************************************************************************
+     * @param track
+     **************************************************************************/
+    public void resetTrack( TrackType track )
+    {
+        switch( track )
+        {
+            case TRACK_1:
+            {
+                track1View.resetTrack();
+                break;
+            }
+            case TRACK_2:
+            {
+                track2View.resetTrack();
+                break;
+            }
+        }
+    }
+
+    /***************************************************************************
+     * @param track
+     **************************************************************************/
     public void clearTrack( TrackType track )
     {
         switch( track )
@@ -202,6 +273,9 @@ public class CompetitionView implements IView<JComponent>
         }
     }
 
+    /***************************************************************************
+     * @param track
+     **************************************************************************/
     public void startRun( TrackType track )
     {
         switch( track )
@@ -219,6 +293,9 @@ public class CompetitionView implements IView<JComponent>
         }
     }
 
+    /***************************************************************************
+     * @param track
+     **************************************************************************/
     public void stopRun( TrackType track )
     {
         switch( track )
@@ -234,10 +311,5 @@ public class CompetitionView implements IView<JComponent>
                 break;
             }
         }
-    }
-
-    public boolean isRunning()
-    {
-        return track1View.isRunning() || track2View.isRunning();
     }
 }

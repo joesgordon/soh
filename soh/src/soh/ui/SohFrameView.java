@@ -39,10 +39,6 @@ public class SohFrameView implements IView<JFrame>
     private final JCheckBoxMenuItem fauxGpioMenuItem;
     /**  */
     private final HoverConfigView configView;
-    /**  */
-    private final CompetitionView competitionView;
-    /**  */
-    private final TextZoomer zoomer;
 
     /**  */
     private final Action newAction;
@@ -50,6 +46,9 @@ public class SohFrameView implements IView<JFrame>
     private final Action openAction;
     /**  */
     private final Action saveAction;
+
+    /**  */
+    private CompetitionView competitionView;
 
     /***************************************************************************
      * 
@@ -59,12 +58,12 @@ public class SohFrameView implements IView<JFrame>
         this.frameView = new StandardFrameView();
         this.fauxGpioMenuItem = new JCheckBoxMenuItem();
         this.configView = new HoverConfigView();
-        this.competitionView = new CompetitionView();
-        this.zoomer = new TextZoomer( competitionView.getView() );
 
         this.newAction = createNewAction();
         this.openAction = createOpenAction();
         this.saveAction = createSaveAction();
+
+        this.competitionView = null;
 
         createMenubar( frameView.getMenuBar(), frameView.getFileMenu() );
 
@@ -78,11 +77,12 @@ public class SohFrameView implements IView<JFrame>
 
         // setFullScreen( frameView.getView() );
 
-        setupHotkeys();
-
         OptionsSerializer<SohOptions> options = SohMain.getOptions();
 
         configView.setData( options.getOptions().config );
+
+        UiUtils.addHotKey( ( JComponent )frameView.getView().getContentPane(),
+            "F8", ( e ) -> showCompetition( competitionView == null ) );
     }
 
     /***************************************************************************
@@ -195,83 +195,6 @@ public class SohFrameView implements IView<JFrame>
                     file.getAbsolutePath(),
                 "File Format Error" );
         }
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    private void setupHotkeys()
-    {
-        JComponent contentPane = ( JComponent )frameView.getView().getContentPane();
-
-        // addHotKeys( contentPane, TrackType.TRACK_1, "F1", "F2", "F3",
-        // "control 1", "control 2" );
-        addHotKeys( competitionView.getView(), TrackType.TRACK_1, "F1", "F2",
-            "F3", "control 1", "control 2" );
-
-        // addHotKeys( contentPane, TrackType.TRACK_2, "F10", "F11", "F13",
-        // "control 9", "control 0" );
-        addHotKeys( competitionView.getView(), TrackType.TRACK_2, "F10", "F11",
-            "F12", "control 9", "control 0" );
-
-        UiUtils.addHotKey( contentPane, "F8", ( e ) -> showCompetition(
-            !competitionView.getView().isShowing() ) );
-
-        KeyStroke ks;
-        ActionListener listener;
-
-        ks = KeyStroke.getKeyStroke( KeyEvent.VK_ADD, KeyEvent.CTRL_DOWN_MASK );
-        listener = ( e ) -> zoomer.zoomText( true );
-        UiUtils.addHotKey( competitionView.getView(), ks, listener );
-
-        ks = KeyStroke.getKeyStroke( KeyEvent.VK_EQUALS,
-            KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK );
-        listener = ( e ) -> zoomer.zoomText( true );
-        UiUtils.addHotKey( competitionView.getView(), ks, listener );
-
-        ks = KeyStroke.getKeyStroke( KeyEvent.VK_MINUS,
-            KeyEvent.CTRL_DOWN_MASK );
-        listener = ( e ) -> zoomer.zoomText( false );
-        UiUtils.addHotKey( competitionView.getView(), ks, listener );
-
-        ks = KeyStroke.getKeyStroke( KeyEvent.VK_NUMPAD0,
-            KeyEvent.CTRL_DOWN_MASK );
-        listener = ( e ) -> zoomer.normalize();
-        UiUtils.addHotKey( competitionView.getView(), ks, listener );
-
-        // ks = KeyStroke.getKeyStroke( KeyEvent.VK_0, KeyEvent.CTRL_DOWN_MASK
-        // );
-        // listener = ( e ) -> zoomer.normalize();
-        // UiUtils.addHotKey( competitionView.getView(), ks, listener );
-    }
-
-    /***************************************************************************
-     * @param comp
-     * @param t
-     * @param startPeriodKey
-     * @param failKey
-     * @param clearKey
-     * @param startRunKey
-     * @param stopRunKey
-     **************************************************************************/
-    private void addHotKeys( JComponent comp, TrackType t,
-        String startPeriodKey, String failKey, String clearKey,
-        String startRunKey, String stopRunKey )
-    {
-        UiUtils.addHotKey( comp, startPeriodKey,
-            ( e ) -> competitionView.startPeriod( t ) );
-
-        UiUtils.addHotKey( comp, failKey,
-            ( e ) -> competitionView.failRun( t ) );
-
-        UiUtils.addHotKey( comp, clearKey,
-            ( e ) -> competitionView.clearTrack( t ) );
-
-        UiUtils.addHotKey( comp, startRunKey,
-            ( e ) -> competitionView.startRun( t ) );
-
-        UiUtils.addHotKey( comp, stopRunKey,
-            ( e ) -> competitionView.stopRun( t ) );
     }
 
     /***************************************************************************
@@ -425,7 +348,7 @@ public class SohFrameView implements IView<JFrame>
     {
         fauxGpioMenuItem.setEnabled( false );
 
-        if( show )
+        if( show && competitionView == null )
         {
             HoverConfig config = configView.getData();
             OptionsSerializer<SohOptions> options = SohMain.getOptions();
@@ -433,6 +356,8 @@ public class SohFrameView implements IView<JFrame>
             options.getOptions().config = config;
 
             options.write();
+
+            competitionView = new CompetitionView( config );
 
             Runnable startT1 = () -> competitionView.startRun(
                 TrackType.TRACK_1 );
@@ -456,27 +381,23 @@ public class SohFrameView implements IView<JFrame>
                 return;
             }
 
-            competitionView.setConfig( configView.getData() );
-
             frameView.getStatusBar().getView().setVisible( false );
             frameView.getMenuBar().setVisible( false );
             frameView.setContent( competitionView.getView() );
 
             // setFullScreen( true );
         }
-        else
+        else if( !show && competitionView != null )
         {
-            if( competitionView.getView().isShowing() &&
-                !competitionView.isRunning() )
-            {
-                SohGpio.disconnect();
+            SohGpio.disconnect();
 
-                frameView.getStatusBar().getView().setVisible( true );
-                frameView.getMenuBar().setVisible( true );
-                frameView.setContent( configView.getView() );
+            frameView.getStatusBar().getView().setVisible( true );
+            frameView.getMenuBar().setVisible( true );
+            frameView.setContent( configView.getView() );
 
-                // setFullScreen( false );
-            }
+            competitionView = null;
+
+            // setFullScreen( false );
         }
     }
 
@@ -522,71 +443,6 @@ public class SohFrameView implements IView<JFrame>
     /***************************************************************************
      * 
      **************************************************************************/
-    private static final class TextZoomer
-    {
-        private final Container parent;
-        private int mag;
-
-        public TextZoomer( Container parent )
-        {
-            this.parent = parent;
-            this.mag = 0;
-        }
-
-        public void normalize()
-        {
-            boolean bigger = mag < 0;
-            int cnt = Math.abs( mag / 2 );
-
-            // LogUtils.printDebug( "normalizing text %s for %d",
-            // bigger ? "larger" : "smaller", cnt );
-            for( int i = 0; i < cnt; i++ )
-            {
-                zoomText( bigger );
-            }
-
-            mag = 0;
-        }
-
-        public void zoomText( boolean bigger )
-        {
-            // LogUtils.printDebug( "zooming text %s",
-            // bigger ? "larger" : "smaller" );
-            zoomText( parent, bigger );
-
-            mag += bigger ? 2 : -2;
-        }
-
-        private void zoomText( Container parent, boolean bigger )
-        {
-            int cnt = parent.getComponentCount();
-
-            for( int i = 0; i < cnt; i++ )
-            {
-                Component c = parent.getComponent( i );
-
-                if( c instanceof JLabel )
-                {
-                    Font f = c.getFont();
-                    int size = f.getSize();
-
-                    size += bigger ? 2 : -2;
-
-                    f = f.deriveFont( ( float )size );
-
-                    c.setFont( f );
-                }
-                else if( c instanceof Container )
-                {
-                    zoomText( ( Container )c, bigger );
-                }
-            }
-        }
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
     private static final class FrameExitListener implements ActionListener
     {
         private final SohFrameView view;
@@ -599,7 +455,8 @@ public class SohFrameView implements IView<JFrame>
         @Override
         public void actionPerformed( ActionEvent e )
         {
-            if( !view.competitionView.getView().isShowing() )
+            if( view.competitionView == null ||
+                !view.competitionView.isRunning() )
             {
                 SohGpio.shutdown();
                 System.exit( 0 );
@@ -622,9 +479,10 @@ public class SohFrameView implements IView<JFrame>
         @Override
         public void windowClosing( WindowEvent e )
         {
-            if( !view.competitionView.getView().isShowing() ||
+            if( view.competitionView == null ||
                 !view.competitionView.isRunning() )
             {
+                SohGpio.shutdown();
                 System.exit( 0 );
             }
         }

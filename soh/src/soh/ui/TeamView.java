@@ -19,7 +19,7 @@ import soh.data.Team;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class TeamConfigView implements IDataView<Team>
+public class TeamView implements IDataView<Team>
 {
     /**  */
     private final JPanel view;
@@ -40,7 +40,7 @@ public class TeamConfigView implements IDataView<Team>
     /***************************************************************************
      * 
      **************************************************************************/
-    public TeamConfigView()
+    public TeamView()
     {
         this.nameField = new StringFormField( "School Code", 15, 1, null );
         this.divField = new ComboFormField<>( "Division", Division.values() );

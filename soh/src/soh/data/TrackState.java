@@ -7,9 +7,12 @@ import org.jutils.INamedItem;
  ******************************************************************************/
 public enum TrackState implements INamedItem
 {
+    UNINTIALIZED( "Unintialized", false, false ),
     INITIALIZED( "Initialized", false, false ),
+    PAUSE_A( "Pause A", false, false ),
     WAITING_A( "Waiting on Run A", false, false ),
     RUNNING_A( "Running A", false, false ),
+    PAUSE_B( "Pause B", false, false ),
     WAITING_B( "Waiting on Run B", true, false ),
     RUNNING_B( "Runnning B", true, false ),
     FINISHED( "Finished", true, true );
