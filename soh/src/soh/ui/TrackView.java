@@ -2,6 +2,7 @@ package soh.ui;
 
 import java.awt.*;
 import java.awt.Dialog.ModalityType;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -117,6 +118,14 @@ public class TrackView implements IView<JComponent>
         competition.clearTrack();
 
         teamButton.setText( "Select Team" );
+        teamButton.setEnabled( true );
+
+        if( config.getAvailableTeams().isEmpty() )
+        {
+            teamButton.setText( "Teams Complete" );
+            teamButton.setEnabled( false );
+        }
+
         targetTimeField.setText( " --.- s" );
         targetLengthField.setText( "---.- s" );
         setPeriodTime( -1 );
@@ -220,6 +229,11 @@ public class TrackView implements IView<JComponent>
         String text = finished ? "Team Complete" : "";
 
         finishedField.setText( text );
+
+        if( finished && config.getAvailableTeams().isEmpty() )
+        {
+            teamButton.setEnabled( false );
+        }
     }
 
     /***************************************************************************
@@ -278,7 +292,8 @@ public class TrackView implements IView<JComponent>
 
         clearTeam();
 
-        TeamsView teamsView = new TeamsView( config );
+        List<Team> teams = config.getAvailableTeams();
+        TeamsView teamsView = new TeamsView( teams );
         OkDialogView okDialog = new OkDialogView( teamButton,
             teamsView.getView(), ModalityType.MODELESS,
             OkDialogButtons.OK_CANCEL );

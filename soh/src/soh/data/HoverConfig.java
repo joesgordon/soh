@@ -32,7 +32,7 @@ public class HoverConfig
         this.divC = new DivisionConfig( Division.DIVISION_C );
 
         this.track1 = new TrackCfg();
-        this.track2 = new TrackCfg();
+        this.track2 = new TrackCfg( true );
 
         this.teams = new ArrayList<>();
     }

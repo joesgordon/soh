@@ -1,13 +1,13 @@
 package soh.ui;
 
 import java.awt.*;
+import java.util.List;
 
 import javax.swing.*;
 
 import org.jutils.ui.model.CollectionListModel;
 import org.jutils.ui.model.IView;
 
-import soh.data.HoverConfig;
 import soh.data.Team;
 
 /*******************************************************************************
@@ -25,14 +25,14 @@ public class TeamsView implements IView<JComponent>
     /***************************************************************************
      * @param config
      **************************************************************************/
-    public TeamsView( HoverConfig config )
+    public TeamsView( List<Team> teams )
     {
         this.itemsListModel = new CollectionListModel<>();
         this.itemsList = new JList<>( itemsListModel );
 
         this.view = createView();
 
-        itemsListModel.addAll( config.getAvailableTeams() );
+        itemsListModel.addAll( teams );
     }
 
     /***************************************************************************
