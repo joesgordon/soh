@@ -14,9 +14,9 @@ import soh.ui.TrackView;
 public class TrackCompetition
 {
     /**  */
-    public final TrackView view;
+    private final TrackView view;
     /**  */
-    public final HoverConfig config;
+    private final HoverConfig config;
     /**  */
     private final javax.swing.Timer updateTimer;
 
@@ -29,9 +29,9 @@ public class TrackCompetition
     private TrackState state;
 
     /**  */
-    public Team team;
+    private Team team;
     /**  */
-    public int targetTime;
+    private int targetTime;
 
     /***************************************************************************
      * @param view
@@ -91,7 +91,6 @@ public class TrackCompetition
         updateTimer.stop();
 
         state = TrackState.FINISHED;
-        team.finished = true;
     }
 
     /***************************************************************************
@@ -206,12 +205,10 @@ public class TrackCompetition
 
         if( localState == TrackState.RUNNING_A )
         {
-            team.time1 = -1;
             state = TrackState.WAITING_A;
         }
         else if( localState == TrackState.RUNNING_B )
         {
-            team.time2 = -1;
             state = TrackState.WAITING_B;
         }
     }
@@ -311,5 +308,13 @@ public class TrackCompetition
     private int getRunTime()
     {
         return Math.round( runWatch.getElapsed() / 100.0f );
+    }
+
+    /***************************************************************************
+     * Returns the school code of the currently loaded team or "N/A".
+     **************************************************************************/
+    public String getTeamCode()
+    {
+        return team == null ? "N/A" : team.schoolCode;
     }
 }

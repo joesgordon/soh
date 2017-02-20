@@ -33,6 +33,8 @@ public class TeamView implements IDataView<Team>
     private final IntegerFormField time1Field;
     /**  */
     private final IntegerFormField time2Field;
+    /**  */
+    private final BooleanFormField loadedField;
 
     /**  */
     private Team team;
@@ -49,6 +51,7 @@ public class TeamView implements IDataView<Team>
             null );
         this.time2Field = new IntegerFormField( "Time 2", "0.1 seconds", 15, -1,
             null );
+        this.loadedField = new BooleanFormField( "Loaded" );
         this.view = createView();
 
         setData( new Team() );
@@ -60,6 +63,8 @@ public class TeamView implements IDataView<Team>
             new ReflectiveUpdater<>( this, "team.failedCount" ) );
         time1Field.setUpdater( new ReflectiveUpdater<>( this, "team.time1" ) );
         time2Field.setUpdater( new ReflectiveUpdater<>( this, "team.time2" ) );
+        loadedField.setUpdater(
+            new ReflectiveUpdater<>( this, "team.loaded" ) );
     }
 
     /***************************************************************************
@@ -114,6 +119,7 @@ public class TeamView implements IDataView<Team>
         form.addField( failedCountField );
         form.addField( time1Field );
         form.addField( time2Field );
+        form.addField( loadedField );
 
         return form.getView();
     }
@@ -149,5 +155,6 @@ public class TeamView implements IDataView<Team>
         failedCountField.setValue( team.failedCount );
         time1Field.setValue( team.time1 );
         time2Field.setValue( team.time2 );
+        loadedField.setValue( team.loaded );
     }
 }

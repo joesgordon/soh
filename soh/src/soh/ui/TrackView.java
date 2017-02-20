@@ -271,7 +271,7 @@ public class TrackView implements IView<JComponent>
         {
             SwingUtils.showErrorMessage(
                 getView(), "Cannot change teams until " +
-                    competition.team.schoolCode + " has finished",
+                    competition.getTeamCode() + " has finished",
                 "Input Error" );
             return;
         }
@@ -290,6 +290,7 @@ public class TrackView implements IView<JComponent>
 
                 if( t != null )
                 {
+                    t.loaded = true;
                     setTeamData( t );
                 }
             }
@@ -600,7 +601,7 @@ public class TrackView implements IView<JComponent>
         {
             String msg = String.format(
                 "The current team (%s) must finish first",
-                competition.team.schoolCode );
+                competition.getTeamCode() );
             SwingUtils.showErrorMessage( getView(), msg, "Input Error" );
             return;
         }
@@ -687,7 +688,7 @@ public class TrackView implements IView<JComponent>
         {
             SwingUtilities.invokeLater(
                 () -> SwingUtils.showErrorMessage( getView(),
-                    "Wait for " + competition.team.schoolCode +
+                    "Wait for " + competition.getTeamCode() +
                         " to finish before clearing track data",
                     "Input Error" ) );
             return;

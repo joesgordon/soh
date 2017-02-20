@@ -89,7 +89,7 @@ public class HoverConfig
 
         for( Team t : this.teams )
         {
-            if( !t.isFinished() )
+            if( !t.loaded && !t.isFinished() )
             {
                 teams.add( t );
             }

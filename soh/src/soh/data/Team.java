@@ -5,14 +5,18 @@ package soh.data;
  ******************************************************************************/
 public class Team
 {
-    // Inputs
+    // -------------------------------------------------------------------------
+    // Configuration
+    // -------------------------------------------------------------------------
 
     /**  */
     public String schoolCode;
     /**  */
     public Division div;
 
+    // -------------------------------------------------------------------------
     // Outputs
+    // -------------------------------------------------------------------------
 
     /**  */
     public int failedCount;
@@ -21,7 +25,7 @@ public class Team
     /** Second successful time in tenths of seconds. */
     public int time2;
     /**  */
-    public boolean finished;
+    public boolean loaded;
 
     /***************************************************************************
      * 
@@ -33,7 +37,7 @@ public class Team
         this.failedCount = 0;
         this.time1 = -1;
         this.time2 = -1;
-        this.finished = false;
+        this.loaded = false;
     }
 
     /***************************************************************************
@@ -46,7 +50,7 @@ public class Team
         this.failedCount = t.failedCount;
         this.time1 = t.time1;
         this.time2 = t.time2;
-        this.finished = t.finished;
+        this.loaded = t.loaded;
     }
 
     /***************************************************************************
@@ -57,14 +61,11 @@ public class Team
         this.failedCount = 0;
         this.time1 = -1;
         this.time2 = -1;
-        this.finished = false;
+        this.loaded = false;
     }
 
-    /***************************************************************************
-     * @return
-     **************************************************************************/
     public boolean isFinished()
     {
-        return finished;
+        return time2 > 0 || failedCount >= 5;
     }
 }
