@@ -64,6 +64,22 @@ public class HoverConfigView implements IDataView<HoverConfig>
      **************************************************************************/
     private JPanel createView()
     {
+        JPanel panel = new JPanel( new BorderLayout() );
+        JTabbedPane pane = new JTabbedPane();
+
+        pane.addTab( "Configuration", createControlsView() );
+        pane.addTab( "Help", createHelpPanel() );
+
+        panel.add( pane, BorderLayout.CENTER );
+
+        return panel;
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    private JPanel createControlsView()
+    {
         JPanel panel = new JPanel( new GridBagLayout() );
         GridBagConstraints constraints;
         int row = 0;
@@ -95,19 +111,19 @@ public class HoverConfigView implements IDataView<HoverConfig>
             new Insets( 0, 10, 10, 10 ), 0, 0 );
         panel.add( divbView.getView(), constraints );
 
-        track1View.getView().setBorder( new TitledBorder( "Track 1" ) );
+        divcView.getView().setBorder( new TitledBorder( "Division C" ) );
         constraints = new GridBagConstraints( 1, row++, 1, 1, 0.0, 0.0,
-            GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
+            GridBagConstraints.NORTH, GridBagConstraints.NONE,
             new Insets( 0, 0, 10, 10 ), 0, 0 );
-        panel.add( track1View.getView(), constraints );
+        panel.add( divcView.getView(), constraints );
 
         // ---------------------------------------------------------------------
 
-        divcView.getView().setBorder( new TitledBorder( "Division C" ) );
+        track1View.getView().setBorder( new TitledBorder( "Track 1" ) );
         constraints = new GridBagConstraints( 0, row, 1, 1, 0.0, 0.0,
-            GridBagConstraints.NORTH, GridBagConstraints.NONE,
+            GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
             new Insets( 0, 10, 10, 10 ), 0, 0 );
-        panel.add( divcView.getView(), constraints );
+        panel.add( track1View.getView(), constraints );
 
         track2View.getView().setBorder( new TitledBorder( "Track 2" ) );
         constraints = new GridBagConstraints( 1, row++, 1, 1, 0.0, 0.0,
@@ -120,7 +136,7 @@ public class HoverConfigView implements IDataView<HoverConfig>
         constraints = new GridBagConstraints( 0, row++, 3, 1, 1.0, 1.0,
             GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
             new Insets( 0, 10, 10, 10 ), 0, 0 );
-        panel.add( createHelpPanel(), constraints );
+        panel.add( Box.createHorizontalStrut( 0 ), constraints );
 
         // ---------------------------------------------------------------------
 

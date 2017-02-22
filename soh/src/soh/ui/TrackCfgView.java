@@ -18,6 +18,7 @@ public class TrackCfgView implements IDataView<TrackCfg>
 {
     /**  */
     private final JPanel view;
+
     /**  */
     private final ComboFormField<Pi3GpioPin> startPinField;
     /**  */
@@ -26,6 +27,19 @@ public class TrackCfgView implements IDataView<TrackCfg>
     private final ComboFormField<Pi3GpioPin> stopPinField;
     /**  */
     private final ComboFormField<PinResistance> stopResField;
+
+    /**  */
+    private final ComboFormField<Pi3GpioPin> redPinField;
+    /**  */
+    private final ComboFormField<PinLevel> redLevelField;
+    /**  */
+    private final ComboFormField<Pi3GpioPin> greenPinField;
+    /**  */
+    private final ComboFormField<PinLevel> greenLevelField;
+    /**  */
+    private final ComboFormField<Pi3GpioPin> bluePinField;
+    /**  */
+    private final ComboFormField<PinLevel> blueLevelField;
 
     /**  */
     private TrackCfg track;
@@ -44,6 +58,21 @@ public class TrackCfgView implements IDataView<TrackCfg>
         this.stopResField = new ComboFormField<>( "Stop Resistance",
             PinResistance.values(), new NamedItemDescriptor<>() );
 
+        this.redPinField = new ComboFormField<>( "Red Pin", Pi3GpioPin.values(),
+            new NamedItemDescriptor<>() );
+        this.redLevelField = new ComboFormField<>( "Red Default Level",
+            PinLevel.values(), new NamedItemDescriptor<>() );
+
+        this.greenPinField = new ComboFormField<>( "Green Pin",
+            Pi3GpioPin.values(), new NamedItemDescriptor<>() );
+        this.greenLevelField = new ComboFormField<>( "Green Default Level",
+            PinLevel.values(), new NamedItemDescriptor<>() );
+
+        this.bluePinField = new ComboFormField<>( "Blue Pin",
+            Pi3GpioPin.values(), new NamedItemDescriptor<>() );
+        this.blueLevelField = new ComboFormField<>( "Blue Default Level",
+            PinLevel.values(), new NamedItemDescriptor<>() );
+
         this.view = createView();
 
         setData( new TrackCfg() );
@@ -57,6 +86,21 @@ public class TrackCfgView implements IDataView<TrackCfg>
             new ReflectiveUpdater<>( this, "track.stopPin" ) );
         stopResField.setUpdater(
             new ReflectiveUpdater<>( this, "track.stopRes" ) );
+
+        redPinField.setUpdater(
+            new ReflectiveUpdater<>( this, "track.redPin" ) );
+        redLevelField.setUpdater(
+            new ReflectiveUpdater<>( this, "track.redDefaultLevel" ) );
+
+        greenPinField.setUpdater(
+            new ReflectiveUpdater<>( this, "track.greenPin" ) );
+        greenLevelField.setUpdater(
+            new ReflectiveUpdater<>( this, "track.greenDefaultLevel" ) );
+
+        bluePinField.setUpdater(
+            new ReflectiveUpdater<>( this, "track.bluePin" ) );
+        blueLevelField.setUpdater(
+            new ReflectiveUpdater<>( this, "track.blueDefaultLevel" ) );
     }
 
     /***************************************************************************
@@ -70,6 +114,13 @@ public class TrackCfgView implements IDataView<TrackCfg>
         form.addField( startResField );
         form.addField( stopPinField );
         form.addField( stopResField );
+
+        form.addField( redPinField );
+        form.addField( redLevelField );
+        form.addField( greenPinField );
+        form.addField( greenLevelField );
+        form.addField( bluePinField );
+        form.addField( blueLevelField );
 
         return form.getView();
     }
@@ -105,5 +156,14 @@ public class TrackCfgView implements IDataView<TrackCfg>
 
         stopPinField.setValue( track.stopPin );
         stopResField.setValue( track.stopRes );
+
+        redPinField.setValue( track.redPin );
+        redLevelField.setValue( track.redDefaultLevel );
+
+        greenPinField.setValue( track.greenPin );
+        greenLevelField.setValue( track.greenDefaultLevel );
+
+        bluePinField.setValue( track.bluePin );
+        blueLevelField.setValue( track.blueDefaultLevel );
     }
 }
