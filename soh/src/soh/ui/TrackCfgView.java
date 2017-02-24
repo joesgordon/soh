@@ -60,17 +60,17 @@ public class TrackCfgView implements IDataView<TrackCfg>
 
         this.redPinField = new ComboFormField<>( "Red Pin", Pi3GpioPin.values(),
             new NamedItemDescriptor<>() );
-        this.redLevelField = new ComboFormField<>( "Red Default Level",
+        this.redLevelField = new ComboFormField<>( "Red Off Level",
             PinLevel.values(), new NamedItemDescriptor<>() );
 
         this.greenPinField = new ComboFormField<>( "Green Pin",
             Pi3GpioPin.values(), new NamedItemDescriptor<>() );
-        this.greenLevelField = new ComboFormField<>( "Green Default Level",
+        this.greenLevelField = new ComboFormField<>( "Green Off Level",
             PinLevel.values(), new NamedItemDescriptor<>() );
 
         this.bluePinField = new ComboFormField<>( "Blue Pin",
             Pi3GpioPin.values(), new NamedItemDescriptor<>() );
-        this.blueLevelField = new ComboFormField<>( "Blue Default Level",
+        this.blueLevelField = new ComboFormField<>( "Blue Off Level",
             PinLevel.values(), new NamedItemDescriptor<>() );
 
         this.view = createView();
