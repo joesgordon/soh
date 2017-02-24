@@ -14,8 +14,8 @@ import org.jutils.ui.OkDialogView.OkDialogButtons;
 import org.jutils.ui.model.IView;
 
 import soh.SohIcons;
-import soh.TrackCompetition;
 import soh.data.*;
+import soh.tasks.TrackCompetition;
 
 /*******************************************************************************
  * 
@@ -29,6 +29,10 @@ public class TrackView implements IView<JComponent>
 
     /**  */
     private final HoverConfig config;
+    /**  */
+    private final TrackCompetition competition;
+    /**  */
+    private final javax.swing.Timer updateTimer;
     /**  */
     private final JPanel view;
 
@@ -63,15 +67,16 @@ public class TrackView implements IView<JComponent>
     /**  */
     private final Icon xIcon;
 
-    /**  */
-    private final TrackCompetition competition;
-
     /***************************************************************************
      * @param trackName
      **************************************************************************/
-    public TrackView( String trackName, HoverConfig config )
+    public TrackView( String trackName, HoverConfig config,
+        TrackCompetition competition )
     {
         this.config = config;
+        this.competition = competition;
+        this.updateTimer = new Timer( 50, ( e ) -> edtUpdateUI() );
+
         this.teamButton = new JButton( "Welcome Olympians" );
         this.targetTimeField = UiUtils.createNumLabel( "--.- s", 24 );
         this.targetLengthField = UiUtils.createNumLabel( "---.- cm", 24 );
@@ -87,8 +92,6 @@ public class TrackView implements IView<JComponent>
         this.run2Icon = new JLabel( blankIcon );
         this.failedFields = new JLabel[5];
         this.finishedField = UiUtils.createTextLabel( " ", 36 );
-
-        this.competition = new TrackCompetition( this, config );
 
         for( int i = 0; i < failedFields.length; i++ )
         {
@@ -115,7 +118,7 @@ public class TrackView implements IView<JComponent>
      **************************************************************************/
     private void clearTeam()
     {
-        competition.clearTrack();
+        competition.signalClearTrack();
 
         teamButton.setText( "Select Team" );
         teamButton.setEnabled( true );
@@ -166,6 +169,8 @@ public class TrackView implements IView<JComponent>
                 String.format( "%5.1f cm   ", dcv.targetLength * 1.0 ) );
 
             initializeTrack( team );
+
+            updateTimer.start();
         }
     }
 
@@ -279,13 +284,14 @@ public class TrackView implements IView<JComponent>
      **************************************************************************/
     private void showTeamChooser()
     {
-        TrackState state = competition.getState();
+        TrackData data = competition.updateData();
+        TrackState state = data.state;
 
-        if( state != TrackState.FINISHED && state != TrackState.UNINTIALIZED )
+        if( state != TrackState.FINISHED && state != TrackState.UNINITIALIZED )
         {
-            SwingUtils.showErrorMessage(
-                getView(), "Cannot change teams until " +
-                    competition.getTeamCode() + " has finished",
+            SwingUtils.showErrorMessage( getView(),
+                "Cannot change teams until " + data.getTeamCode() +
+                    " has finished",
                 "Input Error" );
             return;
         }
@@ -609,14 +615,14 @@ public class TrackView implements IView<JComponent>
     /***************************************************************************
      * @param team
      **************************************************************************/
-    public void initializeTrack( Team team )
+    private void initializeTrack( Team team )
     {
-        if( competition.getState() != TrackState.FINISHED &&
-            competition.getState() != TrackState.UNINTIALIZED )
+        TrackData data = competition.updateData();
+        if( data.state != TrackState.FINISHED &&
+            data.state != TrackState.UNINITIALIZED )
         {
             String msg = String.format(
-                "The current team (%s) must finish first",
-                competition.getTeamCode() );
+                "The current team (%s) must finish first", data.getTeamCode() );
             SwingUtils.showErrorMessage( getView(), msg, "Input Error" );
             return;
         }
@@ -627,139 +633,7 @@ public class TrackView implements IView<JComponent>
             return;
         }
 
-        competition.initializeTrack( team );
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    public void startPeriod()
-    {
-        TrackState state = competition.getState();
-
-        if( state == TrackState.INITIALIZED )
-        {
-            competition.startPeriod();
-        }
-        else if( state != TrackState.RUNNING_A &&
-            state != TrackState.RUNNING_B )
-        {
-            competition.pauseResume();
-        }
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    public void startRun()
-    {
-        if( checkStates( TrackState.WAITING_A, TrackState.WAITING_B ) )
-        {
-            competition.startRun();
-        }
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    public void stopRun()
-    {
-        if( checkStates( TrackState.RUNNING_A, TrackState.RUNNING_B ) )
-        {
-            competition.stopRun();
-        }
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    public void failRun()
-    {
-        if( checkState( "fail a run ", TrackState.WAITING_A,
-            TrackState.RUNNING_A, TrackState.WAITING_B, TrackState.RUNNING_B ) )
-        {
-            competition.failRun();
-        }
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    public void resetTrack()
-    {
-        if( checkState( "reset a run", TrackState.RUNNING_A,
-            TrackState.RUNNING_B ) )
-        {
-            competition.resetTrial();
-        }
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    public void clearTrack()
-    {
-        if( competition.getState() != TrackState.FINISHED )
-        {
-            SwingUtilities.invokeLater(
-                () -> SwingUtils.showErrorMessage( getView(),
-                    "Wait for " + competition.getTeamCode() +
-                        " to finish before clearing track data",
-                    "Input Error" ) );
-            return;
-        }
-
-        competition.clearTrack();
-
-        SwingUtilities.invokeLater( () -> setTeamData( null ) );
-    }
-
-    /***************************************************************************
-     * @param state
-     * @param track
-     * @return
-     **************************************************************************/
-    private boolean checkState( String action, TrackState... states )
-    {
-        if( competition.getState() == TrackState.UNINTIALIZED )
-        {
-            SwingUtilities.invokeLater( () -> SwingUtils.showErrorMessage(
-                getView(), "No Team Chosen", "Input Error" ) );
-            return false;
-        }
-        else if( states != null && action != null )
-        {
-            if( !checkStates( states ) )
-            {
-                SwingUtilities.invokeLater( () -> SwingUtils.showErrorMessage(
-                    getView(),
-                    "Cannot " + action + " in state " + competition.getState(),
-                    "Input Error" ) );
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /***************************************************************************
-     * Returns {@code true} if the current state is one of the provided states;
-     * {@code false} otherwise.
-     * @param states the states to be checked.
-     **************************************************************************/
-    private boolean checkStates( TrackState... states )
-    {
-        TrackState curState = competition.getState();
-
-        for( TrackState state : states )
-        {
-            if( curState == state )
-            {
-                return true;
-            }
-        }
-
-        return false;
+        competition.signalLoadTrack( team );
     }
 
     /***************************************************************************
@@ -768,9 +642,37 @@ public class TrackView implements IView<JComponent>
      **************************************************************************/
     public boolean isRunning()
     {
-        TrackState state = competition.getState();
+        return competition.isRunning();
+    }
 
-        return competition != null && state != TrackState.UNINTIALIZED &&
-            state != TrackState.FINISHED;
+    /***************************************************************************
+     * Run on the EDT
+     **************************************************************************/
+    private void edtUpdateUI()
+    {
+        TrackData data = competition.updateData();
+
+        if( data.checkTimeFail() )
+        {
+            competition.signalFailRun();
+        }
+
+        data = competition.updateData();
+
+        if( data.state == TrackState.FINISHED )
+        {
+            updateTimer.stop();
+        }
+
+        // LogUtils.printDebug( "Updating times for track " +
+        // view.getTrackName() +
+        // " @ " + runaSecs );
+
+        setPeriodTime( data.periodTime );
+        setFinished( data.state == TrackState.FINISHED );
+
+        setRunaTime( data.run1Time, data.state.runaComplete );
+        setRunbTime( data.run2Time, data.state.runbComplete );
+        setFailCount( data.failedCount );
     }
 }

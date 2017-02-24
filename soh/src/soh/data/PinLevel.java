@@ -23,4 +23,16 @@ public enum PinLevel implements INamedItem
     {
         return name;
     }
+
+    public PinLevel inverse()
+    {
+        if( this == PinLevel.HIGH )
+        {
+            return PinLevel.LOW;
+        }
+        else
+        {
+            return PinLevel.HIGH;
+        }
+    }
 }

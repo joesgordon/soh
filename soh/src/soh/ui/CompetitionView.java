@@ -8,7 +8,8 @@ import org.jutils.ui.model.IView;
 
 import soh.SohIcons;
 import soh.data.HoverConfig;
-import soh.data.TrackType;
+import soh.tasks.HovercraftCompetition;
+import soh.tasks.TrackCompetition;
 
 /*******************************************************************************
  * 
@@ -25,61 +26,54 @@ public class CompetitionView implements IView<JComponent>
     /***************************************************************************
      * 
      **************************************************************************/
-    public CompetitionView( HoverConfig config )
+    public CompetitionView( HoverConfig config, HovercraftCompetition hc )
     {
-        this.track1View = new TrackView( "Track 1", config );
-        this.track2View = new TrackView( "Track 2", config );
+        this.track1View = new TrackView( "Track 1", config, hc.track1 );
+        this.track2View = new TrackView( "Track 2", config, hc.track2 );
 
         this.view = createView();
 
-        setupHotkeys();
+        setupHotkeys( hc );
+    }
+
+    /***************************************************************************
+     * @param hc
+     **************************************************************************/
+    private void setupHotkeys( HovercraftCompetition hc )
+    {
+        addHotKeys( track1View.getView(), hc.track1, "F1", "F2", "F3", "F4",
+            "control 1", "control 2" );
+
+        addHotKeys( track2View.getView(), hc.track2, "F9", "F10", "F11", "F12",
+            "control 9", "control 0" );
     }
 
     /***************************************************************************
      * @param comp
-     * @param t
+     * @param track
      * @param startPeriodKey
      * @param failKey
      * @param clearKey
      * @param startRunKey
      * @param stopRunKey
      **************************************************************************/
-    private void addHotKeys( JComponent comp, TrackType t,
+    private static void addHotKeys( JComponent comp, TrackCompetition track,
         String startPeriodKey, String failKey, String resetKey, String clearKey,
         String startRunKey, String stopRunKey )
     {
-        UiUtils.addHotKey( comp, startPeriodKey, ( e ) -> startPeriod( t ) );
+        UiUtils.addHotKey( comp, startPeriodKey,
+            ( e ) -> track.signalStartPauseTrack() );
 
-        UiUtils.addHotKey( comp, failKey, ( e ) -> failRun( t ) );
+        UiUtils.addHotKey( comp, failKey, ( e ) -> track.signalFailRun() );
 
-        UiUtils.addHotKey( comp, resetKey, ( e ) -> resetTrack( t ) );
+        UiUtils.addHotKey( comp, resetKey, ( e ) -> track.signalResetRun() );
 
-        UiUtils.addHotKey( comp, clearKey, ( e ) -> clearTrack( t ) );
+        UiUtils.addHotKey( comp, clearKey, ( e ) -> track.signalClearTrack() );
 
-        UiUtils.addHotKey( comp, startRunKey, ( e ) -> startRun( t ) );
+        UiUtils.addHotKey( comp, startRunKey, ( e ) -> track.signalStartRun() );
 
-        UiUtils.addHotKey( comp, stopRunKey, ( e ) -> stopRun( t ) );
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    private void setupHotkeys()
-    {
-        // addHotKeys( contentPane, TrackType.TRACK_1, "F1", "F2", "F3",
-        // "control 1", "control 2" );
-        addHotKeys( track1View.getView(), TrackType.TRACK_1, "F1", "F2", "F3",
-            "F4", "control 1", "control 2" );
-
-        // addHotKeys( contentPane, TrackType.TRACK_2, "F10", "F11", "F13",
-        // "control 9", "control 0" );
-        addHotKeys( getView(), TrackType.TRACK_2, "F9", "F10", "F11", "F12",
-            "control 9", "control 0" );
-
-        // ks = KeyStroke.getKeyStroke( KeyEvent.VK_0, KeyEvent.CTRL_DOWN_MASK
-        // );
-        // listener = ( e ) -> zoomer.normalize();
-        // UiUtils.addHotKey( competitionView.getView(), ks, listener );
+        UiUtils.addHotKey( comp, stopRunKey,
+            ( e ) -> track.signalCompleteRun() );
     }
 
     /***************************************************************************
@@ -191,125 +185,5 @@ public class CompetitionView implements IView<JComponent>
     public boolean isRunning()
     {
         return track1View.isRunning() || track2View.isRunning();
-    }
-
-    /***************************************************************************
-     * @param track
-     **************************************************************************/
-    public void startPeriod( TrackType track )
-    {
-        switch( track )
-        {
-            case TRACK_1:
-            {
-                track1View.startPeriod();
-                break;
-            }
-            case TRACK_2:
-            {
-                track2View.startPeriod();
-                break;
-            }
-        }
-    }
-
-    /***************************************************************************
-     * @param track
-     **************************************************************************/
-    public void failRun( TrackType track )
-    {
-        switch( track )
-        {
-            case TRACK_1:
-            {
-                track1View.failRun();
-                break;
-            }
-            case TRACK_2:
-            {
-                track2View.failRun();
-                break;
-            }
-        }
-    }
-
-    /***************************************************************************
-     * @param track
-     **************************************************************************/
-    public void resetTrack( TrackType track )
-    {
-        switch( track )
-        {
-            case TRACK_1:
-            {
-                track1View.resetTrack();
-                break;
-            }
-            case TRACK_2:
-            {
-                track2View.resetTrack();
-                break;
-            }
-        }
-    }
-
-    /***************************************************************************
-     * @param track
-     **************************************************************************/
-    public void clearTrack( TrackType track )
-    {
-        switch( track )
-        {
-            case TRACK_1:
-            {
-                track1View.clearTrack();
-                break;
-            }
-            case TRACK_2:
-            {
-                track2View.clearTrack();
-                break;
-            }
-        }
-    }
-
-    /***************************************************************************
-     * @param track
-     **************************************************************************/
-    public void startRun( TrackType track )
-    {
-        switch( track )
-        {
-            case TRACK_1:
-            {
-                track1View.startRun();
-                break;
-            }
-            case TRACK_2:
-            {
-                track2View.startRun();
-                break;
-            }
-        }
-    }
-
-    /***************************************************************************
-     * @param track
-     **************************************************************************/
-    public void stopRun( TrackType track )
-    {
-        switch( track )
-        {
-            case TRACK_1:
-            {
-                track1View.stopRun();
-                break;
-            }
-            case TRACK_2:
-            {
-                track2View.stopRun();
-                break;
-            }
-        }
     }
 }

@@ -27,6 +27,7 @@ import soh.SohIcons;
 import soh.SohMain;
 import soh.data.*;
 import soh.gpio.*;
+import soh.tasks.HovercraftCompetition;
 
 /*******************************************************************************
  * 
@@ -367,22 +368,17 @@ public class SohFrameView implements IView<JFrame>
 
         if( show && competitionView == null )
         {
-            competitionView = new CompetitionView( config );
-
-            Runnable startT1 = () -> competitionView.startRun(
-                TrackType.TRACK_1 );
-            Runnable stopT1 = () -> competitionView.stopRun(
-                TrackType.TRACK_1 );
-            Runnable startT2 = () -> competitionView.startRun(
-                TrackType.TRACK_2 );
-            Runnable stopT2 = () -> competitionView.stopRun(
-                TrackType.TRACK_2 );
-
             try
             {
-                SohGpio.startup();
-                SohGpio.connect( config.track1, startT1, stopT1, config.track2,
-                    startT2, stopT2 );
+                HovercraftCompetition hc = SohGpio.connect( config );
+
+                competitionView = new CompetitionView( config, hc );
+
+                frameView.getStatusBar().getView().setVisible( false );
+                frameView.getMenuBar().setVisible( false );
+                frameView.setContent( competitionView.getView() );
+
+                // setFullScreen( true );
             }
             catch( IllegalStateException ex )
             {
@@ -390,12 +386,6 @@ public class SohFrameView implements IView<JFrame>
                     "Pi4j library was not found" );
                 return;
             }
-
-            frameView.getStatusBar().getView().setVisible( false );
-            frameView.getMenuBar().setVisible( false );
-            frameView.setContent( competitionView.getView() );
-
-            // setFullScreen( true );
         }
         else if( !show && competitionView != null )
         {

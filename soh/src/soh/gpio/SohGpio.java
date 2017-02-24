@@ -5,6 +5,8 @@ import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
 import soh.data.*;
+import soh.tasks.HovercraftCompetition;
+import soh.tasks.TrackCompetition;
 
 /*******************************************************************************
  * 
@@ -18,13 +20,7 @@ public class SohGpio
     private static GpioController gpio;
 
     /**  */
-    private static GpioPinDigitalInput t1StartPin;
-    /**  */
-    private static GpioPinDigitalInput t1StopPin;
-    /**  */
-    private static GpioPinDigitalInput t2StartPin;
-    /**  */
-    private static GpioPinDigitalInput t2StopPin;
+    public static HovercraftCompetition competition;
 
     /***************************************************************************
      * 
@@ -38,29 +34,27 @@ public class SohGpio
         }
     }
 
-    /***************************************************************************
-     * 
+    /**
+     * @return *************************************************************************
      **************************************************************************/
-    public static void connect( TrackCfg track1, Runnable startT1,
-        Runnable stopT1, TrackCfg track2, Runnable startT2, Runnable stopT2 )
+    public static HovercraftCompetition connect( HoverConfig config )
         throws IllegalStateException
     {
-        if( t1StartPin != null )
+        if( competition != null )
         {
-            return;
+            return null;
         }
 
-        t1StartPin = provisionPin( gpio, track1.startPin, track1.startRes,
-            "Track 1 Start Pin", startT1 );
+        startup();
 
-        t1StopPin = provisionPin( gpio, track1.stopPin, track1.stopRes,
-            "Track 1 Stop Pin", stopT1 );
+        TrackCompetition tc1 = new TrackCompetition( config, config.track1,
+            gpio );
+        TrackCompetition tc2 = new TrackCompetition( config, config.track2,
+            gpio );
 
-        t2StartPin = provisionPin( gpio, track2.startPin, track2.startRes,
-            "Track 2 Start Pin", startT2 );
+        competition = new HovercraftCompetition( tc1, tc2 );
 
-        t2StopPin = provisionPin( gpio, track2.stopPin, track2.stopRes,
-            "Track 2 Stop Pin", stopT2 );
+        return competition;
     }
 
     /***************************************************************************
@@ -68,18 +62,12 @@ public class SohGpio
      **************************************************************************/
     public static void disconnect()
     {
-        if( t1StartPin != null )
+        if( competition != null )
         {
-            gpio.unprovisionPin( t1StartPin );
-            gpio.unprovisionPin( t1StopPin );
-            gpio.unprovisionPin( t2StartPin );
-            gpio.unprovisionPin( t2StopPin );
+            competition.unprovisionAll( gpio );
         }
 
-        t1StartPin = null;
-        t1StopPin = null;
-        t2StartPin = null;
-        t2StopPin = null;
+        competition = null;
     }
 
     /***************************************************************************
@@ -122,16 +110,36 @@ public class SohGpio
      * @param callback
      * @return
      **************************************************************************/
-    private static GpioPinDigitalInput provisionPin( GpioController gpio,
+    static GpioPinDigitalInput provisionInputPin( GpioController gpio,
         Pi3GpioPin pin, PinResistance res, String name, Runnable callback )
     {
         GpioPinDigitalInput inputPin = gpio.provisionDigitalInputPin( pin.hwPin,
             name, res.res );
 
-        inputPin.setShutdownOptions( true );
+        inputPin.setShutdownOptions( true, PinState.LOW,
+            PinPullResistance.OFF );
         inputPin.addListener( new PhotogatePinListener( callback ) );
 
         return inputPin;
+    }
+
+    /***************************************************************************
+     * @param gpio
+     * @param pin
+     * @param defaultLevel
+     * @param name
+     * @return
+     **************************************************************************/
+    static GpioPinDigitalOutput provisionOuputPin( GpioController gpio,
+        Pi3GpioPin pin, PinLevel defaultLevel, String name )
+    {
+        GpioPinDigitalOutput outputPin = gpio.provisionDigitalOutputPin(
+            pin.hwPin, name, defaultLevel.state );
+
+        outputPin.setShutdownOptions( true, defaultLevel.state,
+            PinPullResistance.OFF );
+
+        return outputPin;
     }
 
     /***************************************************************************
