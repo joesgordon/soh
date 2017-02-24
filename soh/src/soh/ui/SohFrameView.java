@@ -50,6 +50,8 @@ public class SohFrameView implements IView<JFrame>
 
     /**  */
     private CompetitionView competitionView;
+    /**  */
+    private JFrame competitionFrame;
 
     /***************************************************************************
      * 
@@ -68,15 +70,11 @@ public class SohFrameView implements IView<JFrame>
 
         createMenubar( frameView.getMenuBar(), frameView.getFileMenu() );
 
-        frameView.getView().addWindowListener( new SohWindowListener( this ) );
+        frameView.getView().addWindowListener( new SohWindowListener() );
         frameView.setContent( configView.getView() );
-        frameView.setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE );
-        // frameView.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+        frameView.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         frameView.setSize( 1280, 800 );
-        // frameView.getView().setExtendedState( JFrame.MAXIMIZED_BOTH );
         frameView.getView().setIconImages( SohIcons.getSohIcons() );
-
-        // setFullScreen( frameView.getView() );
 
         OptionsSerializer<SohOptions> options = SohMain.getOptions();
 
@@ -346,6 +344,9 @@ public class SohFrameView implements IView<JFrame>
         view.unprovisionAll();
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
     private HoverConfig saveUserConfig()
     {
         HoverConfig config = configView.getData();
@@ -372,13 +373,22 @@ public class SohFrameView implements IView<JFrame>
             {
                 HovercraftCompetition hc = SohGpio.connect( config );
 
-                competitionView = new CompetitionView( config, hc );
+                this.competitionView = new CompetitionView( config, hc );
 
-                frameView.getStatusBar().getView().setVisible( false );
-                frameView.getMenuBar().setVisible( false );
-                frameView.setContent( competitionView.getView() );
+                this.competitionFrame = new JFrame( "Competition" );
+                competitionFrame.setContentPane( competitionView.createView() );
+                competitionFrame.setDefaultCloseOperation( JDialog.DO_NOTHING_ON_CLOSE );
+                competitionFrame.addWindowListener( new SohDialogListener( this ) );
+                competitionFrame.setUndecorated( true );
+                competitionFrame.setSize( getView().getWidth(), getView().getHeight() );
 
-                // setFullScreen( true );
+                competitionFrame.validate();
+                competitionFrame.setVisible( true );
+
+                UiUtils.addHotKey( ( JComponent )competitionFrame.getContentPane(), "F8",
+                    ( e ) -> showCompetition( this.competitionView == null ) );
+
+                setFullScreen( true );
             }
             catch( IllegalStateException ex )
             {
@@ -391,13 +401,12 @@ public class SohFrameView implements IView<JFrame>
         {
             SohGpio.disconnect();
 
-            frameView.getStatusBar().getView().setVisible( true );
-            frameView.getMenuBar().setVisible( true );
-            frameView.setContent( configView.getView() );
-
             competitionView = null;
 
-            // setFullScreen( false );
+            setFullScreen( false );
+
+            competitionFrame.dispose();
+            competitionFrame = null;
         }
     }
 
@@ -406,10 +415,7 @@ public class SohFrameView implements IView<JFrame>
      **************************************************************************/
     private void setFullScreen( boolean fullscreen )
     {
-        JFrame frame = frameView.getView();
-
-        // frame.setUndecorated( true );
-        frame.setAlwaysOnTop( fullscreen );
+        // dialog.setAlwaysOnTop( fullscreen );
 
         if( fullscreen )
         {
@@ -418,16 +424,17 @@ public class SohFrameView implements IView<JFrame>
 
             if( device.isFullScreenSupported() && !"".isEmpty() )
             {
-                device.setFullScreenWindow( frame );
+                device.setFullScreenWindow( this.competitionFrame );
             }
             else
             {
-                frame.setExtendedState( JFrame.MAXIMIZED_BOTH );
+                competitionFrame.setBounds( ge.getMaximumWindowBounds() );
             }
         }
         else
         {
-            frame.setExtendedState( frame.getExtendedState() );
+            competitionFrame.setSize( 500, 500 );
+            competitionFrame.setLocationRelativeTo( getView() );
         }
     }
 
@@ -468,11 +475,11 @@ public class SohFrameView implements IView<JFrame>
     /***************************************************************************
      * 
      **************************************************************************/
-    private static final class SohWindowListener extends WindowAdapter
+    private static final class SohDialogListener extends WindowAdapter
     {
         private final SohFrameView view;
 
-        public SohWindowListener( SohFrameView view )
+        public SohDialogListener( SohFrameView view )
         {
             this.view = view;
         }
@@ -484,9 +491,21 @@ public class SohFrameView implements IView<JFrame>
                 !view.competitionView.isRunning() )
             {
                 view.saveUserConfig();
-                SohGpio.shutdown();
-                System.exit( 0 );
+                view.setFullScreen( false );
+                view.competitionFrame.setVisible( false );
             }
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private static final class SohWindowListener extends WindowAdapter
+    {
+        @Override
+        public void windowClosing( WindowEvent e )
+        {
+            SohGpio.shutdown();
         }
     }
 }
