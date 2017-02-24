@@ -83,7 +83,8 @@ public class TrackView implements IView<JComponent>
     {
         this.config = config;
         this.competition = competition;
-        this.updateTimer = new Timer( 50, ( e ) -> edtUpdateUI() );
+        this.updateTimer = new Timer( 50,
+            ( e ) -> edtUpdateUI( competition.updateData() ) );
 
         this.teamButton = new JButton( "Welcome Olympians" );
         this.targetTimeField = UiUtils.createNumLabel( "--.- s", 24 );
@@ -101,6 +102,8 @@ public class TrackView implements IView<JComponent>
         this.failedFields = new JLabel[5];
         this.finishedField = UiUtils.createTextLabel( " ", 36 );
         this.errorField = new JTextArea();
+
+        competition.addDataListener( ( e ) -> edtUpdateUI( e.getItem() ) );
 
         errorField.setFont(
             errorField.getFont().deriveFont( 36.0f ).deriveFont( Font.BOLD ) );
@@ -164,6 +167,7 @@ public class TrackView implements IView<JComponent>
         }
 
         setFinished( false );
+        setError( "" );
     }
 
     /***************************************************************************
@@ -252,11 +256,7 @@ public class TrackView implements IView<JComponent>
     {
         String text = finished ? "Team Complete" : "";
 
-        if( !text.isEmpty() )
-        {
-            finishedField.setForeground( UiUtils.UNI_MAIN_COLOR );
-            finishedField.setText( text );
-        }
+        finishedField.setText( text );
 
         if( finished && config.getAvailableTeams().isEmpty() )
         {
@@ -264,6 +264,9 @@ public class TrackView implements IView<JComponent>
         }
     }
 
+    /***************************************************************************
+     * @param errorMsg
+     **************************************************************************/
     private void setError( String errorMsg )
     {
         errorField.setForeground( Color.red );
@@ -684,10 +687,8 @@ public class TrackView implements IView<JComponent>
     /***************************************************************************
      * Run on the EDT
      **************************************************************************/
-    private void edtUpdateUI()
+    private void edtUpdateUI( TrackData data )
     {
-        TrackData data = competition.updateData();
-
         if( data.checkTimeFail() )
         {
             competition.signalFailRun();
@@ -732,6 +733,12 @@ public class TrackView implements IView<JComponent>
 
                 errorField.setForeground( fg );
             }
+        }
+
+        if( lastData.state != data.state &&
+            data.state == TrackState.UNINITIALIZED )
+        {
+            clearTeam();
         }
 
         setFinished( data.state == TrackState.FINISHED );

@@ -70,6 +70,12 @@ public class TeamListView implements IDataView<List<Team>>
         {
             t.initTrials();
         }
+
+        Team t = view.getSelected();
+
+        view.setSelected( null );
+
+        view.setSelected( t );
     }
 
     /***************************************************************************

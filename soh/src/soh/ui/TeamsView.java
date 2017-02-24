@@ -40,15 +40,20 @@ public class TeamsView implements IView<JComponent>
      **************************************************************************/
     private JPanel createView()
     {
+        JScrollPane pane = new JScrollPane( itemsList );
         JPanel panel = new JPanel( new GridBagLayout() );
         GridBagConstraints constraints;
 
         itemsList.setCellRenderer( new TeamCellRenderer() );
 
+        pane.getVerticalScrollBar().setUnitIncrement( 12 );
+        pane.setVerticalScrollBarPolicy(
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
+
         constraints = new GridBagConstraints( 0, 0, 1, 1, 1.0, 1.0,
             GridBagConstraints.CENTER, GridBagConstraints.BOTH,
             new Insets( 8, 8, 8, 8 ), 0, 0 );
-        panel.add( itemsList, constraints );
+        panel.add( pane, constraints );
 
         return panel;
     }

@@ -95,6 +95,18 @@ public class TrackData
         {
             run2Time = runTime;
         }
+        else
+        {
+            if( !state.runaComplete )
+            {
+                run1Time = -1;
+            }
+
+            if( !state.runbComplete )
+            {
+                run2Time = -1;
+            }
+        }
     }
 
     /***************************************************************************
@@ -126,17 +138,5 @@ public class TrackData
         team.time1 = run1Time;
         team.time2 = run2Time;
         team.failedCount = failedCount;
-    }
-
-    public String wrapError()
-    {
-        String text = errorMsg;
-
-        if( !text.isEmpty() )
-        {
-            text = "<html>" + text + "</html>";
-        }
-
-        return text;
     }
 }

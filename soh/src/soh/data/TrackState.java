@@ -12,7 +12,7 @@ public enum TrackState implements INamedItem
     PAUSE_A( "Pause A", false, false ),
     WAITING_A( "Waiting on Run A", false, false ),
     RUNNING_A( "Running A", false, false ),
-    PAUSE_B( "Pause B", false, false ),
+    PAUSE_B( "Pause B", true, false ),
     WAITING_B( "Waiting on Run B", true, false ),
     RUNNING_B( "Runnning B", true, false ),
     FINISHED( "Finished", true, true );

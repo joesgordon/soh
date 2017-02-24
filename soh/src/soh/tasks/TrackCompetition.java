@@ -1,6 +1,8 @@
 package soh.tasks;
 
 import org.jutils.Stopwatch;
+import org.jutils.ui.event.ItemActionList;
+import org.jutils.ui.event.ItemActionListener;
 
 import com.pi4j.io.gpio.GpioController;
 
@@ -26,6 +28,9 @@ public class TrackCompetition
     /**  */
     private final Stopwatch runWatch;
 
+    /**  */
+    private final ItemActionList<TrackData> dataListeners;
+
     /***************************************************************************
      * @param config
      * @param track
@@ -46,6 +51,8 @@ public class TrackCompetition
 
         this.data = new TrackData();
 
+        this.dataListeners = new ItemActionList<>();
+
         setOutputUninitialized();
     }
 
@@ -61,6 +68,8 @@ public class TrackCompetition
         // LogUtils.printDebug( "Initializing track " + view.getTrackName() );
 
         setOutputInitPaused();
+
+        dataListeners.fireListeners( this, data );
     }
 
     /***************************************************************************
@@ -76,6 +85,8 @@ public class TrackCompetition
             periodWatch.start();
             data.state = TrackState.WAITING_A;
             setOutputWaiting();
+
+            dataListeners.fireListeners( this, data );
         }
         else
         {
@@ -114,73 +125,10 @@ public class TrackCompetition
                 {
                     setOutputWaiting();
                 }
+
+                dataListeners.fireListeners( this, data );
             }
         }
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    private void setOutputUninitialized()
-    {
-        pins.redPin.setState( track.redDefaultLevel.inverse().state );
-        pins.greenPin.setState( track.greenDefaultLevel.state );
-        pins.bluePin.setState( track.blueDefaultLevel.inverse().state );
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    private void setOutputInitPaused()
-    {
-        pins.redPin.setState( track.redDefaultLevel.inverse().state );
-        pins.greenPin.setState( track.greenDefaultLevel.state );
-        pins.bluePin.setState( track.blueDefaultLevel.state );
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    private void setOutputWaiting()
-    {
-        pins.redPin.setState( track.redDefaultLevel.inverse().state );
-        pins.greenPin.setState( track.greenDefaultLevel.inverse().state );
-        pins.bluePin.setState( track.blueDefaultLevel.state );
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    private void setOutputRunning()
-    {
-        pins.redPin.setState( track.redDefaultLevel.state );
-        pins.greenPin.setState( track.greenDefaultLevel.inverse().state );
-        pins.bluePin.setState( track.blueDefaultLevel.state );
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    private void setOutputFinished()
-    {
-        pins.redPin.setState( track.redDefaultLevel.state );
-        pins.greenPin.setState( track.greenDefaultLevel.state );
-        pins.bluePin.setState( track.blueDefaultLevel.inverse().state );
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    private void stopPeriod()
-    {
-        // LogUtils.printDebug(
-        // "Stopping period for track " + view.getTrackName() );
-
-        periodWatch.stop();
-
-        data.completeTrack();
-
-        setOutputFinished();
     }
 
     /***************************************************************************
@@ -210,6 +158,8 @@ public class TrackCompetition
                 data.state = TrackState.RUNNING_B;
                 setOutputRunning();
             }
+
+            dataListeners.fireListeners( this, data );
         }
     }
 
@@ -240,6 +190,8 @@ public class TrackCompetition
             }
 
             data.team.failedCount = data.failedCount;
+
+            dataListeners.fireListeners( this, data );
         }
     }
 
@@ -280,6 +232,8 @@ public class TrackCompetition
                     }
                 }
             }
+
+            dataListeners.fireListeners( this, data );
         }
     }
 
@@ -305,6 +259,8 @@ public class TrackCompetition
                 data.state = TrackState.WAITING_B;
                 setOutputWaiting();
             }
+
+            dataListeners.fireListeners( this, data );
         }
     }
 
@@ -313,6 +269,8 @@ public class TrackCompetition
      **************************************************************************/
     public void signalClearTrack()
     {
+        // LogUtils.printDebug( "clearing track" );
+
         if( data.state != TrackState.FINISHED )
         {
             data.errorMsg = "Wait for " + data.getTeamCode() +
@@ -323,6 +281,8 @@ public class TrackCompetition
         this.data.clearTrack();
 
         setOutputUninitialized();
+
+        dataListeners.fireListeners( this, data );
     }
 
     /***************************************************************************
@@ -347,6 +307,48 @@ public class TrackCompetition
         data.setRunTime( getRunTime() );
 
         return data;
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    public boolean isRunning()
+    {
+        return data.state != TrackState.UNINITIALIZED &&
+            data.state != TrackState.FINISHED;
+    }
+
+    /***************************************************************************
+     * @param gpio
+     **************************************************************************/
+    public void unprovisionAll( GpioController gpio )
+    {
+        pins.unprovisionAll( gpio );
+    }
+
+    /***************************************************************************
+     * @param l
+     **************************************************************************/
+    public void addDataListener( ItemActionListener<TrackData> l )
+    {
+        dataListeners.addListener( l );
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void stopPeriod()
+    {
+        // LogUtils.printDebug(
+        // "Stopping period for track " + view.getTrackName() );
+
+        periodWatch.stop();
+
+        data.completeTrack();
+
+        setOutputFinished();
+
+        dataListeners.fireListeners( this, data );
     }
 
     /***************************************************************************
@@ -418,19 +420,52 @@ public class TrackCompetition
     }
 
     /***************************************************************************
-     * @return
+     * 
      **************************************************************************/
-    public boolean isRunning()
+    private void setOutputUninitialized()
     {
-        return data.state != TrackState.UNINITIALIZED &&
-            data.state != TrackState.FINISHED;
+        pins.redPin.setState( track.redDefaultLevel.inverse().state );
+        pins.greenPin.setState( track.greenDefaultLevel.state );
+        pins.bluePin.setState( track.blueDefaultLevel.inverse().state );
     }
 
     /***************************************************************************
-     * @param gpio
+     * 
      **************************************************************************/
-    public void unprovisionAll( GpioController gpio )
+    private void setOutputInitPaused()
     {
-        pins.unprovisionAll( gpio );
+        pins.redPin.setState( track.redDefaultLevel.inverse().state );
+        pins.greenPin.setState( track.greenDefaultLevel.state );
+        pins.bluePin.setState( track.blueDefaultLevel.state );
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void setOutputWaiting()
+    {
+        pins.redPin.setState( track.redDefaultLevel.inverse().state );
+        pins.greenPin.setState( track.greenDefaultLevel.inverse().state );
+        pins.bluePin.setState( track.blueDefaultLevel.inverse().state );
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void setOutputRunning()
+    {
+        pins.redPin.setState( track.redDefaultLevel.state );
+        pins.greenPin.setState( track.greenDefaultLevel.inverse().state );
+        pins.bluePin.setState( track.blueDefaultLevel.state );
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void setOutputFinished()
+    {
+        pins.redPin.setState( track.redDefaultLevel.state );
+        pins.greenPin.setState( track.greenDefaultLevel.state );
+        pins.bluePin.setState( track.blueDefaultLevel.inverse().state );
     }
 }
