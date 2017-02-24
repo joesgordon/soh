@@ -251,7 +251,7 @@ public class TrackCompetition
         // LogUtils.printDebug( "Failing run for track " + view.getTrackName()
         // );
 
-        if( checkState( "fail a run ", TrackState.WAITING_A,
+        if( checkState( "fail a run", TrackState.WAITING_A,
             TrackState.RUNNING_A, TrackState.WAITING_B, TrackState.RUNNING_B ) )
         {
             runWatch.stop();

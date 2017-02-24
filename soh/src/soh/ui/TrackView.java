@@ -5,6 +5,7 @@ import java.awt.Dialog.ModalityType;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.jutils.SwingUtils;
@@ -59,6 +60,8 @@ public class TrackView implements IView<JComponent>
 
     /**  */
     private final JLabel finishedField;
+    /**  */
+    private final JTextArea errorField;
 
     /**  */
     private final Icon blankIcon;
@@ -66,6 +69,11 @@ public class TrackView implements IView<JComponent>
     private final Icon checkIcon;
     /**  */
     private final Icon xIcon;
+
+    /**  */
+    private long errTime;
+    /**  */
+    private TrackData lastData;
 
     /***************************************************************************
      * @param trackName
@@ -92,6 +100,15 @@ public class TrackView implements IView<JComponent>
         this.run2Icon = new JLabel( blankIcon );
         this.failedFields = new JLabel[5];
         this.finishedField = UiUtils.createTextLabel( " ", 36 );
+        this.errorField = new JTextArea();
+
+        errorField.setFont(
+            errorField.getFont().deriveFont( 36.0f ).deriveFont( Font.BOLD ) );
+        errorField.setLineWrap( true );
+        errorField.setWrapStyleWord( true );
+        errorField.setOpaque( false );
+        errorField.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
+        errorField.setForeground( Color.red );
 
         for( int i = 0; i < failedFields.length; i++ )
         {
@@ -101,6 +118,8 @@ public class TrackView implements IView<JComponent>
         teamButton.setName( trackName );
 
         this.view = createView();
+        this.lastData = new TrackData();
+        this.errTime = -1;
 
         clearTeam();
     }
@@ -229,16 +248,28 @@ public class TrackView implements IView<JComponent>
     /***************************************************************************
      * @param finished
      **************************************************************************/
-    public void setFinished( boolean finished )
+    private void setFinished( boolean finished )
     {
         String text = finished ? "Team Complete" : "";
 
-        finishedField.setText( text );
+        if( !text.isEmpty() )
+        {
+            finishedField.setForeground( UiUtils.UNI_MAIN_COLOR );
+            finishedField.setText( text );
+        }
 
         if( finished && config.getAvailableTeams().isEmpty() )
         {
             teamButton.setEnabled( false );
         }
+    }
+
+    private void setError( String errorMsg )
+    {
+        errorField.setForeground( Color.red );
+        errorField.setText( errorMsg );
+
+        errTime = System.currentTimeMillis();
     }
 
     /***************************************************************************
@@ -365,10 +396,15 @@ public class TrackView implements IView<JComponent>
 
         finishedField.setForeground( UiUtils.UNI_MAIN_COLOR );
 
-        constraints = new GridBagConstraints( 0, row++, 2, 1, 1.0, 1.0,
+        constraints = new GridBagConstraints( 0, row, 2, 1, 1.0, 1.0,
             GridBagConstraints.CENTER, GridBagConstraints.NONE,
             new Insets( 0, 0, 0, 0 ), 0, 0 );
         panel.add( finishedField, constraints );
+
+        constraints = new GridBagConstraints( 0, row++, 2, 1, 1.0, 1.0,
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+            new Insets( 0, 0, 0, 0 ), 0, 0 );
+        panel.add( errorField, constraints );
 
         return panel;
     }
@@ -668,11 +704,43 @@ public class TrackView implements IView<JComponent>
         // view.getTrackName() +
         // " @ " + runaSecs );
 
-        setPeriodTime( data.periodTime );
+        if( lastData.periodTime != data.periodTime )
+        {
+            setPeriodTime( data.periodTime );
+        }
+
+        if( !lastData.errorMsg.equals( data.errorMsg ) )
+        {
+            setError( data.errorMsg );
+        }
+        else if( errTime > 0 )
+        {
+            long now = System.currentTimeMillis();
+            long delta = now - errTime;
+
+            if( delta > 3000 )
+            {
+                errTime = -1;
+            }
+            else
+            {
+                float percent = 1.0f - delta / 3000.0f;
+
+                // LogUtils.printDebug( "percent: %f", percent );
+
+                Color fg = new Color( 1.0f, 0.0f, 0.0f, percent );
+
+                errorField.setForeground( fg );
+            }
+        }
+
         setFinished( data.state == TrackState.FINISHED );
 
         setRunaTime( data.run1Time, data.state.runaComplete );
         setRunbTime( data.run2Time, data.state.runbComplete );
+
         setFailCount( data.failedCount );
+
+        this.lastData = new TrackData( data );
     }
 }

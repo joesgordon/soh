@@ -127,4 +127,16 @@ public class TrackData
         team.time2 = run2Time;
         team.failedCount = failedCount;
     }
+
+    public String wrapError()
+    {
+        String text = errorMsg;
+
+        if( !text.isEmpty() )
+        {
+            text = "<html>" + text + "</html>";
+        }
+
+        return text;
+    }
 }
