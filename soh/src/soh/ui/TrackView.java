@@ -2,6 +2,7 @@ package soh.ui;
 
 import java.awt.*;
 import java.awt.Dialog.ModalityType;
+import java.awt.event.*;
 import java.util.List;
 
 import javax.swing.*;
@@ -12,6 +13,7 @@ import org.jutils.SwingUtils;
 import org.jutils.ui.ColorIcon;
 import org.jutils.ui.OkDialogView;
 import org.jutils.ui.OkDialogView.OkDialogButtons;
+import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.model.IView;
 
 import soh.SohIcons;
@@ -75,6 +77,9 @@ public class TrackView implements IView<JComponent>
     /**  */
     private TrackData lastData;
 
+    /**  */
+    private Team team;
+
     /***************************************************************************
      * @param trackName
      **************************************************************************/
@@ -102,6 +107,8 @@ public class TrackView implements IView<JComponent>
         this.failedFields = new JLabel[5];
         this.finishedField = UiUtils.createTextLabel( " ", 36 );
         this.errorField = new JTextArea();
+
+        this.team = null;
 
         competition.addDataListener( ( e ) -> edtUpdateUI( e.getItem() ) );
 
@@ -175,12 +182,16 @@ public class TrackView implements IView<JComponent>
      **************************************************************************/
     private void setTeamData( Team team )
     {
+        this.team = team;
+
         if( team == null )
         {
             clearTeam();
+            teamButton.setEnabled( true );
         }
         else
         {
+            team.loaded = true;
             teamButton.setText( team.schoolCode );
             // + " (Division " + team.div.name + ")" );
 
@@ -194,6 +205,7 @@ public class TrackView implements IView<JComponent>
             initializeTrack( team );
 
             updateTimer.start();
+            teamButton.setEnabled( false );
         }
     }
 
@@ -345,7 +357,6 @@ public class TrackView implements IView<JComponent>
 
                 if( t != null )
                 {
-                    t.loaded = true;
                     setTeamData( t );
                 }
             }
@@ -429,6 +440,7 @@ public class TrackView implements IView<JComponent>
         teamButton.setOpaque( false );
         teamButton.setForeground( Color.white );
         teamButton.addActionListener( ( e ) -> showTeamChooser() );
+        teamButton.addMouseListener( new TeamMouseListener( this ) );
         teamButton.setBorderPainted( false );
 
         // ---------------------------------------------------------------------
@@ -657,6 +669,7 @@ public class TrackView implements IView<JComponent>
     private void initializeTrack( Team team )
     {
         TrackData data = competition.updateData();
+
         if( data.state != TrackState.FINISHED &&
             data.state != TrackState.UNINITIALIZED )
         {
@@ -749,5 +762,38 @@ public class TrackView implements IView<JComponent>
         setFailCount( data.failedCount );
 
         this.lastData = new TrackData( data );
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private static final class TeamMouseListener extends MouseAdapter
+    {
+        private final TrackView view;
+
+        public TeamMouseListener( TrackView view )
+        {
+            this.view = view;
+        }
+
+        @Override
+        public void mouseReleased( MouseEvent e )
+        {
+            if( e.getButton() == MouseEvent.BUTTON3 && view.team == null )
+            {
+                JPopupMenu menu = new JPopupMenu();
+                List<Team> teams = view.config.getAvailableTeams();
+
+                for( Team t : teams )
+                {
+                    ActionListener listener = ( evt ) -> view.setTeamData( t );
+                    Action a = new ActionAdapter( listener, t.schoolCode,
+                        null );
+                    menu.add( a );
+                }
+
+                menu.show( e.getComponent(), e.getX(), e.getY() );
+            }
+        }
     }
 }

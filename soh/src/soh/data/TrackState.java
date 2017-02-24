@@ -38,7 +38,7 @@ public enum TrackState implements INamedItem
     }
 
     /***************************************************************************
-     * 
+     * {@inheritDoc}
      **************************************************************************/
     @Override
     public String getName()
