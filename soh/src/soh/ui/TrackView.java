@@ -278,6 +278,22 @@ public class TrackView implements IView<JComponent>
     }
 
     /***************************************************************************
+     * @param paused
+     **************************************************************************/
+    private void setPaused( boolean paused )
+    {
+        if( paused )
+        {
+            errorField.setForeground( Color.ORANGE );
+            errorField.setText( "Paused" );
+        }
+        else
+        {
+            errorField.setText( "" );
+        }
+    }
+
+    /***************************************************************************
      * @param errorMsg
      **************************************************************************/
     private void setError( String errorMsg )
@@ -727,6 +743,16 @@ public class TrackView implements IView<JComponent>
             data.state != TrackState.UNINITIALIZED )
         {
             updateTimer.start();
+        }
+
+        if( lastData.state != data.state &&
+            ( lastData.state == TrackState.PAUSE_A ||
+                lastData.state == TrackState.PAUSE_B ||
+                data.state == TrackState.PAUSE_A ||
+                data.state == TrackState.PAUSE_B ) )
+        {
+            setPaused( data.state == TrackState.PAUSE_A ||
+                data.state == TrackState.PAUSE_B );
         }
 
         // LogUtils.printDebug( "Updating times for track @ " + data.periodTime
