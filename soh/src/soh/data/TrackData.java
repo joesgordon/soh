@@ -55,8 +55,8 @@ public class TrackData
         this.team = team;
         this.targetTime = div.targetTime;
         this.failedCount = team.failedCount;
-        this.run1Time = team.time1;
-        this.run2Time = team.time2;
+        this.run1Time = team.run1Time;
+        this.run2Time = team.run2Time;
         this.errorMsg = "";
     }
 
@@ -135,8 +135,8 @@ public class TrackData
     {
         state = TrackState.FINISHED;
 
-        team.time1 = run1Time;
-        team.time2 = run2Time;
+        team.run1Time = run1Time;
+        team.run2Time = run2Time;
         team.failedCount = failedCount;
     }
 }

@@ -21,9 +21,9 @@ public class Team
     /**  */
     public int failedCount;
     /** First successful time in tenths of seconds. */
-    public int time1;
+    public int run1Time;
     /** Second successful time in tenths of seconds. */
-    public int time2;
+    public int run2Time;
     /**  */
     public boolean loaded;
 
@@ -35,8 +35,8 @@ public class Team
         this.schoolCode = "";
         this.div = Division.DIVISION_B;
         this.failedCount = 0;
-        this.time1 = -1;
-        this.time2 = -1;
+        this.run1Time = -1;
+        this.run2Time = -1;
         this.loaded = false;
     }
 
@@ -48,8 +48,8 @@ public class Team
         this.schoolCode = t.schoolCode;
         this.div = t.div;
         this.failedCount = t.failedCount;
-        this.time1 = t.time1;
-        this.time2 = t.time2;
+        this.run1Time = t.run1Time;
+        this.run2Time = t.run2Time;
         this.loaded = t.loaded;
     }
 
@@ -59,13 +59,13 @@ public class Team
     public void initTrials()
     {
         this.failedCount = 0;
-        this.time1 = -1;
-        this.time2 = -1;
+        this.run1Time = -1;
+        this.run2Time = -1;
         this.loaded = false;
     }
 
     public boolean isFinished()
     {
-        return time2 > 0 || failedCount >= 5;
+        return run2Time > 0 || failedCount >= 5;
     }
 }

@@ -153,8 +153,8 @@ public class TeamView implements IDataView<Team>
         nameField.setValue( team.schoolCode );
         divField.setValue( team.div );
         failedCountField.setValue( team.failedCount );
-        time1Field.setValue( team.time1 );
-        time2Field.setValue( team.time2 );
+        time1Field.setValue( team.run1Time );
+        time2Field.setValue( team.run2Time );
         loadedField.setValue( team.loaded );
     }
 }

@@ -377,18 +377,22 @@ public class SohFrameView implements IView<JFrame>
 
                 this.competitionFrame = new JFrame( "Competition" );
                 competitionFrame.setContentPane( competitionView.createView() );
-                competitionFrame.setDefaultCloseOperation( JDialog.DO_NOTHING_ON_CLOSE );
-                competitionFrame.addWindowListener( new SohDialogListener( this ) );
+                competitionFrame.setDefaultCloseOperation(
+                    JDialog.DO_NOTHING_ON_CLOSE );
+                competitionFrame.addWindowListener(
+                    new SohDialogListener( this ) );
                 competitionFrame.setUndecorated( true );
-                competitionFrame.setSize( getView().getWidth(), getView().getHeight() );
+                competitionFrame.setSize( getView().getWidth(),
+                    getView().getHeight() );
 
                 competitionFrame.validate();
                 competitionFrame.setVisible( true );
 
-                UiUtils.addHotKey( ( JComponent )competitionFrame.getContentPane(), "F8",
+                UiUtils.addHotKey(
+                    ( JComponent )competitionFrame.getContentPane(), "F8",
                     ( e ) -> showCompetition( this.competitionView == null ) );
 
-                setFullScreen( true );
+                // setFullScreen( true );
             }
             catch( IllegalStateException ex )
             {
@@ -403,7 +407,7 @@ public class SohFrameView implements IView<JFrame>
 
             competitionView = null;
 
-            setFullScreen( false );
+            // setFullScreen( false );
 
             competitionFrame.dispose();
             competitionFrame = null;

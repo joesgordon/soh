@@ -2,7 +2,8 @@ package soh.ui;
 
 import java.awt.*;
 import java.awt.Dialog.ModalityType;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.*;
@@ -323,6 +324,10 @@ public class TrackView implements IView<JComponent>
         {
             failedFields[i].setIcon( xIcon );
         }
+        for( int i = cnt; i < 5; i++ )
+        {
+            failedFields[i].setIcon( blankIcon );
+        }
     }
 
     /***************************************************************************
@@ -440,7 +445,8 @@ public class TrackView implements IView<JComponent>
         teamButton.setOpaque( false );
         teamButton.setForeground( Color.white );
         teamButton.addActionListener( ( e ) -> showTeamChooser() );
-        teamButton.addMouseListener( new TeamMouseListener( this ) );
+        teamButton.addMouseListener( new RightClickMouseListener(
+            ( e ) -> showTeamPopup( e.getItem() ) ) );
         teamButton.setBorderPainted( false );
 
         // ---------------------------------------------------------------------
@@ -556,6 +562,8 @@ public class TrackView implements IView<JComponent>
         // ---------------------------------------------------------------------
 
         label = UiUtils.createTextLabel( "Successful Attempts", 36 );
+        label.addMouseListener( new RightClickMouseListener(
+            ( e ) -> showResetSuccessPopup( e.getItem() ) ) );
         constraints = new GridBagConstraints( 0, row++, 1, 1, 0.0, 0.0,
             GridBagConstraints.CENTER, GridBagConstraints.NONE,
             new Insets( 4, 4, 4, 0 ), 0, 0 );
@@ -569,6 +577,8 @@ public class TrackView implements IView<JComponent>
 
         // ---------------------------------------------------------------------
         label = UiUtils.createTextLabel( "Failed Attempts", 36 );
+        label.addMouseListener( new RightClickMouseListener(
+            ( e ) -> showResetFailurePopup( e.getItem() ) ) );
         constraints = new GridBagConstraints( 0, row++, 1, 1, 0.0, 0.0,
             GridBagConstraints.CENTER, GridBagConstraints.NONE,
             new Insets( 20, 4, 4, 4 ), 0, 0 );
@@ -713,10 +723,14 @@ public class TrackView implements IView<JComponent>
         {
             updateTimer.stop();
         }
+        else if( lastData.state == TrackState.FINISHED &&
+            data.state != TrackState.UNINITIALIZED )
+        {
+            updateTimer.start();
+        }
 
-        // LogUtils.printDebug( "Updating times for track " +
-        // view.getTrackName() +
-        // " @ " + runaSecs );
+        // LogUtils.printDebug( "Updating times for track @ " + data.periodTime
+        // );
 
         if( lastData.periodTime != data.periodTime )
         {
@@ -765,35 +779,63 @@ public class TrackView implements IView<JComponent>
     }
 
     /***************************************************************************
-     * 
+     * @param e
      **************************************************************************/
-    private static final class TeamMouseListener extends MouseAdapter
+    private void showResetSuccessPopup( MouseEvent e )
     {
-        private final TrackView view;
-
-        public TeamMouseListener( TrackView view )
+        TrackData data = competition.updateData();
+        if( data.run1Time > -1 && data.state != TrackState.RUNNING_A &&
+            data.failedCount < 5 )
         {
-            this.view = view;
+            JPopupMenu menu = new JPopupMenu();
+
+            ActionListener listener = (
+                evt ) -> competition.signalResetSuccess();
+            Action a = new ActionAdapter( listener, "Reset Last Success",
+                null );
+            menu.add( a );
+
+            menu.show( e.getComponent(), e.getX(), e.getY() );
         }
+    }
 
-        @Override
-        public void mouseReleased( MouseEvent e )
+    /***************************************************************************
+     * @param e
+     **************************************************************************/
+    private void showResetFailurePopup( MouseEvent e )
+    {
+        if( competition.updateData().failedCount > 0 )
         {
-            if( e.getButton() == MouseEvent.BUTTON3 && view.team == null )
+            JPopupMenu menu = new JPopupMenu();
+
+            ActionListener listener = (
+                evt ) -> competition.signalResetFailure();
+            Action a = new ActionAdapter( listener, "Reset Last Failure",
+                null );
+            menu.add( a );
+
+            menu.show( e.getComponent(), e.getX(), e.getY() );
+        }
+    }
+
+    /***************************************************************************
+     * @param e
+     **************************************************************************/
+    private void showTeamPopup( MouseEvent e )
+    {
+        if( team == null )
+        {
+            JPopupMenu menu = new JPopupMenu();
+            List<Team> teams = config.getAvailableTeams();
+
+            for( Team t : teams )
             {
-                JPopupMenu menu = new JPopupMenu();
-                List<Team> teams = view.config.getAvailableTeams();
-
-                for( Team t : teams )
-                {
-                    ActionListener listener = ( evt ) -> view.setTeamData( t );
-                    Action a = new ActionAdapter( listener, t.schoolCode,
-                        null );
-                    menu.add( a );
-                }
-
-                menu.show( e.getComponent(), e.getX(), e.getY() );
+                ActionListener listener = ( evt ) -> setTeamData( t );
+                Action a = new ActionAdapter( listener, t.schoolCode, null );
+                menu.add( a );
             }
+
+            menu.show( e.getComponent(), e.getX(), e.getY() );
         }
     }
 }

@@ -39,10 +39,10 @@ public class TrackCfg
 
         this.redPin = Pi3GpioPin.GPIO_13;
         this.redDefaultLevel = PinLevel.HIGH;
-        this.bluePin = Pi3GpioPin.GPIO_06;
-        this.blueDefaultLevel = PinLevel.HIGH;
-        this.greenPin = Pi3GpioPin.GPIO_05;
+        this.greenPin = Pi3GpioPin.GPIO_06;
         this.greenDefaultLevel = PinLevel.HIGH;
+        this.bluePin = Pi3GpioPin.GPIO_05;
+        this.blueDefaultLevel = PinLevel.HIGH;
     }
 
     /***************************************************************************
@@ -58,8 +58,8 @@ public class TrackCfg
             this.stopPin = Pi3GpioPin.GPIO_24;
 
             this.redPin = Pi3GpioPin.GPIO_16;
-            this.bluePin = Pi3GpioPin.GPIO_12;
-            this.greenPin = Pi3GpioPin.GPIO_26;
+            this.greenPin = Pi3GpioPin.GPIO_12;
+            this.bluePin = Pi3GpioPin.GPIO_26;
 
         }
     }

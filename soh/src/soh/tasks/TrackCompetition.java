@@ -1,6 +1,7 @@
 package soh.tasks;
 
 import org.jutils.Stopwatch;
+import org.jutils.io.LogUtils;
 import org.jutils.ui.event.ItemActionList;
 import org.jutils.ui.event.ItemActionListener;
 
@@ -119,10 +120,14 @@ public class TrackCompetition
                 if( newState == TrackState.PAUSE_A ||
                     newState == TrackState.PAUSE_B )
                 {
+                    LogUtils.printDebug( "Timer paused @ %d",
+                        periodWatch.getElapsed() );
                     setOutputInitPaused();
                 }
                 else
                 {
+                    LogUtils.printDebug( "Timer resumed @ %d",
+                        periodWatch.getElapsed() );
                     setOutputWaiting();
                 }
 
@@ -179,13 +184,13 @@ public class TrackCompetition
 
             if( localState == TrackState.RUNNING_A )
             {
-                data.team.time1 = getRunTime();
+                data.team.run1Time = getRunTime();
                 data.state = TrackState.WAITING_B;
                 setOutputWaiting();
             }
             else if( localState == TrackState.RUNNING_B )
             {
-                data.team.time2 = getRunTime();
+                data.team.run2Time = getRunTime();
                 stopPeriod();
             }
 
@@ -286,6 +291,78 @@ public class TrackCompetition
     }
 
     /***************************************************************************
+     * 
+     **************************************************************************/
+    public void signalResetFailure()
+    {
+        if( data.state == TrackState.FINISHED && data.run2Time > -1 )
+        {
+            return;
+        }
+        else if( data.state == TrackState.FINISHED )
+        {
+            if( data.run1Time < 0 )
+            {
+                data.state = TrackState.PAUSE_A;
+            }
+            else
+            {
+                data.state = TrackState.PAUSE_B;
+            }
+        }
+
+        data.failedCount--;
+
+        LogUtils.printDebug( "resetting failure count to %d in state %s",
+            data.failedCount, data.state.name );
+
+        dataListeners.fireListeners( this, data );
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    public void signalResetSuccess()
+    {
+        if( data.state == TrackState.FINISHED && data.failedCount == 5 )
+        {
+            return;
+        }
+        else if( data.state == TrackState.FINISHED )
+        {
+            if( data.run2Time < 0 )
+            {
+                data.run1Time = -1;
+                data.team.run1Time = -1;
+                data.state = TrackState.PAUSE_A;
+            }
+            else
+            {
+                data.run2Time = -1;
+                data.team.run2Time = -1;
+                data.state = TrackState.PAUSE_B;
+            }
+        }
+        else
+        {
+            if( data.run2Time < 0 )
+            {
+                data.run1Time = -1;
+                data.team.run1Time = -1;
+                data.state = TrackState.WAITING_A;
+            }
+            else
+            {
+                data.run2Time = -1;
+                data.team.run2Time = -1;
+                data.state = TrackState.WAITING_B;
+            }
+        }
+
+        dataListeners.fireListeners( this, data );
+    }
+
+    /***************************************************************************
      * @return
      **************************************************************************/
     public TrackData updateData()
@@ -342,7 +419,11 @@ public class TrackCompetition
         // LogUtils.printDebug(
         // "Stopping period for track " + view.getTrackName() );
 
-        periodWatch.stop();
+        if( data.state != TrackState.PAUSE_A &&
+            data.state != TrackState.PAUSE_B )
+        {
+            periodWatch.pauseResume();
+        }
 
         data.completeTrack();
 
