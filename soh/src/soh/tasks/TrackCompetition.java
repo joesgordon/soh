@@ -71,6 +71,8 @@ public class TrackCompetition
         setOutputInitPaused();
 
         dataListeners.fireListeners( this, data );
+
+        printInfo( "signal track load" );
     }
 
     /***************************************************************************
@@ -120,20 +122,18 @@ public class TrackCompetition
                 if( newState == TrackState.PAUSE_A ||
                     newState == TrackState.PAUSE_B )
                 {
-                    LogUtils.printDebug( "Timer paused @ %d",
-                        periodWatch.getElapsed() );
                     setOutputInitPaused();
                 }
                 else
                 {
-                    LogUtils.printDebug( "Timer resumed @ %d",
-                        periodWatch.getElapsed() );
                     setOutputWaiting();
                 }
 
                 dataListeners.fireListeners( this, data );
             }
         }
+
+        printInfo( "signal start/pause" );
     }
 
     /***************************************************************************
@@ -166,6 +166,8 @@ public class TrackCompetition
 
             dataListeners.fireListeners( this, data );
         }
+
+        printInfo( "signal start run" );
     }
 
     /***************************************************************************
@@ -198,6 +200,8 @@ public class TrackCompetition
 
             dataListeners.fireListeners( this, data );
         }
+
+        printInfo( "signal complete run" );
     }
 
     /***************************************************************************
@@ -239,6 +243,8 @@ public class TrackCompetition
             }
 
             dataListeners.fireListeners( this, data );
+
+            printInfo( "signal fail run" );
         }
     }
 
@@ -267,6 +273,8 @@ public class TrackCompetition
 
             dataListeners.fireListeners( this, data );
         }
+
+        printInfo( "signal reset run" );
     }
 
     /***************************************************************************
@@ -288,6 +296,8 @@ public class TrackCompetition
         setOutputUninitialized();
 
         dataListeners.fireListeners( this, data );
+
+        printInfo( "signal clear track" );
     }
 
     /***************************************************************************
@@ -313,10 +323,9 @@ public class TrackCompetition
 
         data.failedCount--;
 
-        LogUtils.printDebug( "resetting failure count to %d in state %s",
-            data.failedCount, data.state.name );
-
         dataListeners.fireListeners( this, data );
+
+        printInfo( "signal reset failure" );
     }
 
     /***************************************************************************
@@ -360,6 +369,8 @@ public class TrackCompetition
         }
 
         dataListeners.fireListeners( this, data );
+
+        printInfo( "signal reset success" );
     }
 
     /***************************************************************************
@@ -375,7 +386,8 @@ public class TrackCompetition
             data.periodTime = -1;
         }
         else if( data.periodTime < 1 && data.state != TrackState.RUNNING_A &&
-            data.state != TrackState.RUNNING_B )
+            data.state != TrackState.RUNNING_B &&
+            data.state != TrackState.FINISHED )
         {
             stopPeriod();
             data.periodTime = getPeriodTime();
@@ -430,6 +442,17 @@ public class TrackCompetition
         setOutputFinished();
 
         dataListeners.fireListeners( this, data );
+    }
+
+    /***************************************************************************
+     * @param message
+     **************************************************************************/
+    private void printInfo( String message )
+    {
+        String teamStr = data.team != null ? data.team.schoolCode : "N/A";
+
+        LogUtils.printInfo( "Team [%s] : %s in %s @ %.1f", teamStr, message,
+            data.state.getName(), periodWatch.getElapsed() / 10.0 );
     }
 
     /***************************************************************************
