@@ -392,7 +392,7 @@ public class SohFrameView implements IView<JFrame>
                     ( JComponent )competitionFrame.getContentPane(), "F8",
                     ( e ) -> showCompetition( this.competitionView == null ) );
 
-                setFullScreen( true );
+                // setFullScreen( true );
             }
             catch( IllegalStateException ex )
             {
@@ -407,7 +407,7 @@ public class SohFrameView implements IView<JFrame>
 
             competitionView = null;
 
-            setFullScreen( false );
+            // setFullScreen( false );
 
             competitionFrame.dispose();
             competitionFrame = null;

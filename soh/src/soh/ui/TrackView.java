@@ -11,6 +11,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.jutils.SwingUtils;
+import org.jutils.io.LogUtils;
 import org.jutils.ui.ColorIcon;
 import org.jutils.ui.OkDialogView;
 import org.jutils.ui.OkDialogView.OkDialogButtons;
@@ -78,9 +79,6 @@ public class TrackView implements IView<JComponent>
     /**  */
     private TrackData lastData;
 
-    /**  */
-    private Team team;
-
     /***************************************************************************
      * @param trackName
      **************************************************************************/
@@ -108,8 +106,6 @@ public class TrackView implements IView<JComponent>
         this.failedFields = new JLabel[5];
         this.finishedField = UiUtils.createTextLabel( " ", 36 );
         this.errorField = new JTextArea();
-
-        this.team = null;
 
         competition.addDataListener( ( e ) -> edtUpdateUI( e.getItem() ) );
 
@@ -183,8 +179,6 @@ public class TrackView implements IView<JComponent>
      **************************************************************************/
     private void setTeamData( Team team )
     {
-        this.team = team;
-
         if( team == null )
         {
             clearTeam();
@@ -849,7 +843,12 @@ public class TrackView implements IView<JComponent>
      **************************************************************************/
     private void showTeamPopup( MouseEvent e )
     {
-        if( team == null )
+        TrackData data = competition.updateData();
+
+        LogUtils.printDebug( "Track State is : " + data.state.name );
+
+        if( data.state == TrackState.UNINITIALIZED ||
+            data.state == TrackState.FINISHED )
         {
             JPopupMenu menu = new JPopupMenu();
             List<Team> teams = config.getAvailableTeams();
@@ -863,5 +862,23 @@ public class TrackView implements IView<JComponent>
 
             menu.show( e.getComponent(), e.getX(), e.getY() );
         }
+        else if( data.state == TrackState.INITIALIZED )
+        {
+            JPopupMenu menu = new JPopupMenu();
+            ActionListener listener = ( evt ) -> unloadTeam();
+            Action a = new ActionAdapter( listener, "Unload Team", null );
+            menu.add( a );
+            menu.show( e.getComponent(), e.getX(), e.getY() );
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void unloadTeam()
+    {
+        competition.signalUnloadTrack();
+
+        edtUpdateUI( competition.updateData() );
     }
 }

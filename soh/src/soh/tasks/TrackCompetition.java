@@ -75,6 +75,13 @@ public class TrackCompetition
         printInfo( "signal track load" );
     }
 
+    public void signalUnloadTrack()
+    {
+        data.team.loaded = false;
+        data.clearTrack();
+        dataListeners.fireListeners( this, data );
+    }
+
     /***************************************************************************
      * 
      **************************************************************************/
