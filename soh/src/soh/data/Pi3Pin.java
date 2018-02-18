@@ -3,7 +3,7 @@ package soh.data;
 import org.jutils.INamedItem;
 
 /*******************************************************************************
- * 
+ * <a href="http://pi4j.com/pins/model-3b-rev1.html">Pin Numbering</a>
  ******************************************************************************/
 public enum Pi3Pin implements INamedItem
 {

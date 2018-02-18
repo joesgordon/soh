@@ -7,7 +7,7 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.jutils.IconLoader;
+import org.jutils.io.IconLoader;
 
 /*******************************************************************************
  * 

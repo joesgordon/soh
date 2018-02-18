@@ -1,4 +1,4 @@
-package soh.ui;
+package soh.ui.cfg;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;

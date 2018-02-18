@@ -3,14 +3,21 @@ package soh.ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 import org.jutils.IconConstants;
 import org.jutils.SwingUtils;
 import org.jutils.ui.StandardFormView;
 import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.event.updater.ReflectiveUpdater;
-import org.jutils.ui.fields.*;
+import org.jutils.ui.fields.BooleanFormField;
+import org.jutils.ui.fields.ComboFormField;
+import org.jutils.ui.fields.IntegerFormField;
+import org.jutils.ui.fields.NamedItemDescriptor;
+import org.jutils.ui.fields.StringFormField;
 import org.jutils.ui.model.IDataView;
 
 import soh.data.Division;
@@ -45,7 +52,8 @@ public class TeamView implements IDataView<Team>
     public TeamView()
     {
         this.nameField = new StringFormField( "School Code", 15, 1, null );
-        this.divField = new ComboFormField<>( "Division", Division.values() );
+        this.divField = new ComboFormField<>( "Division", Division.values(),
+            new NamedItemDescriptor<>() );
         this.failedCountField = new IntegerFormField( "Failed Count" );
         this.time1Field = new IntegerFormField( "Time 1", "0.1 seconds", 15, -1,
             null );

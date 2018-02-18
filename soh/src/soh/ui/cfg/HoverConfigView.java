@@ -1,4 +1,4 @@
-package soh.ui;
+package soh.ui.cfg;
 
 import java.awt.*;
 
@@ -12,6 +12,8 @@ import org.jutils.ui.fields.IntegerFormField;
 import org.jutils.ui.model.IDataView;
 
 import soh.data.HoverConfig;
+import soh.ui.TeamListView;
+import soh.ui.UiUtils;
 
 /*******************************************************************************
  * 

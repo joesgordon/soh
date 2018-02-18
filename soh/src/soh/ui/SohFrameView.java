@@ -28,6 +28,8 @@ import soh.SohMain;
 import soh.data.*;
 import soh.gpio.*;
 import soh.tasks.HovercraftCompetition;
+import soh.ui.cfg.HoverConfigView;
+import soh.ui.live.CompetitionView;
 
 /*******************************************************************************
  * 

@@ -7,8 +7,8 @@ import org.jutils.INamedItem;
  **************************************************************************/
 public enum Division implements INamedItem
 {
-    DIVISION_B( "B", 130 ),
-    DIVISION_C( "C", 200 );
+    DIVISION_B( "Division B", 130 ),
+    DIVISION_C( "Division C", 200 );
 
     /** The name of the division */
     public final String name;

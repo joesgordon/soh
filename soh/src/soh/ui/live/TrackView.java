@@ -1,12 +1,26 @@
-package soh.ui;
+package soh.ui.live;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dialog.ModalityType;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextArea;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -19,8 +33,15 @@ import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.model.IView;
 
 import soh.SohIcons;
-import soh.data.*;
+import soh.data.DivisionConfig;
+import soh.data.HoverConfig;
+import soh.data.Team;
+import soh.data.TrackData;
+import soh.data.TrackState;
 import soh.tasks.TrackCompetition;
+import soh.ui.RightClickMouseListener;
+import soh.ui.TeamsView;
+import soh.ui.UiUtils;
 
 /*******************************************************************************
  * 
@@ -87,7 +108,7 @@ public class TrackView implements IView<JComponent>
     {
         this.config = config;
         this.competition = competition;
-        this.updateTimer = new Timer( 50,
+        this.updateTimer = new Timer( 100,
             ( e ) -> edtUpdateUI( competition.updateData() ) );
 
         this.teamButton = new JButton( "Welcome Olympians" );
@@ -109,6 +130,7 @@ public class TrackView implements IView<JComponent>
 
         competition.addDataListener( ( e ) -> edtUpdateUI( e.getItem() ) );
 
+        errorField.setEditable( false );
         errorField.setFont(
             errorField.getFont().deriveFont( 36.0f ).deriveFont( Font.BOLD ) );
         errorField.setLineWrap( true );
@@ -122,6 +144,8 @@ public class TrackView implements IView<JComponent>
             failedFields[i] = new JLabel( blankIcon );
         }
 
+        updateTimer.setInitialDelay( 0 );
+
         teamButton.setName( trackName );
 
         this.view = createView();
@@ -129,14 +153,6 @@ public class TrackView implements IView<JComponent>
         this.errTime = -1;
 
         clearTeam();
-    }
-
-    /***************************************************************************
-     * @return
-     **************************************************************************/
-    public String getTrackName()
-    {
-        return teamButton.getName();
     }
 
     /***************************************************************************
@@ -199,6 +215,7 @@ public class TrackView implements IView<JComponent>
 
             initializeTrack( team );
 
+            LogUtils.printDebug( "Starting the timer" );
             updateTimer.start();
             teamButton.setEnabled( false );
         }
@@ -207,7 +224,7 @@ public class TrackView implements IView<JComponent>
     /***************************************************************************
      * @param seconds
      **************************************************************************/
-    public void setPeriodTime( int seconds )
+    private void setPeriodTime( int seconds )
     {
         if( seconds < 0 )
         {
@@ -242,7 +259,7 @@ public class TrackView implements IView<JComponent>
      * @param tenthsSeconds
      * @param complete
      **************************************************************************/
-    public void setRunaTime( int tenthsSeconds, boolean complete )
+    private void setRunaTime( int tenthsSeconds, boolean complete )
     {
         setRunTime( run1Field, run1Icon, tenthsSeconds, complete );
     }
@@ -251,7 +268,7 @@ public class TrackView implements IView<JComponent>
      * @param tenthsSeconds
      * @param complete
      **************************************************************************/
-    public void setRunbTime( int tenthsSeconds, boolean complete )
+    private void setRunbTime( int tenthsSeconds, boolean complete )
     {
         setRunTime( run2Field, run2Icon, tenthsSeconds, complete );
     }
@@ -328,7 +345,7 @@ public class TrackView implements IView<JComponent>
     /***************************************************************************
      * @param cnt
      **************************************************************************/
-    public void setFailCount( int cnt )
+    private void setFailCount( int cnt )
     {
         for( int i = 0; i < cnt; i++ )
         {
@@ -451,13 +468,13 @@ public class TrackView implements IView<JComponent>
         panel.setOpaque( false );
 
         teamButton.setFont( UiUtils.getTextFont() );
-        teamButton.setBorder( new LineBorder( Color.lightGray, 2 ) );
+        // teamButton.setBorder( new LineBorder( Color.lightGray, 2 ) );
         teamButton.setOpaque( false );
         teamButton.setForeground( Color.white );
         teamButton.addActionListener( ( e ) -> showTeamChooser() );
         teamButton.addMouseListener( new RightClickMouseListener(
             ( e ) -> showTeamPopup( e.getItem() ) ) );
-        teamButton.setBorderPainted( false );
+        // teamButton.setBorderPainted( false );
 
         // ---------------------------------------------------------------------
 
@@ -757,6 +774,9 @@ public class TrackView implements IView<JComponent>
             setPeriodTime( data.periodTime );
         }
 
+        // LogUtils.printDebug( "Last Error \"%s\", error \"%s\" @ %d",
+        // lastData.errorMsg, data.errorMsg, errTime );
+
         if( !lastData.errorMsg.equals( data.errorMsg ) )
         {
             setError( data.errorMsg );
@@ -769,6 +789,7 @@ public class TrackView implements IView<JComponent>
             if( delta > 3000 )
             {
                 errTime = -1;
+                lastData.errorMsg = "";
             }
             else
             {

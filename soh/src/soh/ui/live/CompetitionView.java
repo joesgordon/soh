@@ -1,4 +1,4 @@
-package soh.ui;
+package soh.ui.live;
 
 import java.awt.*;
 
@@ -10,6 +10,7 @@ import soh.SohIcons;
 import soh.data.HoverConfig;
 import soh.tasks.HovercraftCompetition;
 import soh.tasks.TrackCompetition;
+import soh.ui.UiUtils;
 
 /*******************************************************************************
  * 
