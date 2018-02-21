@@ -10,6 +10,9 @@ import soinc.lib.data.PinResistance;
 public class TrackCfg
 {
     /**  */
+    public Division division;
+
+    /**  */
     public Pi3GpioPin startPin;
     /**  */
     public PinResistance startRes;
@@ -36,6 +39,8 @@ public class TrackCfg
      **************************************************************************/
     public TrackCfg()
     {
+        this.division = Division.DIVISION_C;
+
         this.startPin = Pi3GpioPin.GPIO_27;
         this.startRes = PinResistance.OFF;
         this.stopPin = Pi3GpioPin.GPIO_22;
@@ -73,6 +78,8 @@ public class TrackCfg
      **************************************************************************/
     public TrackCfg( TrackCfg track )
     {
+        this.division = track.division;
+
         this.startPin = track.startPin;
         this.startRes = track.startRes;
         this.stopPin = track.stopPin;

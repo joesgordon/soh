@@ -41,6 +41,9 @@ public class HoverConfig
 
         divC.targetLength = 175;
         divC.targetTime = 150;
+
+        track1.division = Division.DIVISION_B;
+        track2.division = Division.DIVISION_C;
     }
 
     /***************************************************************************
@@ -87,15 +90,16 @@ public class HoverConfig
     }
 
     /***************************************************************************
+     * @param division
      * @return
      **************************************************************************/
-    public List<Team> getAvailableTeams()
+    public List<Team> getAvailableTeams( Division division )
     {
         List<Team> teams = new ArrayList<>();
 
         for( Team t : this.teams )
         {
-            if( !t.loaded && !t.isFinished() )
+            if( !t.loaded && !t.isFinished() && t.div == division )
             {
                 teams.add( t );
             }

@@ -23,7 +23,7 @@ public class TrackCompetition
     /**  */
     private final HoverConfig config;
     /**  */
-    private final TrackCfg track;
+    public final TrackCfg track;
     /**  */
     private final TrackPins pins;
 

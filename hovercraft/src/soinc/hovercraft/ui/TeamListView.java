@@ -17,6 +17,7 @@ import org.jutils.ui.ListView.IItemListModel;
 import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.model.IDataView;
 
+import soinc.hovercraft.data.Division;
 import soinc.hovercraft.data.Team;
 
 /*******************************************************************************
@@ -139,6 +140,16 @@ public class TeamListView implements IDataView<List<Team>>
 
                 newTeam = new Team();
                 newTeam.schoolCode = name;
+
+                for( Division d : Division.values() )
+                {
+                    if( d.designation == Character.toUpperCase(
+                        name.charAt( 0 ) ) )
+                    {
+                        newTeam.div = d;
+                        break;
+                    }
+                }
             }
 
             return newTeam;

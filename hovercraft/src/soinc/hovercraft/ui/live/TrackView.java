@@ -165,7 +165,7 @@ public class TrackView implements IView<JComponent>
         teamButton.setText( "Select Team" );
         teamButton.setEnabled( true );
 
-        if( config.getAvailableTeams().isEmpty() )
+        if( config.getAvailableTeams( competition.track.division ).isEmpty() )
         {
             teamButton.setText( "Teams Complete" );
             teamButton.setEnabled( false );
@@ -282,7 +282,8 @@ public class TrackView implements IView<JComponent>
 
         finishedField.setText( text );
 
-        if( finished && config.getAvailableTeams().isEmpty() )
+        if( finished &&
+            config.getAvailableTeams( competition.track.division ).isEmpty() )
         {
             teamButton.setEnabled( false );
         }
@@ -376,7 +377,8 @@ public class TrackView implements IView<JComponent>
 
         clearTeam();
 
-        List<Team> teams = config.getAvailableTeams();
+        List<Team> teams = config.getAvailableTeams(
+            competition.track.division );
         TeamsView teamsView = new TeamsView( teams );
         OkDialogView okDialog = new OkDialogView( teamButton,
             teamsView.getView(), ModalityType.MODELESS,
@@ -872,7 +874,8 @@ public class TrackView implements IView<JComponent>
             data.state == TrackState.FINISHED )
         {
             JPopupMenu menu = new JPopupMenu();
-            List<Team> teams = config.getAvailableTeams();
+            List<Team> teams = config.getAvailableTeams(
+                competition.track.division );
 
             for( Team t : teams )
             {

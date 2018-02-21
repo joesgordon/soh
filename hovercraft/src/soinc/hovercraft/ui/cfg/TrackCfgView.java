@@ -4,11 +4,11 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.jutils.ui.StandardFormView;
-import org.jutils.ui.event.updater.ReflectiveUpdater;
 import org.jutils.ui.fields.ComboFormField;
 import org.jutils.ui.fields.NamedItemDescriptor;
 import org.jutils.ui.model.IDataView;
 
+import soinc.hovercraft.data.Division;
 import soinc.hovercraft.data.TrackCfg;
 import soinc.lib.data.Pi3GpioPin;
 import soinc.lib.data.PinLevel;
@@ -21,6 +21,9 @@ public class TrackCfgView implements IDataView<TrackCfg>
 {
     /**  */
     private final JPanel view;
+
+    /**  */
+    private final ComboFormField<Division> divisionField;
 
     /**  */
     private final ComboFormField<Pi3GpioPin> startPinField;
@@ -52,6 +55,9 @@ public class TrackCfgView implements IDataView<TrackCfg>
      **************************************************************************/
     public TrackCfgView()
     {
+        this.divisionField = new ComboFormField<>( "Division",
+            Division.values(), new NamedItemDescriptor<>() );
+
         this.startPinField = new ComboFormField<>( "Start Pin",
             Pi3GpioPin.values(), new NamedItemDescriptor<>() );
         this.startResField = new ComboFormField<>( "Start Resistance",
@@ -80,30 +86,22 @@ public class TrackCfgView implements IDataView<TrackCfg>
 
         setData( new TrackCfg() );
 
-        startPinField.setUpdater(
-            new ReflectiveUpdater<>( this, "track.startPin" ) );
-        startResField.setUpdater(
-            new ReflectiveUpdater<>( this, "track.startRes" ) );
+        divisionField.setUpdater( ( d ) -> track.division = d );
 
-        stopPinField.setUpdater(
-            new ReflectiveUpdater<>( this, "track.stopPin" ) );
-        stopResField.setUpdater(
-            new ReflectiveUpdater<>( this, "track.stopRes" ) );
+        startPinField.setUpdater( ( d ) -> track.startPin = d );
+        startResField.setUpdater( ( d ) -> track.startRes = d );
 
-        redPinField.setUpdater(
-            new ReflectiveUpdater<>( this, "track.redPin" ) );
-        redLevelField.setUpdater(
-            new ReflectiveUpdater<>( this, "track.redDefaultLevel" ) );
+        stopPinField.setUpdater( ( d ) -> track.stopPin = d );
+        stopResField.setUpdater( ( d ) -> track.stopRes = d );
 
-        greenPinField.setUpdater(
-            new ReflectiveUpdater<>( this, "track.greenPin" ) );
-        greenLevelField.setUpdater(
-            new ReflectiveUpdater<>( this, "track.greenDefaultLevel" ) );
+        redPinField.setUpdater( ( d ) -> track.redPin = d );
+        redLevelField.setUpdater( ( d ) -> track.redDefaultLevel = d );
 
-        bluePinField.setUpdater(
-            new ReflectiveUpdater<>( this, "track.bluePin" ) );
-        blueLevelField.setUpdater(
-            new ReflectiveUpdater<>( this, "track.blueDefaultLevel" ) );
+        greenPinField.setUpdater( ( d ) -> track.greenPin = d );
+        greenLevelField.setUpdater( ( d ) -> track.greenDefaultLevel = d );
+
+        bluePinField.setUpdater( ( d ) -> track.bluePin = d );
+        blueLevelField.setUpdater( ( d ) -> track.blueDefaultLevel = d );
     }
 
     /***************************************************************************
@@ -112,6 +110,8 @@ public class TrackCfgView implements IDataView<TrackCfg>
     private JPanel createView()
     {
         StandardFormView form = new StandardFormView();
+
+        form.addField( divisionField );
 
         form.addField( startPinField );
         form.addField( startResField );
@@ -153,6 +153,8 @@ public class TrackCfgView implements IDataView<TrackCfg>
     public void setData( TrackCfg track )
     {
         this.track = track;
+
+        divisionField.setValue( track.division );
 
         startPinField.setValue( track.startPin );
         startResField.setValue( track.startRes );
