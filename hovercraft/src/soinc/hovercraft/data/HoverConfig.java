@@ -35,6 +35,12 @@ public class HoverConfig
         this.track2 = new TrackCfg( true );
 
         this.teams = new ArrayList<>();
+
+        divB.targetLength = 165;
+        divB.targetTime = 150;
+
+        divC.targetLength = 175;
+        divC.targetTime = 150;
     }
 
     /***************************************************************************

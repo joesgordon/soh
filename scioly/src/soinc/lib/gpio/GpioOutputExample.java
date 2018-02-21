@@ -1,4 +1,4 @@
-package soinc.hovercraft;
+package soinc.lib.gpio;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,6 @@ import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 
 import soinc.lib.data.Pi3GpioPin;
-import soinc.lib.gpio.SciolyGpio;
 
 /**
  * This example code demonstrates how to perform simple state control of a GPIO

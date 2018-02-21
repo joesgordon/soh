@@ -19,6 +19,7 @@ import org.jutils.ui.model.CollectionListModel;
 import org.jutils.ui.model.IView;
 
 import soinc.hovercraft.data.Team;
+import soinc.lib.UiUtils;
 
 /*******************************************************************************
  * 
@@ -69,7 +70,7 @@ public class TeamsView implements IView<JComponent>
     }
 
     /***************************************************************************
-     * 
+     * {@inheritDoc}
      **************************************************************************/
     @Override
     public JComponent getView()
@@ -91,10 +92,14 @@ public class TeamsView implements IView<JComponent>
     private static final class TeamCellRenderer
         implements ListCellRenderer<Team>
     {
+        /**  */
         private final DefaultListCellRenderer renderer;
-
+        /**  */
         private final Font f;
 
+        /**
+         * 
+         */
         public TeamCellRenderer()
         {
             this.renderer = new DefaultListCellRenderer();
@@ -102,6 +107,9 @@ public class TeamsView implements IView<JComponent>
             f = ( UiUtils.getTextFont( 36 ) );
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Component getListCellRendererComponent(
             JList<? extends Team> list, Team value, int index,

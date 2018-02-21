@@ -8,7 +8,7 @@ import org.jutils.io.options.IOptionsCreator;
 import org.jutils.io.options.OptionsSerializer;
 import org.jutils.ui.app.FrameRunner;
 
-import soinc.hovercraft.data.SohOptions;
+import soinc.hovercraft.data.HovercraftOptions;
 import soinc.lib.gpio.SciolyGpio;
 
 /*******************************************************************************
@@ -21,14 +21,14 @@ public class HovercraftMain
         ".ScienceOlympiad", "soh.xml" );
 
     /**  */
-    private static OptionsSerializer<SohOptions> options;
+    private static OptionsSerializer<HovercraftOptions> options;
 
     /***************************************************************************
      * @param args
      **************************************************************************/
     public static void main( String [] args )
     {
-        OptionsSerializer<SohOptions> options = HovercraftMain.getOptions();
+        OptionsSerializer<HovercraftOptions> options = HovercraftMain.getOptions();
 
         SciolyGpio.FAUX_CONNECT = options.getOptions().useFauxGpio;
 
@@ -38,31 +38,34 @@ public class HovercraftMain
     /***************************************************************************
      * @return
      **************************************************************************/
-    public static OptionsSerializer<SohOptions> getOptions()
+    public static OptionsSerializer<HovercraftOptions> getOptions()
     {
         if( options == null )
         {
-            IOptionsCreator<SohOptions> ioc = new OptionsCreator();
+            IOptionsCreator<HovercraftOptions> ioc = new OptionsCreator();
             options = OptionsSerializer.getOptions( ioc, userFile );
         }
 
         return options;
     }
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     private static final class OptionsCreator
-        implements IOptionsCreator<SohOptions>
+        implements IOptionsCreator<HovercraftOptions>
     {
 
         @Override
-        public SohOptions createDefaultOptions()
+        public HovercraftOptions createDefaultOptions()
         {
-            return new SohOptions();
+            return new HovercraftOptions();
         }
 
         @Override
-        public SohOptions initialize( SohOptions data )
+        public HovercraftOptions initialize( HovercraftOptions data )
         {
-            return new SohOptions( data );
+            return new HovercraftOptions( data );
         }
 
         @Override

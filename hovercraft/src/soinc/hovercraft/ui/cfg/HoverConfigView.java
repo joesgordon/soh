@@ -25,7 +25,7 @@ import org.jutils.ui.model.IDataView;
 
 import soinc.hovercraft.data.HoverConfig;
 import soinc.hovercraft.ui.TeamListView;
-import soinc.hovercraft.ui.UiUtils;
+import soinc.lib.UiUtils;
 
 /*******************************************************************************
  * 

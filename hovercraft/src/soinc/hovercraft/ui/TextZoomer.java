@@ -10,6 +10,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.KeyStroke;
 
+import soinc.lib.UiUtils;
+
 public class TextZoomer
 {
     private final JComponent parent;

@@ -1,4 +1,4 @@
-package soh.data;
+package soinc.hovercraft.data;
 
 import java.util.ArrayList;
 

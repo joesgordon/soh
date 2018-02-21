@@ -2,5 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jutils"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scioly"/>
+	<classpathentry kind="lib" path="/libs/jgoodies.jar"/>
+	<classpathentry kind="lib" path="/libs/xstream_min.jar"/>
+	<classpathentry kind="lib" path="/SciolyLibs/pi4j-core.jar" sourcepath="/SciolyLibs/pi4j-core-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

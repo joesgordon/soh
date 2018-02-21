@@ -1,4 +1,4 @@
-package soinc.hovercraft;
+package soinc.lib.gpio;
 //START SNIPPET: listen-gpio-snippet
 
 import org.jutils.task.ITask;
@@ -42,7 +42,6 @@ import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
 import soinc.lib.data.Pi3GpioPin;
-import soinc.lib.gpio.SciolyGpio;
 
 /**
  * This example code demonstrates how to setup a listener for GPIO pin state
@@ -51,7 +50,11 @@ import soinc.lib.gpio.SciolyGpio;
  */
 public class GpioInputExample implements ITask
 {
-    private static void doit( ITaskHandler handler ) throws InterruptedException
+    /**
+     * @param handler
+     * @throws InterruptedException
+     */
+    private static void doit( ITaskHandler handler )
     {
         handler.signalPercent( 0 );
         handler.signalPercent( -1 );
@@ -103,7 +106,14 @@ public class GpioInputExample implements ITask
             // keep program running until user aborts (CTRL-C)
             while( handler.canContinue() )
             {
-                Thread.sleep( 200 );
+                try
+                {
+                    Thread.sleep( 200 );
+                }
+                catch( InterruptedException e )
+                {
+                    break;
+                }
             }
         }
         finally
@@ -121,18 +131,18 @@ public class GpioInputExample implements ITask
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void run( ITaskHandler handler )
     {
-        try
-        {
-            doit( handler );
-        }
-        catch( InterruptedException e )
-        {
-        }
+        doit( handler );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName()
     {

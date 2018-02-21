@@ -19,7 +19,7 @@ import soinc.hovercraft.HovercraftIcons;
 import soinc.hovercraft.data.HoverConfig;
 import soinc.hovercraft.tasks.HovercraftCompetition;
 import soinc.hovercraft.tasks.TrackCompetition;
-import soinc.hovercraft.ui.UiUtils;
+import soinc.lib.UiUtils;
 
 /*******************************************************************************
  * 

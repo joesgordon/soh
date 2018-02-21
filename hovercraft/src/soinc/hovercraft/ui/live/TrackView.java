@@ -40,8 +40,8 @@ import soinc.hovercraft.data.TrackState;
 import soinc.hovercraft.tasks.TrackCompetition;
 import soinc.hovercraft.ui.RightClickMouseListener;
 import soinc.hovercraft.ui.TeamsView;
-import soinc.hovercraft.ui.UiUtils;
 import soinc.lib.SciolyIcons;
+import soinc.lib.UiUtils;
 
 /*******************************************************************************
  * 

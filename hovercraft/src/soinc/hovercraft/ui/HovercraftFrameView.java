@@ -1,7 +1,5 @@
 package soinc.hovercraft.ui;
 
-import java.awt.Dialog.ModalityType;
-import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
@@ -28,8 +26,6 @@ import org.jutils.SwingUtils;
 import org.jutils.io.XStreamUtils;
 import org.jutils.io.options.OptionsSerializer;
 import org.jutils.task.TaskView;
-import org.jutils.ui.OkDialogView;
-import org.jutils.ui.OkDialogView.OkDialogButtons;
 import org.jutils.ui.StandardFrameView;
 import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.event.FileChooserListener;
@@ -39,23 +35,22 @@ import org.jutils.ui.model.IView;
 
 import com.thoughtworks.xstream.XStreamException;
 
-import soinc.hovercraft.GpioInputExample;
-import soinc.hovercraft.GpioOutputExample;
 import soinc.hovercraft.HovercraftIcons;
 import soinc.hovercraft.HovercraftMain;
 import soinc.hovercraft.data.HoverConfig;
-import soinc.hovercraft.data.SohOptions;
+import soinc.hovercraft.data.HovercraftOptions;
 import soinc.hovercraft.tasks.HovercraftCompetition;
 import soinc.hovercraft.ui.cfg.HoverConfigView;
 import soinc.hovercraft.ui.live.CompetitionView;
-import soinc.lib.data.PinTestSuite;
+import soinc.lib.UiUtils;
+import soinc.lib.gpio.GpioInputExample;
+import soinc.lib.gpio.GpioOutputExample;
 import soinc.lib.gpio.SciolyGpio;
-import soinc.lib.ui.PinTestSuiteView;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class SohFrameView implements IView<JFrame>
+public class HovercraftFrameView implements IView<JFrame>
 {
     /**  */
     private final StandardFrameView frameView;
@@ -79,7 +74,7 @@ public class SohFrameView implements IView<JFrame>
     /***************************************************************************
      * 
      **************************************************************************/
-    public SohFrameView()
+    public HovercraftFrameView()
     {
         this.frameView = new StandardFrameView();
         this.fauxGpioMenuItem = new JCheckBoxMenuItem();
@@ -100,7 +95,7 @@ public class SohFrameView implements IView<JFrame>
         frameView.getView().setIconImages(
             HovercraftIcons.getHovercraftIcons() );
 
-        OptionsSerializer<SohOptions> options = HovercraftMain.getOptions();
+        OptionsSerializer<HovercraftOptions> options = HovercraftMain.getOptions();
 
         configView.setData( options.getOptions().config );
 
@@ -157,7 +152,7 @@ public class SohFrameView implements IView<JFrame>
      **************************************************************************/
     private void openFile( File file )
     {
-        OptionsSerializer<SohOptions> options = HovercraftMain.getOptions();
+        OptionsSerializer<HovercraftOptions> options = HovercraftMain.getOptions();
         options.getOptions().lastConfigFile = file;
         options.write();
 
@@ -196,7 +191,7 @@ public class SohFrameView implements IView<JFrame>
      **************************************************************************/
     private void saveFile( File file )
     {
-        OptionsSerializer<SohOptions> options = HovercraftMain.getOptions();
+        OptionsSerializer<HovercraftOptions> options = HovercraftMain.getOptions();
         options.getOptions().lastConfigFile = file;
         options.write();
 
@@ -261,7 +256,8 @@ public class SohFrameView implements IView<JFrame>
      **************************************************************************/
     private Action createTestSuiteAction()
     {
-        return new ActionAdapter( ( e ) -> showTestSuiteScreen(), "Test I/O",
+        return new ActionAdapter(
+            ( e ) -> UiUtils.showTestSuiteScreen( getView() ), "Test I/O",
             IconConstants.getIcon( IconConstants.CHECK_16 ) );
     }
 
@@ -302,7 +298,7 @@ public class SohFrameView implements IView<JFrame>
         ActionListener listener = ( e ) -> {
             SciolyGpio.FAUX_CONNECT = !SciolyGpio.FAUX_CONNECT;
             fauxGpioMenuItem.setSelected( SciolyGpio.FAUX_CONNECT );
-            OptionsSerializer<SohOptions> options = HovercraftMain.getOptions();
+            OptionsSerializer<HovercraftOptions> options = HovercraftMain.getOptions();
 
             options.getOptions().useFauxGpio = SciolyGpio.FAUX_CONNECT;
             options.write();
@@ -334,47 +330,12 @@ public class SohFrameView implements IView<JFrame>
     }
 
     /***************************************************************************
-     * 
-     **************************************************************************/
-    private void showTestSuiteScreen()
-    {
-        PinTestSuiteView view = new PinTestSuiteView();
-        OkDialogView okView = new OkDialogView( getView(), view.getView(),
-            ModalityType.DOCUMENT_MODAL, OkDialogButtons.OK_ONLY );
-
-        try
-        {
-            SciolyGpio.startup();
-        }
-        catch( IllegalStateException ex )
-        {
-            SwingUtils.showErrorMessage( getView(), "Setup Error",
-                "Pi4j library was not found" );
-            return;
-        }
-
-        OptionsSerializer<SohOptions> options = HovercraftMain.getOptions();
-        PinTestSuite suite = options.getOptions().testSuite;
-
-        suite.initialize();
-
-        view.setData( suite );
-
-        okView.show( "I/O Test", new Dimension( 850, 700 ) );
-
-        options.getOptions().testSuite = view.getData();
-        options.write();
-
-        view.unprovisionAll();
-    }
-
-    /***************************************************************************
      * @return
      **************************************************************************/
     private HoverConfig saveUserConfig()
     {
         HoverConfig config = configView.getData();
-        OptionsSerializer<SohOptions> options = HovercraftMain.getOptions();
+        OptionsSerializer<HovercraftOptions> options = HovercraftMain.getOptions();
 
         options.getOptions().config = config;
         options.write();
@@ -481,9 +442,9 @@ public class SohFrameView implements IView<JFrame>
      **************************************************************************/
     private static final class FrameExitListener implements ActionListener
     {
-        private final SohFrameView view;
+        private final HovercraftFrameView view;
 
-        public FrameExitListener( SohFrameView view )
+        public FrameExitListener( HovercraftFrameView view )
         {
             this.view = view;
         }
@@ -506,9 +467,9 @@ public class SohFrameView implements IView<JFrame>
      **************************************************************************/
     private static final class SohDialogListener extends WindowAdapter
     {
-        private final SohFrameView view;
+        private final HovercraftFrameView view;
 
-        public SohDialogListener( SohFrameView view )
+        public SohDialogListener( HovercraftFrameView view )
         {
             this.view = view;
         }

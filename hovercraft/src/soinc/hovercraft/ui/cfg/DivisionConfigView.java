@@ -42,7 +42,7 @@ public class DivisionConfigView implements IDataView<DivisionConfig>
         this.lengthField = new IntegerFormField( "Target Length", "cm", 10, 100,
             195 );
         this.timeField = new IntegerFormField( "Target Time", "0.1 seconds", 10,
-            50, 250 );
+            5, 250 );
         this.mphField = new StringFormField( "Speed (mph)", 10, null, null );
         this.mpsField = new StringFormField( "Speed (m/s)", 10, null, null );
 
@@ -54,9 +54,11 @@ public class DivisionConfigView implements IDataView<DivisionConfig>
         lengthField.setUpdater( new WrappedUpdater<>(
             new ReflectiveUpdater<>( this, "config.targetLength" ),
             ( e ) -> updateSpeed() ) );
-        timeField.setUpdater( new WrappedUpdater<>(
-            new ReflectiveUpdater<>( this, "config.targetTime" ),
-            ( e ) -> updateSpeed() ) );
+        // timeField.setUpdater( new WrappedUpdater<>(
+        // new ReflectiveUpdater<>( this, "config.targetTime" ),
+        // ( e ) -> updateSpeed() ) );
+
+        timeField.setEditable( false );
         mphField.setEditable( false );
         mpsField.setEditable( false );
     }

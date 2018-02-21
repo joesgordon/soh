@@ -4,16 +4,16 @@ import javax.swing.JFrame;
 
 import org.jutils.ui.app.IFrameApp;
 
-import soinc.hovercraft.ui.SohFrameView;
+import soinc.hovercraft.ui.HovercraftFrameView;
 
 public class HovercraftApp implements IFrameApp
 {
-    private SohFrameView view;
+    private HovercraftFrameView view;
 
     @Override
     public JFrame createFrame()
     {
-        this.view = new SohFrameView();
+        this.view = new HovercraftFrameView();
 
         return view.getView();
     }
