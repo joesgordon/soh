@@ -19,7 +19,6 @@ import javax.swing.border.TitledBorder;
 
 import org.jutils.ui.StandardFormView;
 import org.jutils.ui.TitleView;
-import org.jutils.ui.event.updater.ReflectiveUpdater;
 import org.jutils.ui.fields.IntegerFormField;
 import org.jutils.ui.model.IDataView;
 
@@ -69,8 +68,7 @@ public class HoverConfigView implements IDataView<HoverConfig>
 
         setData( new HoverConfig() );
 
-        periodField.setUpdater(
-            new ReflectiveUpdater<>( this, "config.periodTime" ) );
+        periodField.setUpdater( ( d ) -> config.periodTime = d );
     }
 
     /***************************************************************************

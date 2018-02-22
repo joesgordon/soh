@@ -17,8 +17,8 @@ import soinc.lib.gpio.SciolyGpio;
 public class HovercraftMain
 {
     /**  */
-    private static final File userFile = IOUtils.getUsersFile(
-        ".ScienceOlympiad", "soh.xml" );
+    private static final File USERS_FILE = IOUtils.getUsersFile(
+        ".ScienceOlympiad", "hovercraft.xml" );
 
     /**  */
     private static OptionsSerializer<HovercraftOptions> options;
@@ -43,7 +43,7 @@ public class HovercraftMain
         if( options == null )
         {
             IOptionsCreator<HovercraftOptions> ioc = new OptionsCreator();
-            options = OptionsSerializer.getOptions( ioc, userFile );
+            options = OptionsSerializer.getOptions( ioc, USERS_FILE );
         }
 
         return options;

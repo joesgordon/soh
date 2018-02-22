@@ -22,6 +22,8 @@ public class RollercoasterFrameView implements IView<JFrame>
 {
     /**  */
     private final StandardFrameView view;
+    /**  */
+    private final RollercoasterConfigView configView;
 
     /***************************************************************************
      * 
@@ -29,9 +31,11 @@ public class RollercoasterFrameView implements IView<JFrame>
     public RollercoasterFrameView()
     {
         this.view = new StandardFrameView();
+        this.configView = new RollercoasterConfigView();
 
         createMenubar( view.getMenuBar(), view.getFileMenu() );
 
+        view.setContent( configView.getView() );
         view.getView().setIconImages(
             RollercoasterIcons.getRollercoasterIcons() );
         view.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );

@@ -9,7 +9,9 @@ import java.util.List;
 public class HoverConfig
 {
     /**  */
-    public final int periodTime;
+    public int periodTime;
+    /**  */
+    public int maxTrialTime;
     /**  */
     public final DivisionConfig divB;
     /**  */
@@ -27,6 +29,7 @@ public class HoverConfig
     public HoverConfig()
     {
         this.periodTime = 8 * 60;
+        this.maxTrialTime = 45;
 
         this.divB = new DivisionConfig( Division.DIVISION_B );
         this.divC = new DivisionConfig( Division.DIVISION_C );
@@ -52,6 +55,7 @@ public class HoverConfig
     public HoverConfig( HoverConfig config )
     {
         this.periodTime = config.periodTime;
+        this.maxTrialTime = config.maxTrialTime;
 
         this.divB = new DivisionConfig( config.divB );
         this.divC = new DivisionConfig( config.divC );

@@ -7,6 +7,9 @@ import javax.swing.Icon;
 
 import org.jutils.io.IconLoader;
 
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 public class RollercoasterIcons
 {
     /**  */
@@ -28,12 +31,11 @@ public class RollercoasterIcons
         return loader.getImages( IconLoader.buildNameList( "rc_" ) );
     }
 
-    /**
+    /***************************************************************************
      * @return
-     */
+     **************************************************************************/
     public static Icon getRollercoaster16()
     {
         return loader.getIcon( "rc_016.png" );
     }
-
 }

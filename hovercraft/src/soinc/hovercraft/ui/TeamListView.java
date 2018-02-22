@@ -111,12 +111,18 @@ public class TeamListView implements IDataView<List<Team>>
      **************************************************************************/
     private static final class TeamsModel implements IItemListModel<Team>
     {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String getTitle( Team item )
         {
             return item.schoolCode;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public Team promptForNew( ListView<Team> view )
         {
@@ -126,6 +132,8 @@ public class TeamListView implements IDataView<List<Team>>
 
             if( name != null )
             {
+                name = name.toUpperCase();
+
                 for( Team t : teams )
                 {
                     if( t.schoolCode.equalsIgnoreCase( name ) )
@@ -143,8 +151,7 @@ public class TeamListView implements IDataView<List<Team>>
 
                 for( Division d : Division.values() )
                 {
-                    if( d.designation == Character.toUpperCase(
-                        name.charAt( 0 ) ) )
+                    if( d.designation == name.charAt( 0 ) )
                     {
                         newTeam.div = d;
                         break;

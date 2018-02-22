@@ -1,32 +1,27 @@
-package soinc.rollercoaster;
-
-import javax.swing.JFrame;
-
-import org.jutils.ui.app.IFrameApp;
-
-import soinc.rollercoaster.ui.RollercoasterFrameView;
+package soinc.rollercoaster.data;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class RollercoasterApp implements IFrameApp
+public class RollercoasterUserData
 {
-    /***************************************************************************
-     * {@inheritDoc}
-     **************************************************************************/
-    @Override
-    public JFrame createFrame()
-    {
-        RollercoasterFrameView frameView = new RollercoasterFrameView();
+    /**  */
+    public final RollercoasterConfig config;
 
-        return frameView.getView();
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    public RollercoasterUserData()
+    {
+        this.config = new RollercoasterConfig();
     }
 
     /***************************************************************************
-     * {@inheritDoc}
+     * @param data
      **************************************************************************/
-    @Override
-    public void finalizeGui()
+    public RollercoasterUserData( RollercoasterUserData data )
     {
+        this.config = data.config == null ? new RollercoasterConfig()
+            : new RollercoasterConfig( data.config );
     }
 }
