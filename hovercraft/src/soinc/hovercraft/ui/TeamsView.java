@@ -104,7 +104,7 @@ public class TeamsView implements IView<JComponent>
         {
             this.renderer = new DefaultListCellRenderer();
 
-            f = ( UiUtils.getTextFont( 36 ) );
+            f = UiUtils.getTextFont( 36 );
         }
 
         /**

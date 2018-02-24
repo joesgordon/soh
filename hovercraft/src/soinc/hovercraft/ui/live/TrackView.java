@@ -359,53 +359,6 @@ public class TrackView implements IView<JComponent>
     }
 
     /***************************************************************************
-     * 
-     **************************************************************************/
-    private void showTeamChooser()
-    {
-        TrackData data = competition.updateData();
-        TrackState state = data.state;
-
-        if( state != TrackState.FINISHED && state != TrackState.UNINITIALIZED )
-        {
-            SwingUtils.showErrorMessage( getView(),
-                "Cannot change teams until " + data.getTeamCode() +
-                    " has finished",
-                "Input Error" );
-            return;
-        }
-
-        clearTeam();
-
-        List<Team> teams = config.getAvailableTeams(
-            competition.track.division );
-        TeamsView teamsView = new TeamsView( teams );
-        OkDialogView okDialog = new OkDialogView( teamButton,
-            teamsView.getView(), ModalityType.MODELESS,
-            OkDialogButtons.OK_CANCEL );
-
-        okDialog.addOkListener( ( e ) -> {
-            if( e.getItem() )
-            {
-                Team t = teamsView.getSelected();
-
-                if( t != null )
-                {
-                    setTeamData( t );
-                }
-            }
-        } );
-
-        JDialog dialog = okDialog.getView();
-
-        dialog.setTitle( "Choose Next Team" );
-        dialog.setSize( 300, 400 );
-        dialog.validate();
-        dialog.setLocationRelativeTo( teamButton );
-        dialog.setVisible( true );
-    }
-
-    /***************************************************************************
      * @return
      **************************************************************************/
     private JPanel createView()
@@ -859,6 +812,53 @@ public class TrackView implements IView<JComponent>
 
             menu.show( e.getComponent(), e.getX(), e.getY() );
         }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void showTeamChooser()
+    {
+        TrackData data = competition.updateData();
+        TrackState state = data.state;
+
+        if( state != TrackState.FINISHED && state != TrackState.UNINITIALIZED )
+        {
+            SwingUtils.showErrorMessage( getView(),
+                "Cannot change teams until " + data.getTeamCode() +
+                    " has finished",
+                "Input Error" );
+            return;
+        }
+
+        clearTeam();
+
+        List<Team> teams = config.getAvailableTeams(
+            competition.track.division );
+        TeamsView teamsView = new TeamsView( teams );
+        OkDialogView okDialog = new OkDialogView( teamButton,
+            teamsView.getView(), ModalityType.MODELESS,
+            OkDialogButtons.OK_CANCEL );
+
+        okDialog.addOkListener( ( e ) -> {
+            if( e.getItem() )
+            {
+                Team t = teamsView.getSelected();
+
+                if( t != null )
+                {
+                    setTeamData( t );
+                }
+            }
+        } );
+
+        JDialog dialog = okDialog.getView();
+
+        dialog.setTitle( "Choose Next Team" );
+        dialog.setSize( 300, 400 );
+        dialog.validate();
+        dialog.setLocationRelativeTo( teamButton );
+        dialog.setVisible( true );
     }
 
     /***************************************************************************

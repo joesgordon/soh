@@ -89,4 +89,9 @@ public class RcCompetition
         this.periodTime = -1;
         this.team = null;
     }
+
+    public RcTeam getTeam()
+    {
+        return team;
+    }
 }

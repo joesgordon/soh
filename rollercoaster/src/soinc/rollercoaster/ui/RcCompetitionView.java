@@ -3,31 +3,44 @@ package soinc.rollercoaster.ui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
 
+import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
+import org.jutils.SwingUtils;
+import org.jutils.ui.OkDialogView;
+import org.jutils.ui.OkDialogView.OkDialogButtons;
+import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.event.RightClickListener;
+import org.jutils.ui.fields.ItemsListField;
 import org.jutils.ui.model.IView;
+import org.jutils.ui.model.LabelListCellRenderer.IListCellLabelDecorator;
 
 import soinc.lib.UiUtils;
 import soinc.rollercoaster.RollercoasterIcons;
 import soinc.rollercoaster.RollercoasterMain;
 import soinc.rollercoaster.data.RcCompetition;
+import soinc.rollercoaster.data.RcTeam;
 
 /*******************************************************************************
  * 
@@ -192,12 +205,70 @@ public class RcCompetitionView implements IView<JFrame>
 
     private void showTeamPopup( MouseEvent e )
     {
-        // TODO Auto-generated method stub
+        if( competition.isRunning() )
+        {
+            JPopupMenu menu = new JPopupMenu();
+            ActionListener listener = ( evt ) -> unloadTeam();
+            Action a = new ActionAdapter( listener, "Unload Team", null );
+            menu.add( a );
+            menu.show( e.getComponent(), e.getX(), e.getY() );
+        }
+        else
+        {
+            JPopupMenu menu = new JPopupMenu();
+            List<RcTeam> teams = competition.getAvailableTeams();
+
+            for( RcTeam t : teams )
+            {
+                ActionListener listener = ( evt ) -> setTeamData( t );
+                Action a = new ActionAdapter( listener, t.name, null );
+                menu.add( a );
+            }
+
+            menu.show( e.getComponent(), e.getX(), e.getY() );
+        }
     }
 
     private void showTeamChooser()
     {
-        // TODO Auto-generated method stub
+        if( competition.isRunning() )
+        {
+            SwingUtils.showErrorMessage(
+                getView(), "Cannot change teams until " +
+                    competition.getTeam().name + " has finished",
+                "Input Error" );
+            return;
+        }
+
+        List<RcTeam> teams = competition.getAvailableTeams();
+        ItemsListField<RcTeam> teamsField = new ItemsListField<>( "Teams",
+            teams, ( t ) -> t.name );
+        teamsField.setDecorator( new TeamsDecorator() );
+
+        OkDialogView okDialog = new OkDialogView( teamButton,
+            teamsField.getView(), ModalityType.DOCUMENT_MODAL,
+            OkDialogButtons.OK_CANCEL );
+
+        okDialog.addOkListener( ( e ) -> {
+            if( e.getItem() )
+            {
+                RcTeam t = teamsField.getValue();
+
+                if( t != null )
+                {
+                    setTeamData( t );
+                }
+            }
+        } );
+
+        JDialog dialog = okDialog.getView();
+
+        dialog.setTitle( "Choose Next Team" );
+        dialog.setSize( 300, 400 );
+        dialog.validate();
+        dialog.setLocationRelativeTo( teamButton );
+        dialog.setVisible( true );
+
     }
 
     /***************************************************************************
@@ -360,6 +431,9 @@ public class RcCompetitionView implements IView<JFrame>
         }
     }
 
+    /**
+     * 
+     */
     private void reset()
     {
         competition.reset();
@@ -379,6 +453,16 @@ public class RcCompetitionView implements IView<JFrame>
             teamButton.setText( "Select Team" );
             teamButton.setEnabled( true );
         }
+    }
+
+    private void unloadTeam()
+    {
+        // TODO Auto-generated method stub
+    }
+
+    private void setTeamData( RcTeam t )
+    {
+        // TODO Auto-generated method stub
     }
 
     /***************************************************************************
@@ -402,6 +486,20 @@ public class RcCompetitionView implements IView<JFrame>
                 UiUtils.setFullScreen( false, view.frame );
                 view.frame.setVisible( false );
             }
+        }
+    }
+
+    private static final class TeamsDecorator
+        implements IListCellLabelDecorator<RcTeam>
+    {
+        /**  */
+        private final Font f = UiUtils.getTextFont( 36 );
+
+        @Override
+        public void decorate( JLabel label, JList<? extends RcTeam> list,
+            RcTeam value, int index, boolean isSelected, boolean cellHasFocus )
+        {
+            label.setFont( f );
         }
     }
 }
