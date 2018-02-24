@@ -543,9 +543,9 @@ public class TrackCompetition
      **************************************************************************/
     private void setOutputUninitialized()
     {
-        pins.redPin.setState( track.redDefaultLevel.inverse().state );
-        pins.greenPin.setState( track.greenDefaultLevel.state );
-        pins.bluePin.setState( track.blueDefaultLevel.inverse().state );
+        pins.redPin.setState( track.redPin.level.inverse().state );
+        pins.greenPin.setState( track.greenPin.level.state );
+        pins.bluePin.setState( track.bluePin.level.inverse().state );
     }
 
     /***************************************************************************
@@ -553,9 +553,9 @@ public class TrackCompetition
      **************************************************************************/
     private void setOutputInitPaused()
     {
-        pins.redPin.setState( track.redDefaultLevel.inverse().state );
-        pins.greenPin.setState( track.greenDefaultLevel.state );
-        pins.bluePin.setState( track.blueDefaultLevel.state );
+        pins.redPin.setState( track.redPin.level.inverse().state );
+        pins.greenPin.setState( track.greenPin.level.state );
+        pins.bluePin.setState( track.bluePin.level.state );
     }
 
     /***************************************************************************
@@ -563,9 +563,9 @@ public class TrackCompetition
      **************************************************************************/
     private void setOutputWaiting()
     {
-        pins.redPin.setState( track.redDefaultLevel.inverse().state );
-        pins.greenPin.setState( track.greenDefaultLevel.inverse().state );
-        pins.bluePin.setState( track.blueDefaultLevel.inverse().state );
+        pins.redPin.setState( track.redPin.level.inverse().state );
+        pins.greenPin.setState( track.greenPin.level.inverse().state );
+        pins.bluePin.setState( track.bluePin.level.inverse().state );
     }
 
     /***************************************************************************
@@ -573,9 +573,9 @@ public class TrackCompetition
      **************************************************************************/
     private void setOutputRunning()
     {
-        pins.redPin.setState( track.redDefaultLevel.state );
-        pins.greenPin.setState( track.greenDefaultLevel.inverse().state );
-        pins.bluePin.setState( track.blueDefaultLevel.state );
+        pins.redPin.setState( track.redPin.level.state );
+        pins.greenPin.setState( track.greenPin.level.inverse().state );
+        pins.bluePin.setState( track.bluePin.level.state );
     }
 
     /***************************************************************************
@@ -583,8 +583,8 @@ public class TrackCompetition
      **************************************************************************/
     private void setOutputFinished()
     {
-        pins.redPin.setState( track.redDefaultLevel.state );
-        pins.greenPin.setState( track.greenDefaultLevel.state );
-        pins.bluePin.setState( track.blueDefaultLevel.inverse().state );
+        pins.redPin.setState( track.redPin.level.state );
+        pins.greenPin.setState( track.greenPin.level.state );
+        pins.bluePin.setState( track.bluePin.level.inverse().state );
     }
 }

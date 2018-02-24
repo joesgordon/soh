@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionListener;
 import java.io.File;
 
@@ -12,6 +14,7 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.KeyStroke;
 
@@ -202,6 +205,11 @@ public class UiUtils
         acMap.put( actionName, action );
     }
 
+    /***************************************************************************
+     * @param comp
+     * @param key
+     * @param listener
+     **************************************************************************/
     public static void addHotKey( JComponent comp, KeyStroke key,
         ActionListener listener )
     {
@@ -214,6 +222,34 @@ public class UiUtils
         action.putValue( Action.ACCELERATOR_KEY, key );
         inMap.put( key, actionName );
         acMap.put( actionName, action );
+    }
+
+    /***************************************************************************
+     * @param fullscreen
+     **************************************************************************/
+    public static void setFullScreen( boolean fullscreen, JFrame frame )
+    {
+        // dialog.setAlwaysOnTop( fullscreen );
+
+        if( fullscreen )
+        {
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            GraphicsDevice device = ge.getDefaultScreenDevice();
+
+            if( device.isFullScreenSupported() && !"".isEmpty() )
+            {
+                device.setFullScreenWindow( frame );
+            }
+            else
+            {
+                frame.setBounds( ge.getMaximumWindowBounds() );
+            }
+        }
+        else
+        {
+            frame.setSize( 500, 500 );
+            frame.setLocation( 0, 0 );
+        }
     }
 
     /***************************************************************************

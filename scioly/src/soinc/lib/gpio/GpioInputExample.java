@@ -1,8 +1,8 @@
 package soinc.lib.gpio;
 //START SNIPPET: listen-gpio-snippet
 
-import org.jutils.task.ITask;
-import org.jutils.task.ITaskHandler;
+import org.jutils.task.IStatusTask;
+import org.jutils.task.ITaskStatusHandler;
 import org.jutils.task.TaskError;
 
 /*
@@ -48,13 +48,13 @@ import soinc.lib.data.Pi3GpioPin;
  * changes on the Raspberry Pi.
  * @author Robert Savage
  */
-public class GpioInputExample implements ITask
+public class GpioInputExample implements IStatusTask
 {
     /**
      * @param handler
      * @throws InterruptedException
      */
-    private static void doit( ITaskHandler handler )
+    private static void doit( ITaskStatusHandler handler )
     {
         handler.signalPercent( 0 );
         handler.signalPercent( -1 );
@@ -135,7 +135,7 @@ public class GpioInputExample implements ITask
      * {@inheritDoc}
      */
     @Override
-    public void run( ITaskHandler handler )
+    public void run( ITaskStatusHandler handler )
     {
         doit( handler );
     }

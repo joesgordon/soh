@@ -6,7 +6,7 @@ package soinc.lib.data;
 public class PinData
 {
     /**  */
-    public final Pi3Pin pinout;
+    public final Pi3HeaderPin pinout;
     /**  */
     public final Pi3GpioPin gpio;
     /**  */
@@ -21,7 +21,7 @@ public class PinData
     /***************************************************************************
      * @param pinout
      **************************************************************************/
-    public PinData( Pi3Pin pinout )
+    public PinData( Pi3HeaderPin pinout )
     {
         this.pinout = pinout;
         this.gpio = Pi3GpioPin.getPin( pinout );

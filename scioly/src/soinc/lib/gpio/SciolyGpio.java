@@ -11,6 +11,8 @@ import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 
 import soinc.lib.data.Pi3GpioPin;
+import soinc.lib.data.Pi3InputPin;
+import soinc.lib.data.Pi3OutputPin;
 import soinc.lib.data.PinLevel;
 import soinc.lib.data.PinResistance;
 
@@ -20,7 +22,7 @@ import soinc.lib.data.PinResistance;
 public class SciolyGpio
 {
     /**  */
-    public static boolean FAUX_CONNECT = true;
+    public static boolean FAUX_CONNECT = false;
 
     /**  */
     private static GpioController gpio;
@@ -95,6 +97,21 @@ public class SciolyGpio
     /***************************************************************************
      * @param gpio
      * @param pin
+     * @param shortName
+     * @param callback
+     * @return
+     **************************************************************************/
+    public static GpioPinDigitalInput provisionInputPin( GpioController gpio,
+        Pi3InputPin pin, String shortName, Runnable callback )
+    {
+        String name = shortName + ":" + pin.gpioPin.pin.pinout;
+        return provisionInputPin( gpio, pin.gpioPin, pin.resistance, name,
+            callback );
+    }
+
+    /***************************************************************************
+     * @param gpio
+     * @param pin
      * @param defaultLevel
      * @param name
      * @return
@@ -109,6 +126,19 @@ public class SciolyGpio
             PinPullResistance.OFF );
 
         return outputPin;
+    }
+
+    /***************************************************************************
+     * @param gpio
+     * @param pin
+     * @param shortName
+     * @return
+     **************************************************************************/
+    public static GpioPinDigitalOutput provisionOuputPin( GpioController gpio,
+        Pi3OutputPin pin, String shortName )
+    {
+        return provisionOuputPin( gpio, pin.gpioPin, pin.level,
+            shortName + ":" + pin.gpioPin.pin.pinout );
     }
 
     /***************************************************************************

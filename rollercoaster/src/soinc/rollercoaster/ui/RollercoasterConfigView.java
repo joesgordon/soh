@@ -16,7 +16,7 @@ import org.jutils.ui.model.IDataView;
 
 import soinc.rollercoaster.RollercoasterMain;
 import soinc.rollercoaster.data.RollercoasterConfig;
-import soinc.rollercoaster.data.RollercoasterUserData;
+import soinc.rollercoaster.data.RollercoasterOptions;
 
 /*******************************************************************************
  * 
@@ -52,7 +52,7 @@ public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
 
         this.view = createView();
 
-        OptionsSerializer<RollercoasterUserData> options = RollercoasterMain.getUserOptions();
+        OptionsSerializer<RollercoasterOptions> options = RollercoasterMain.getOptions();
 
         this.config = options.getOptions().config;
 

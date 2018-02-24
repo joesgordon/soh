@@ -3,9 +3,10 @@ package soinc.lib.data;
 import org.jutils.INamedItem;
 
 /*******************************************************************************
- * <a href="http://pi4j.com/pins/model-3b-rev1.html">Pin Numbering</a>
+ * The Pi's pins as enumerated by <a
+ * href="http://pi4j.com/pins/model-3b-rev1.html">Pin Numbering</a>.
  ******************************************************************************/
-public enum Pi3Pin implements INamedItem
+public enum Pi3HeaderPin implements INamedItem
 {
     PIN_01( 1, PinType.PWR_3V3, "3.3 V",
         "3v3 supply w/ up to ~500 mA current" ),
@@ -49,22 +50,25 @@ public enum Pi3Pin implements INamedItem
     PIN_39( 39, PinType.GROUND, "GND", "Ground plane" ),
     PIN_40( 40, PinType.GPIO, "GPIO 21", "PCM DOUT" );
 
-    /**  */
+    /** The header pin number. */
     public final int pinout;
-    /**  */
+    /** The type of pin. */
     public final PinType type;
-    /**  */
+    /** The non-unique name of the pin that describes the pin's function. */
     public final String name;
-    /**  */
+    /** Additional description or empty. */
     public final String description;
 
     /***************************************************************************
-     * @param pinout
-     * @param type
-     * @param name
-     * @param description
+     * Creates a new enumerated pin with the provided parameters.
+     * @param pinout the header pin number.
+     * @param type the type of pin.
+     * @param name the non-unique name of the pin that describes the pin's
+     * function.
+     * @param description any additional description or empty.
      **************************************************************************/
-    private Pi3Pin( int pinout, PinType type, String name, String description )
+    private Pi3HeaderPin( int pinout, PinType type, String name,
+        String description )
     {
         this.pinout = pinout;
         this.type = type;
@@ -73,7 +77,7 @@ public enum Pi3Pin implements INamedItem
     }
 
     /***************************************************************************
-     * 
+     * {@inheritDoc}
      **************************************************************************/
     @Override
     public String getName()

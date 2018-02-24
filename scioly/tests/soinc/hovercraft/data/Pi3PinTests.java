@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.junit.Assert;
 import org.junit.Test;
 
-import soinc.lib.data.Pi3Pin;
+import soinc.lib.data.Pi3HeaderPin;
 
 public class Pi3PinTests
 {
@@ -15,12 +15,12 @@ public class Pi3PinTests
     @Test
     public void ensureNoDuplicatePins()
     {
-        Pi3Pin [] pins = Pi3Pin.values();
-        ArrayList<Pi3Pin> pinList = new ArrayList<>( pins.length );
+        Pi3HeaderPin [] pins = Pi3HeaderPin.values();
+        ArrayList<Pi3HeaderPin> pinList = new ArrayList<>( pins.length );
 
-        for( Pi3Pin pin : pins )
+        for( Pi3HeaderPin pin : pins )
         {
-            Pi3Pin prevPin = containsPinout( pinList, pin.pinout );
+            Pi3HeaderPin prevPin = containsPinout( pinList, pin.pinout );
 
             if( prevPin != null )
             {
@@ -39,9 +39,9 @@ public class Pi3PinTests
      * @param pinout
      * @return
      **************************************************************************/
-    private static Pi3Pin containsPinout( ArrayList<Pi3Pin> pins, int pinout )
+    private static Pi3HeaderPin containsPinout( ArrayList<Pi3HeaderPin> pins, int pinout )
     {
-        for( Pi3Pin pin : pins )
+        for( Pi3HeaderPin pin : pins )
         {
             if( pin.pinout == pinout )
             {

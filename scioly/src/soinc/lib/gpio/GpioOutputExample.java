@@ -3,8 +3,9 @@ package soinc.lib.gpio;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jutils.task.ITask;
-import org.jutils.task.ITaskHandler;
+import org.jutils.concurrent.ITaskHandler;
+import org.jutils.task.IStatusTask;
+import org.jutils.task.ITaskStatusHandler;
 import org.jutils.task.TaskError;
 
 //START SNIPPET: control-gpio-snippet
@@ -51,9 +52,10 @@ import soinc.lib.data.Pi3GpioPin;
  * pin on the Raspberry Pi.
  * @author Robert Savage
  */
-public class GpioOutputExample implements ITask
+public class GpioOutputExample implements IStatusTask
 {
-    private static void doit( ITaskHandler handler ) throws InterruptedException
+    private static void doit( ITaskStatusHandler handler )
+        throws InterruptedException
     {
         handler.signalMessage( "<--Pi4J--> GPIO Control Example ... started." );
 
@@ -178,7 +180,7 @@ public class GpioOutputExample implements ITask
     }
 
     @Override
-    public void run( ITaskHandler handler )
+    public void run( ITaskStatusHandler handler )
     {
         try
         {

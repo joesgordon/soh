@@ -1,7 +1,5 @@
 package soinc.hovercraft.ui;
 
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -20,6 +18,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
 
 import org.jutils.IconConstants;
 import org.jutils.SwingUtils;
@@ -98,9 +97,6 @@ public class HovercraftFrameView implements IView<JFrame>
         OptionsSerializer<HovercraftOptions> options = HovercraftMain.getOptions();
 
         configView.setData( options.getOptions().config );
-
-        UiUtils.addHotKey( ( JComponent )frameView.getView().getContentPane(),
-            "F8", ( e ) -> showCompetition( competitionView == null ) );
     }
 
     /***************************************************************************
@@ -322,9 +318,16 @@ public class HovercraftFrameView implements IView<JFrame>
         JMenu menu = new JMenu( "Go" );
         Action action;
 
+        menu.setMnemonic( 'G' );
+
         action = new ActionAdapter( ( e ) -> showCompetition( true ),
             "Start Competition", HovercraftIcons.getHovercraft16() );
-        menu.add( action );
+        KeyStroke key = KeyStroke.getKeyStroke( "F8" );
+        action.putValue( Action.ACCELERATOR_KEY, key );
+        menu.add( action ).setMnemonic( 'S' );
+
+        UiUtils.addHotKey( ( JComponent )frameView.getView().getContentPane(),
+            "F8", ( e ) -> showCompetition( competitionView == null ) );
 
         return menu;
     }
@@ -362,6 +365,7 @@ public class HovercraftFrameView implements IView<JFrame>
                 this.competitionView = new CompetitionView( config, hc );
 
                 this.competitionFrame = new JFrame( "Competition" );
+                competitionFrame.setIconImages( getView().getIconImages() );
                 competitionFrame.setContentPane( competitionView.createView() );
                 competitionFrame.setDefaultCloseOperation(
                     JDialog.DO_NOTHING_ON_CLOSE );
@@ -397,34 +401,6 @@ public class HovercraftFrameView implements IView<JFrame>
 
             competitionFrame.dispose();
             competitionFrame = null;
-        }
-    }
-
-    /***************************************************************************
-     * @param fullscreen
-     **************************************************************************/
-    private void setFullScreen( boolean fullscreen )
-    {
-        // dialog.setAlwaysOnTop( fullscreen );
-
-        if( fullscreen )
-        {
-            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            GraphicsDevice device = ge.getDefaultScreenDevice();
-
-            if( device.isFullScreenSupported() && !"".isEmpty() )
-            {
-                device.setFullScreenWindow( this.competitionFrame );
-            }
-            else
-            {
-                competitionFrame.setBounds( ge.getMaximumWindowBounds() );
-            }
-        }
-        else
-        {
-            competitionFrame.setSize( 500, 500 );
-            competitionFrame.setLocationRelativeTo( getView() );
         }
     }
 
@@ -481,7 +457,7 @@ public class HovercraftFrameView implements IView<JFrame>
                 !view.competitionView.isRunning() )
             {
                 view.saveUserConfig();
-                view.setFullScreen( false );
+                UiUtils.setFullScreen( false, view.getView() );
                 view.competitionFrame.setVisible( false );
             }
         }

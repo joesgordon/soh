@@ -39,7 +39,7 @@ import soinc.lib.data.PinResistance;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class PinTestView implements IDataView<PinData>
+public class PinDataTestView implements IDataView<PinData>
 {
     /**  */
     private final JComponent view;
@@ -77,7 +77,7 @@ public class PinTestView implements IDataView<PinData>
     /***************************************************************************
      * @param isLeft
      **************************************************************************/
-    public PinTestView( boolean isLeft )
+    public PinDataTestView( boolean isLeft )
     {
         this.pinoutLabel = new JLabel();
         this.pinLabel = new JLabel();

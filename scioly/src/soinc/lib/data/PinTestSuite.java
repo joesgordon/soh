@@ -18,9 +18,9 @@ public class PinTestSuite
     {
         this.pins = new ArrayList<>();
 
-        Pi3Pin [] p3ps = Pi3Pin.values();
+        Pi3HeaderPin [] p3ps = Pi3HeaderPin.values();
 
-        for( Pi3Pin p3p : p3ps )
+        for( Pi3HeaderPin p3p : p3ps )
         {
             pins.add( new PinData( p3p ) );
         }

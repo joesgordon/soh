@@ -3,6 +3,9 @@ package soinc.rollercoaster.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import soinc.lib.data.Pi3InputPin;
+import soinc.lib.data.Pi3OutputPin;
+
 /*******************************************************************************
  * 
  ******************************************************************************/
@@ -20,6 +23,19 @@ public class RollercoasterConfig
     public int trialTimeout;
     /**  */
     public final List<String> teams;
+
+    /**  */
+    public Pi3InputPin timerAIn;
+    /**  */
+    public Pi3OutputPin timerAOut;
+    /**  */
+    public Pi3InputPin timerSIn;
+    /**  */
+    public Pi3OutputPin timerSOut;
+    /**  */
+    public Pi3InputPin timerDIn;
+    /**  */
+    public Pi3OutputPin timerDOut;
 
     /***************************************************************************
      * 

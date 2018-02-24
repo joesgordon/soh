@@ -25,7 +25,7 @@ import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.model.IDataView;
 
 import soinc.lib.SciolyIcons;
-import soinc.lib.data.Pi3Pin;
+import soinc.lib.data.Pi3HeaderPin;
 import soinc.lib.data.PinData;
 import soinc.lib.data.PinTestSuite;
 
@@ -37,7 +37,7 @@ public class PinTestSuiteView implements IDataView<PinTestSuite>
     /**  */
     private final JPanel view;
     /**  */
-    private final List<PinTestView> pinViews;
+    private final List<PinDataTestView> pinViews;
 
     /**  */
     private PinTestSuite suite;
@@ -60,7 +60,7 @@ public class PinTestSuiteView implements IDataView<PinTestSuite>
     {
         List<PinData> pins = new ArrayList<>();
 
-        for( Pi3Pin p : Pi3Pin.values() )
+        for( Pi3HeaderPin p : Pi3HeaderPin.values() )
         {
             pins.add( new PinData( p ) );
         }
@@ -71,14 +71,14 @@ public class PinTestSuiteView implements IDataView<PinTestSuite>
     /***************************************************************************
      * @return
      **************************************************************************/
-    private static List<PinTestView> createPinViews( List<PinData> pins )
+    private static List<PinDataTestView> createPinViews( List<PinData> pins )
     {
-        List<PinTestView> views = new ArrayList<>( pins.size() );
+        List<PinDataTestView> views = new ArrayList<>( pins.size() );
 
         for( int i = 0; i < pins.size(); i++ )
         {
             PinData pd = pins.get( i );
-            PinTestView view = new PinTestView( ( i % 2 ) == 0 );
+            PinDataTestView view = new PinDataTestView( ( i % 2 ) == 0 );
 
             view.setData( pd );
 
@@ -202,7 +202,7 @@ public class PinTestSuiteView implements IDataView<PinTestSuite>
         {
             int idx = pinIdxStart + i * 2;
             Border b = i == 0 ? topBorder : border;
-            PinTestView p = pinViews.get( idx );
+            PinDataTestView p = pinViews.get( idx );
             p.getView().setBorder( b );
             constraints = new GridBagConstraints( 0, row++, 1, 1, 1.0, 0.0,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -224,7 +224,7 @@ public class PinTestSuiteView implements IDataView<PinTestSuite>
 
     public void provisionAll()
     {
-        for( PinTestView ptv : pinViews )
+        for( PinDataTestView ptv : pinViews )
         {
             ptv.provision();
         }
@@ -232,7 +232,7 @@ public class PinTestSuiteView implements IDataView<PinTestSuite>
 
     public void unprovisionAll()
     {
-        for( PinTestView ptv : pinViews )
+        for( PinDataTestView ptv : pinViews )
         {
             ptv.unprovision();
         }
@@ -269,7 +269,7 @@ public class PinTestSuiteView implements IDataView<PinTestSuite>
             for( int i = 0; i < pinViews.size(); i++ )
             {
                 PinData pin = suite.pins.get( i );
-                PinTestView pv = pinViews.get( i );
+                PinDataTestView pv = pinViews.get( i );
 
                 if( pin.gpio != null )
                 {

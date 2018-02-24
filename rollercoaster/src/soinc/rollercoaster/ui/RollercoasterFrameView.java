@@ -1,19 +1,32 @@
 package soinc.rollercoaster.ui;
 
+import java.awt.event.ActionListener;
+
 import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
 
 import org.jutils.IconConstants;
+import org.jutils.SwingUtils;
+import org.jutils.io.LogUtils;
+import org.jutils.io.options.OptionsSerializer;
 import org.jutils.ui.StandardFrameView;
 import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.model.IView;
 
 import soinc.lib.UiUtils;
+import soinc.lib.gpio.SciolyGpio;
 import soinc.rollercoaster.RollercoasterIcons;
+import soinc.rollercoaster.RollercoasterMain;
+import soinc.rollercoaster.data.RcCompetition;
+import soinc.rollercoaster.data.RollercoasterOptions;
 
 /*******************************************************************************
  *
@@ -25,6 +38,12 @@ public class RollercoasterFrameView implements IView<JFrame>
     /**  */
     private final RollercoasterConfigView configView;
 
+    /**  */
+    private final JCheckBoxMenuItem fauxGpioMenuItem;
+
+    /**  */
+    private RcCompetitionView competitionView;
+
     /***************************************************************************
      * 
      **************************************************************************/
@@ -32,6 +51,8 @@ public class RollercoasterFrameView implements IView<JFrame>
     {
         this.view = new StandardFrameView();
         this.configView = new RollercoasterConfigView();
+        this.fauxGpioMenuItem = createMockGpioMenuItem();
+        this.competitionView = null;
 
         createMenubar( view.getMenuBar(), view.getFileMenu() );
 
@@ -41,6 +62,31 @@ public class RollercoasterFrameView implements IView<JFrame>
         view.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         view.setSize( 500, 500 );
         view.setTitle( "Roller Coaster" );
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    private JCheckBoxMenuItem createMockGpioMenuItem()
+    {
+        JCheckBoxMenuItem item = new JCheckBoxMenuItem( "Mock GPIO" );
+        ActionListener listener = ( e ) -> {
+            SciolyGpio.FAUX_CONNECT = !SciolyGpio.FAUX_CONNECT;
+            fauxGpioMenuItem.setSelected( SciolyGpio.FAUX_CONNECT );
+            OptionsSerializer<RollercoasterOptions> options = RollercoasterMain.getOptions();
+
+            options.getOptions().useFauxGpio = SciolyGpio.FAUX_CONNECT;
+            options.write();
+            // LogUtils.printDebug( "Faux connect: %s", SohGpio.FAUX_CONNECT );
+        };
+        // Icon icon = IconConstants.getIcon( IconConstants.EXPORT_16 );
+        Icon icon = null;
+        Action action = new ActionAdapter( listener, "Mock GPIO", icon );
+
+        item.setAction( action );
+        item.setSelected( SciolyGpio.FAUX_CONNECT );
+
+        return item;
     }
 
     /***************************************************************************
@@ -62,6 +108,8 @@ public class RollercoasterFrameView implements IView<JFrame>
 
         fileMenu.add( new JMenuItem( createTestSuiteAction() ), row++ );
         fileMenu.add( new JSeparator(), row++ );
+        fileMenu.add( fauxGpioMenuItem, row++ );
+        fileMenu.add( new JSeparator(), row++ );
     }
 
     /***************************************************************************
@@ -77,9 +125,14 @@ public class RollercoasterFrameView implements IView<JFrame>
 
         action = new ActionAdapter( ( e ) -> showCompetition( true ),
             "Start Competition", RollercoasterIcons.getRollercoaster16() );
+        KeyStroke key = KeyStroke.getKeyStroke( "F8" );
+        action.putValue( Action.ACCELERATOR_KEY, key );
         item = menu.add( action );
 
         item.setMnemonic( 'S' );
+
+        UiUtils.addHotKey( ( JComponent )getView().getContentPane(), "F8",
+            ( e ) -> showCompetition( competitionView == null ) );
 
         return menu;
     }
@@ -89,56 +142,45 @@ public class RollercoasterFrameView implements IView<JFrame>
      **************************************************************************/
     private void showCompetition( boolean show )
     {
-        // fauxGpioMenuItem.setEnabled( false );
-        //
-        // HoverConfig config = saveUserConfig();
-        //
-        // if( show && competitionView == null )
-        // {
-        // try
-        // {
-        // HovercraftCompetition hc = HovercraftCompetition.connect(
-        // config );
-        //
-        // this.competitionView = new CompetitionView( config, hc );
-        //
-        // this.competitionFrame = new JFrame( "Competition" );
-        // competitionFrame.setContentPane( competitionView.createView() );
-        // competitionFrame.setDefaultCloseOperation(
-        // JDialog.DO_NOTHING_ON_CLOSE );
-        // competitionFrame.addWindowListener(
-        // new SohDialogListener( this ) );
-        // competitionFrame.setUndecorated( true );
-        // competitionFrame.setSize( getView().getWidth(),
-        // getView().getHeight() );
-        //
-        // competitionFrame.validate();
-        // competitionFrame.setVisible( true );
-        //
-        // UiUtils.addHotKey(
-        // ( JComponent )competitionFrame.getContentPane(), "F8",
-        // ( e ) -> showCompetition( this.competitionView == null ) );
-        //
-        // // setFullScreen( true );
-        // }
-        // catch( IllegalStateException ex )
-        // {
-        // SwingUtils.showErrorMessage( getView(), "Setup Error",
-        // "Pi4j library was not found" );
-        // return;
-        // }
-        // }
-        // else if( !show && competitionView != null )
-        // {
-        // HovercraftCompetition.disconnect();
-        //
-        // competitionView = null;
-        //
-        // // setFullScreen( false );
-        //
-        // competitionFrame.dispose();
-        // competitionFrame = null;
-        // }
+        fauxGpioMenuItem.setEnabled( false );
+
+        LogUtils.printDebug( "showCompetition(%s)", show );
+
+        OptionsSerializer<RollercoasterOptions> userio = RollercoasterMain.getOptions();
+        RollercoasterOptions options = userio.getOptions();
+
+        if( show && competitionView == null )
+        {
+            try
+            {
+                RcCompetition competition = new RcCompetition( options.config );
+
+                competition.connect();
+
+                this.competitionView = new RcCompetitionView( competition,
+                    getView().getIconImages() );
+
+                JFrame frame = competitionView.getView();
+
+                UiUtils.addHotKey( ( JComponent )frame.getContentPane(), "F8",
+                    ( e ) -> showCompetition( this.competitionView == null ) );
+
+                // setFullScreen( true );
+
+                competitionView.setVisible( true );
+            }
+            catch( IllegalStateException ex )
+            {
+                SwingUtils.showErrorMessage( getView(), "Setup Error",
+                    "Pi4j library was not found" );
+                return;
+            }
+        }
+        else if( !show && competitionView != null )
+        {
+            competitionView.setVisible( false );
+            competitionView = null;
+        }
     }
 
     /***************************************************************************

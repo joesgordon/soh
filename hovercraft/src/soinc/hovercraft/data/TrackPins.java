@@ -23,38 +23,33 @@ public class TrackPins
     /**  */
     public final GpioPinDigitalOutput bluePin;
 
-    /**
+    /***************************************************************************
      * @param gpio
      * @param config
      * @param start
      * @param stop
-     */
+     **************************************************************************/
     public TrackPins( GpioController gpio, TrackCfg config, Runnable start,
         Runnable stop )
     {
         this.config = config;
 
         this.startPin = SciolyGpio.provisionInputPin( gpio, config.startPin,
-            config.startRes, "Track Start:" + config.startPin.pin.pinout,
-            start );
+            "Track Start", start );
         this.stopPin = SciolyGpio.provisionInputPin( gpio, config.stopPin,
-            config.startRes, "Track Stop:" + config.stopPin.pin.pinout, stop );
+            "Track Stop", stop );
 
         this.redPin = SciolyGpio.provisionOuputPin( gpio, config.redPin,
-            config.redDefaultLevel, "Track Red:" + config.redPin.pin.pinout );
-
+            "Track Red" );
         this.greenPin = SciolyGpio.provisionOuputPin( gpio, config.greenPin,
-            config.greenDefaultLevel,
-            "Track Green:" + config.greenPin.pin.pinout );
-
+            "Track Green" );
         this.bluePin = SciolyGpio.provisionOuputPin( gpio, config.bluePin,
-            config.blueDefaultLevel,
-            "Track Blue:" + config.bluePin.pin.pinout );
+            "Track Blue" );
     }
 
-    /**
+    /***************************************************************************
      * @param gpio
-     */
+     **************************************************************************/
     public void unprovisionAll( GpioController gpio )
     {
         gpio.unprovisionPin( startPin );

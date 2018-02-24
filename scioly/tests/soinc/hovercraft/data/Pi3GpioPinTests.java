@@ -8,7 +8,7 @@ import org.junit.Test;
 import com.pi4j.io.gpio.Pin;
 
 import soinc.lib.data.Pi3GpioPin;
-import soinc.lib.data.Pi3Pin;
+import soinc.lib.data.Pi3HeaderPin;
 
 public class Pi3GpioPinTests
 {
@@ -84,7 +84,7 @@ public class Pi3GpioPinTests
      * @return
      **************************************************************************/
     private static Pi3GpioPin containsPin( ArrayList<Pi3GpioPin> pins,
-        Pi3Pin pin )
+        Pi3HeaderPin pin )
     {
         for( Pi3GpioPin p : pins )
         {

@@ -8,7 +8,7 @@ import org.jutils.io.options.IOptionsCreator;
 import org.jutils.io.options.OptionsSerializer;
 import org.jutils.ui.app.FrameRunner;
 
-import soinc.rollercoaster.data.RollercoasterUserData;
+import soinc.rollercoaster.data.RollercoasterOptions;
 
 /*******************************************************************************
  * 
@@ -18,9 +18,11 @@ public class RollercoasterMain
     /**  */
     private static final File USERS_FILE = IOUtils.getUsersFile(
         ".ScienceOlympiad", "rollercoaster.xml" );
+    /**  */
+    public static final File RELAY_FILE = IOUtils.getInstallFile( "relay" );
 
     /**  */
-    private static OptionsSerializer<RollercoasterUserData> userio;
+    private static OptionsSerializer<RollercoasterOptions> userio;
 
     /***************************************************************************
      * @param args ignored
@@ -33,7 +35,7 @@ public class RollercoasterMain
     /***************************************************************************
      * @return
      **************************************************************************/
-    public static OptionsSerializer<RollercoasterUserData> getUserOptions()
+    public static OptionsSerializer<RollercoasterOptions> getOptions()
     {
         if( userio == null )
         {
@@ -48,24 +50,24 @@ public class RollercoasterMain
      * 
      **************************************************************************/
     private static final class RudCreator
-        implements IOptionsCreator<RollercoasterUserData>
+        implements IOptionsCreator<RollercoasterOptions>
     {
         /**
          * {@inheritDoc}
          */
         @Override
-        public RollercoasterUserData createDefaultOptions()
+        public RollercoasterOptions createDefaultOptions()
         {
-            return new RollercoasterUserData();
+            return new RollercoasterOptions();
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public RollercoasterUserData initialize( RollercoasterUserData data )
+        public RollercoasterOptions initialize( RollercoasterOptions data )
         {
-            return new RollercoasterUserData( data );
+            return new RollercoasterOptions( data );
         }
 
         /**
