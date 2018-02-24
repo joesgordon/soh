@@ -8,7 +8,11 @@ import org.jutils.io.options.IOptionsCreator;
 import org.jutils.io.options.OptionsSerializer;
 import org.jutils.ui.app.FrameRunner;
 
+import soinc.lib.gpio.SciolyGpio;
 import soinc.rollercoaster.data.RollercoasterOptions;
+import soinc.rollercoaster.relay.IRelay;
+import soinc.rollercoaster.relay.MockRelay;
+import soinc.rollercoaster.relay.Relay;
 
 /*******************************************************************************
  * 
@@ -18,8 +22,6 @@ public class RollercoasterMain
     /**  */
     private static final File USERS_FILE = IOUtils.getUsersFile(
         ".ScienceOlympiad", "rollercoaster.xml" );
-    /**  */
-    public static final File RELAY_FILE = IOUtils.getInstallFile( "relay" );
 
     /**  */
     private static OptionsSerializer<RollercoasterOptions> userio;
@@ -30,6 +32,28 @@ public class RollercoasterMain
     public static void main( String [] args )
     {
         FrameRunner.invokeLater( new RollercoasterApp() );
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    public static IRelay getRelay()
+    {
+        return getRelay( SciolyGpio.FAUX_CONNECT );
+    }
+
+    /***************************************************************************
+     * @param mock
+     * @return
+     **************************************************************************/
+    public static IRelay getRelay( boolean mock )
+    {
+        if( mock )
+        {
+            return new MockRelay();
+        }
+
+        return new Relay();
     }
 
     /***************************************************************************

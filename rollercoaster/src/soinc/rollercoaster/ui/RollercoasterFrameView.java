@@ -21,6 +21,8 @@ import org.jutils.ui.StandardFrameView;
 import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.model.IView;
 
+import com.pi4j.io.gpio.GpioController;
+
 import soinc.lib.UiUtils;
 import soinc.lib.gpio.SciolyGpio;
 import soinc.rollercoaster.RollercoasterIcons;
@@ -39,7 +41,7 @@ public class RollercoasterFrameView implements IView<JFrame>
     private final RollercoasterConfigView configView;
 
     /**  */
-    private final JCheckBoxMenuItem fauxGpioMenuItem;
+    private final JCheckBoxMenuItem mockIoMenuItem;
 
     /**  */
     private RcCompetitionView competitionView;
@@ -51,7 +53,7 @@ public class RollercoasterFrameView implements IView<JFrame>
     {
         this.view = new StandardFrameView();
         this.configView = new RollercoasterConfigView();
-        this.fauxGpioMenuItem = createMockGpioMenuItem();
+        this.mockIoMenuItem = createMockGpioMenuItem();
         this.competitionView = null;
 
         createMenubar( view.getMenuBar(), view.getFileMenu() );
@@ -60,7 +62,7 @@ public class RollercoasterFrameView implements IView<JFrame>
         view.getView().setIconImages(
             RollercoasterIcons.getRollercoasterIcons() );
         view.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-        view.setSize( 500, 500 );
+        view.setSize( 1280, 800 );
         view.setTitle( "Roller Coaster" );
     }
 
@@ -69,10 +71,13 @@ public class RollercoasterFrameView implements IView<JFrame>
      **************************************************************************/
     private JCheckBoxMenuItem createMockGpioMenuItem()
     {
-        JCheckBoxMenuItem item = new JCheckBoxMenuItem( "Mock GPIO" );
+        boolean mockIo = RollercoasterMain.getOptions().getOptions().useFauxGpio;
+        SciolyGpio.FAUX_CONNECT = mockIo;
+        JCheckBoxMenuItem item = new JCheckBoxMenuItem( "Mock I/O" );
+        item.setSelected( SciolyGpio.FAUX_CONNECT );
         ActionListener listener = ( e ) -> {
             SciolyGpio.FAUX_CONNECT = !SciolyGpio.FAUX_CONNECT;
-            fauxGpioMenuItem.setSelected( SciolyGpio.FAUX_CONNECT );
+            mockIoMenuItem.setSelected( SciolyGpio.FAUX_CONNECT );
             OptionsSerializer<RollercoasterOptions> options = RollercoasterMain.getOptions();
 
             options.getOptions().useFauxGpio = SciolyGpio.FAUX_CONNECT;
@@ -108,7 +113,7 @@ public class RollercoasterFrameView implements IView<JFrame>
 
         fileMenu.add( new JMenuItem( createTestSuiteAction() ), row++ );
         fileMenu.add( new JSeparator(), row++ );
-        fileMenu.add( fauxGpioMenuItem, row++ );
+        fileMenu.add( mockIoMenuItem, row++ );
         fileMenu.add( new JSeparator(), row++ );
     }
 
@@ -142,7 +147,7 @@ public class RollercoasterFrameView implements IView<JFrame>
      **************************************************************************/
     private void showCompetition( boolean show )
     {
-        fauxGpioMenuItem.setEnabled( false );
+        mockIoMenuItem.setEnabled( false );
 
         LogUtils.printDebug( "showCompetition(%s)", show );
 
@@ -153,12 +158,14 @@ public class RollercoasterFrameView implements IView<JFrame>
         {
             try
             {
-                RcCompetition competition = new RcCompetition( options.config );
+                GpioController gpio = SciolyGpio.startup();
+                RcCompetition competition = new RcCompetition( options.config,
+                    gpio );
 
                 competition.connect();
 
                 this.competitionView = new RcCompetitionView( competition,
-                    getView().getIconImages() );
+                    getView().getIconImages(), getView().getSize() );
 
                 JFrame frame = competitionView.getView();
 

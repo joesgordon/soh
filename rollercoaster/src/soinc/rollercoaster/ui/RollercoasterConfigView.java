@@ -20,6 +20,7 @@ import org.jutils.ui.model.IDataView;
 import soinc.lib.ui.Pi3InputPinField;
 import soinc.lib.ui.Pi3OutputPinField;
 import soinc.rollercoaster.RollercoasterMain;
+import soinc.rollercoaster.data.RcTeam;
 import soinc.rollercoaster.data.RollercoasterConfig;
 import soinc.rollercoaster.data.RollercoasterOptions;
 
@@ -49,7 +50,7 @@ public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
     /**  */
     private final Pi3OutputPinField timerDOutField;
     /**  */
-    private final ListView<String> teamsView;
+    private final ListView<RcTeam> teamsView;
 
     /**  */
     private RollercoasterConfig config;
@@ -87,6 +88,14 @@ public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
         periodTimeField.setUpdater( ( d ) -> config.periodTime = d );
         targetTimeField.setUpdater( ( d ) -> config.targetTime = d );
         trailTimeoutField.setUpdater( ( d ) -> config.trialTimeout = d );
+
+        timerAInField.setUpdater( ( d ) -> config.timerAIn.set( d ) );
+        timerSInField.setUpdater( ( d ) -> config.timerSIn.set( d ) );
+        timerDInField.setUpdater( ( d ) -> config.timerDIn.set( d ) );
+
+        timerAOutField.setUpdater( ( d ) -> config.timerAOut.set( d ) );
+        timerSOutField.setUpdater( ( d ) -> config.timerSOut.set( d ) );
+        timerDOutField.setUpdater( ( d ) -> config.timerDOut.set( d ) );
     }
 
     /***************************************************************************
@@ -181,33 +190,34 @@ public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
     /***************************************************************************
      * 
      **************************************************************************/
-    private static final class TeamsModel implements IItemListModel<String>
+    private static final class TeamsModel implements IItemListModel<RcTeam>
     {
         /**
          * {@inheritDoc}
          */
         @Override
-        public String getTitle( String item )
+        public String getTitle( RcTeam team )
         {
-            return item;
+            return team.name;
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public String promptForNew( ListView<String> view )
+        public RcTeam promptForNew( ListView<RcTeam> view )
         {
-            List<String> teams = view.getData();
+            List<RcTeam> teams = view.getData();
             String name = view.promptForName( "Team" );
+            RcTeam team = null;
 
             if( name != null )
             {
                 name = name.toUpperCase();
 
-                for( String t : teams )
+                for( RcTeam t : teams )
                 {
-                    if( t.equalsIgnoreCase( name ) )
+                    if( t.name.equalsIgnoreCase( name ) )
                     {
                         Window w = SwingUtils.getComponentsWindow(
                             view.getView() );
@@ -217,9 +227,11 @@ public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
                         break;
                     }
                 }
+
+                team = new RcTeam( name );
             }
 
-            return name;
+            return team;
         }
     }
 }

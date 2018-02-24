@@ -40,7 +40,7 @@ import soinc.hovercraft.data.HoverConfig;
 import soinc.hovercraft.data.HovercraftOptions;
 import soinc.hovercraft.tasks.HovercraftCompetition;
 import soinc.hovercraft.ui.cfg.HoverConfigView;
-import soinc.hovercraft.ui.live.CompetitionView;
+import soinc.hovercraft.ui.live.HcCompetitionView;
 import soinc.lib.UiUtils;
 import soinc.lib.gpio.GpioInputExample;
 import soinc.lib.gpio.GpioOutputExample;
@@ -66,7 +66,7 @@ public class HovercraftFrameView implements IView<JFrame>
     private final Action saveAction;
 
     /**  */
-    private CompetitionView competitionView;
+    private HcCompetitionView competitionView;
     /**  */
     private JFrame competitionFrame;
 
@@ -362,7 +362,7 @@ public class HovercraftFrameView implements IView<JFrame>
                 HovercraftCompetition hc = HovercraftCompetition.connect(
                     config );
 
-                this.competitionView = new CompetitionView( config, hc );
+                this.competitionView = new HcCompetitionView( config, hc );
 
                 this.competitionFrame = new JFrame( "Competition" );
                 competitionFrame.setIconImages( getView().getIconImages() );

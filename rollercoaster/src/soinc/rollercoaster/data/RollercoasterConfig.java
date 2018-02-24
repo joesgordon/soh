@@ -25,7 +25,7 @@ public class RollercoasterConfig
     /**  */
     public int trialTimeout;
     /**  */
-    public final List<String> teams;
+    public final List<RcTeam> teams;
 
     /**  */
     public final Pi3InputPin timerAIn;

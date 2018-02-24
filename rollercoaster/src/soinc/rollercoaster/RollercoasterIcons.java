@@ -7,6 +7,8 @@ import javax.swing.Icon;
 
 import org.jutils.io.IconLoader;
 
+import soinc.lib.SciolyIcons;
+
 /*******************************************************************************
  * 
  ******************************************************************************/
@@ -37,5 +39,14 @@ public class RollercoasterIcons
     public static Icon getRollercoaster16()
     {
         return loader.getIcon( "rc_016.png" );
+    }
+
+    public static Icon getBannerImage()
+    {
+        Image img = loader.getImage( "header.png" );
+        int w = 1200;
+        float scale = w / ( float )img.getWidth( null );
+        int h = Math.round( img.getHeight( null ) * scale );
+        return SciolyIcons.getScaledIcon( img, w, h );
     }
 }

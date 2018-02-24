@@ -24,7 +24,7 @@ import soinc.lib.UiUtils;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class CompetitionView implements IView<JComponent>
+public class HcCompetitionView implements IView<JComponent>
 {
     /**  */
     private final JPanel view;
@@ -36,7 +36,7 @@ public class CompetitionView implements IView<JComponent>
     /***************************************************************************
      * 
      **************************************************************************/
-    public CompetitionView( HoverConfig config, HovercraftCompetition hc )
+    public HcCompetitionView( HoverConfig config, HovercraftCompetition hc )
     {
         this.track1View = new TrackView( "Track 1", config, hc.track1 );
         this.track2View = new TrackView( "Track 2", config, hc.track2 );

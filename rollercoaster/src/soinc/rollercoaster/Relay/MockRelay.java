@@ -3,42 +3,70 @@ package soinc.rollercoaster.relay;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public interface IRelay
+public class MockRelay implements IRelay
 {
-    /***************************************************************************
-     * @return
-     **************************************************************************/
-    public int getRelayCount();
+    private final boolean [] relays;
+
+    public MockRelay()
+    {
+        this.relays = new boolean[Relay.RELAY_COUNT];
+    }
 
     /***************************************************************************
-     * @param index
-     * @return
+     * {@inheritDoc}
      **************************************************************************/
-    public boolean isRelayOn( int index );
+    @Override
+    public int getRelayCount()
+    {
+        return relays.length;
+    }
 
     /***************************************************************************
-     * @param index
+     * {@inheritDoc}
      **************************************************************************/
-    public void turnRelayOn( int index );
+    @Override
+    public boolean isRelayOn( int index )
+    {
+        return relays[index];
+    }
 
     /***************************************************************************
-     * @param index
+     * {@inheritDoc}
      **************************************************************************/
-    public void turnRelayOff( int index );
+    @Override
+    public void turnRelayOn( int index )
+    {
+    }
 
     /***************************************************************************
-     * @param index
-     * @param isOn
+     * {@inheritDoc}
      **************************************************************************/
-    public void setRelay( int index, boolean isOn );
+    @Override
+    public void turnRelayOff( int index )
+    {
+    }
 
     /***************************************************************************
-     * 
+     * {@inheritDoc}
      **************************************************************************/
-    public void turnAllOn();
+    @Override
+    public void setRelay( int index, boolean isOn )
+    {
+    }
 
     /***************************************************************************
-     * 
+     * {@inheritDoc}
      **************************************************************************/
-    public void turnAllOff();
+    @Override
+    public void turnAllOn()
+    {
+    }
+
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
+    @Override
+    public void turnAllOff()
+    {
+    }
 }

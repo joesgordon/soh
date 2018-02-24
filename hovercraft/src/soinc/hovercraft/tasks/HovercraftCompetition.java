@@ -5,6 +5,9 @@ import com.pi4j.io.gpio.GpioController;
 import soinc.hovercraft.data.HoverConfig;
 import soinc.lib.gpio.SciolyGpio;
 
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 public class HovercraftCompetition
 {
     /**  */
@@ -15,6 +18,10 @@ public class HovercraftCompetition
     /**  */
     public final TrackCompetition track2;
 
+    /***************************************************************************
+     * @param track1
+     * @param track2
+     **************************************************************************/
     public HovercraftCompetition( TrackCompetition track1,
         TrackCompetition track2 )
     {
@@ -22,6 +29,9 @@ public class HovercraftCompetition
         this.track2 = track2;
     }
 
+    /***************************************************************************
+     * @param gpio
+     **************************************************************************/
     public void unprovisionAll( GpioController gpio )
     {
         track1.unprovisionAll( gpio );
