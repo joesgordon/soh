@@ -268,7 +268,6 @@ public class RcCompetitionView implements IView<JFrame>
         dialog.validate();
         dialog.setLocationRelativeTo( teamButton );
         dialog.setVisible( true );
-
     }
 
     /***************************************************************************

@@ -15,7 +15,6 @@ import javax.swing.KeyStroke;
 
 import org.jutils.IconConstants;
 import org.jutils.SwingUtils;
-import org.jutils.io.LogUtils;
 import org.jutils.io.options.OptionsSerializer;
 import org.jutils.ui.StandardFrameView;
 import org.jutils.ui.event.ActionAdapter;
@@ -149,10 +148,11 @@ public class RollercoasterFrameView implements IView<JFrame>
     {
         mockIoMenuItem.setEnabled( false );
 
-        LogUtils.printDebug( "showCompetition(%s)", show );
+        // LogUtils.printDebug( "showCompetition(%s)", show );
 
         OptionsSerializer<RollercoasterOptions> userio = RollercoasterMain.getOptions();
         RollercoasterOptions options = userio.getOptions();
+        userio.write();
 
         if( show && competitionView == null )
         {
