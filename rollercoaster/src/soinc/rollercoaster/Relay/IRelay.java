@@ -1,4 +1,4 @@
-package soinc.rollercoaster.Relay;
+package soinc.rollercoaster.relay;
 
 /**
  * 

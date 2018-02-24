@@ -133,7 +133,8 @@ public class Pi3GpioPinField implements IDataFormField<Pi3GpioPin>
         @Override
         public String getDescription( Pi3GpioPin item )
         {
-            return "Pin " + item.pin.pinout + " (" + item.getName() + ")";
+            return item == null ? ""
+                : "Pin " + item.pin.pinout + " (" + item.getName() + ")";
         }
     }
 }

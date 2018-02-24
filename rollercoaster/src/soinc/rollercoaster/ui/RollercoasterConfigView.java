@@ -1,5 +1,8 @@
 package soinc.rollercoaster.ui;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Window;
 import java.util.List;
 
@@ -14,6 +17,8 @@ import org.jutils.ui.TitleView;
 import org.jutils.ui.fields.IntegerFormField;
 import org.jutils.ui.model.IDataView;
 
+import soinc.lib.ui.Pi3InputPinField;
+import soinc.lib.ui.Pi3OutputPinField;
 import soinc.rollercoaster.RollercoasterMain;
 import soinc.rollercoaster.data.RollercoasterConfig;
 import soinc.rollercoaster.data.RollercoasterOptions;
@@ -32,6 +37,18 @@ public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
     /**  */
     private final IntegerFormField trailTimeoutField;
     /**  */
+    private final Pi3InputPinField timerAInField;
+    /**  */
+    private final Pi3InputPinField timerSInField;
+    /**  */
+    private final Pi3InputPinField timerDInField;
+    /**  */
+    private final Pi3OutputPinField timerAOutField;
+    /**  */
+    private final Pi3OutputPinField timerSOutField;
+    /**  */
+    private final Pi3OutputPinField timerDOutField;
+    /**  */
     private final ListView<String> teamsView;
 
     /**  */
@@ -43,11 +60,20 @@ public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
     public RollercoasterConfigView()
     {
         this.periodTimeField = new IntegerFormField( "Period Time", "seconds",
-            10, 60 * 60 );
-        this.targetTimeField = new IntegerFormField( "TargetTime", "seconds",
+            8, 10, 60 * 60 );
+        this.targetTimeField = new IntegerFormField( "TargetTime", "seconds", 8,
             20, 45 );
         this.trailTimeoutField = new IntegerFormField( "Trial Timeout",
-            "seconds", 10, 2 * 60 );
+            "seconds", 8, 10, 2 * 60 );
+
+        this.timerAInField = new Pi3InputPinField( "Timer A Input" );
+        this.timerSInField = new Pi3InputPinField( "Timer B Input" );
+        this.timerDInField = new Pi3InputPinField( "Timer C Input" );
+
+        this.timerAOutField = new Pi3OutputPinField( "Timer A Output" );
+        this.timerSOutField = new Pi3OutputPinField( "Timer B Output" );
+        this.timerDOutField = new Pi3OutputPinField( "Timer C Output" );
+
         this.teamsView = new ListView<>( new TeamsModel() );
 
         this.view = createView();
@@ -68,13 +94,45 @@ public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
      **************************************************************************/
     private JPanel createView()
     {
-        StandardFormView form = new StandardFormView();
+        JPanel panel = new JPanel( new GridBagLayout() );
+        GridBagConstraints constraints;
+
+        int pad = StandardFormView.DEFAULT_FORM_MARGIN;
+
+        constraints = new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0,
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+            new Insets( 0, 0, 0, 0 ), 0, 0 );
+        panel.add( createForm(), constraints );
+
         TitleView titleView = new TitleView( "Teams", teamsView.getView() );
+
+        constraints = new GridBagConstraints( 1, 0, 1, 1, 1.0, 1.0,
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+            new Insets( pad, 0, pad, pad ), 0, 0 );
+        panel.add( titleView.getView(), constraints );
+
+        return panel;
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    private JPanel createForm()
+    {
+        StandardFormView form = new StandardFormView();
 
         form.addField( periodTimeField );
         form.addField( trailTimeoutField );
         form.addField( targetTimeField );
-        form.addComponent( titleView.getView() );
+
+        form.addField( timerAInField );
+        form.addField( timerAOutField );
+
+        form.addField( timerSInField );
+        form.addField( timerSOutField );
+
+        form.addField( timerDInField );
+        form.addField( timerDOutField );
 
         return form.getView();
     }
@@ -108,6 +166,15 @@ public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
         periodTimeField.setValue( config.periodTime );
         trailTimeoutField.setValue( config.trialTimeout );
         targetTimeField.setValue( config.targetTime );
+
+        timerAInField.setValue( config.timerAIn );
+        timerSInField.setValue( config.timerSIn );
+        timerDInField.setValue( config.timerDIn );
+
+        timerAOutField.setValue( config.timerAOut );
+        timerSOutField.setValue( config.timerSOut );
+        timerDOutField.setValue( config.timerDOut );
+
         teamsView.setData( config.teams );
     }
 

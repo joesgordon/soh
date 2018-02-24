@@ -3,8 +3,11 @@ package soinc.rollercoaster.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import soinc.lib.data.Pi3GpioPin;
 import soinc.lib.data.Pi3InputPin;
 import soinc.lib.data.Pi3OutputPin;
+import soinc.lib.data.PinLevel;
+import soinc.lib.data.PinResistance;
 
 /*******************************************************************************
  * 
@@ -25,17 +28,17 @@ public class RollercoasterConfig
     public final List<String> teams;
 
     /**  */
-    public Pi3InputPin timerAIn;
+    public final Pi3InputPin timerAIn;
     /**  */
-    public Pi3OutputPin timerAOut;
+    public final Pi3OutputPin timerAOut;
     /**  */
-    public Pi3InputPin timerSIn;
+    public final Pi3InputPin timerSIn;
     /**  */
-    public Pi3OutputPin timerSOut;
+    public final Pi3OutputPin timerSOut;
     /**  */
-    public Pi3InputPin timerDIn;
+    public final Pi3InputPin timerDIn;
     /**  */
-    public Pi3OutputPin timerDOut;
+    public final Pi3OutputPin timerDOut;
 
     /***************************************************************************
      * 
@@ -45,6 +48,19 @@ public class RollercoasterConfig
         this.periodTime = 8 * 60;
         this.trialTimeout = 60;
         this.targetTime = 20;
+
+        this.timerAIn = new Pi3InputPin( Pi3GpioPin.GPIO_03,
+            PinResistance.PULL_DOWN );
+        this.timerAOut = new Pi3OutputPin( Pi3GpioPin.GPIO_02, PinLevel.HIGH );
+
+        this.timerSIn = new Pi3InputPin( Pi3GpioPin.GPIO_27,
+            PinResistance.PULL_DOWN );
+        this.timerSOut = new Pi3OutputPin( Pi3GpioPin.GPIO_17, PinLevel.HIGH );
+
+        this.timerDIn = new Pi3InputPin( Pi3GpioPin.GPIO_21,
+            PinResistance.PULL_DOWN );
+        this.timerDOut = new Pi3OutputPin( Pi3GpioPin.GPIO_10, PinLevel.HIGH );
+
         this.teams = new ArrayList<>();
     }
 
@@ -58,6 +74,15 @@ public class RollercoasterConfig
         this.periodTime = cfg.periodTime;
         this.trialTimeout = cfg.trialTimeout;
         this.targetTime = cfg.targetTime;
+
+        this.timerAIn.set( cfg.timerAIn );
+        this.timerAOut.set( cfg.timerAOut );
+
+        this.timerSIn.set( cfg.timerSIn );
+        this.timerSOut.set( cfg.timerSOut );
+
+        this.timerDIn.set( cfg.timerDIn );
+        this.timerDOut.set( cfg.timerDOut );
 
         if( cfg.teams != null )
         {
