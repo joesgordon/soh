@@ -41,6 +41,9 @@ public class Relay implements IRelay
     {
         ProcessBuilder pb = new ProcessBuilder( board.file, board.getArg() );
 
+        pb.redirectOutput( new File( "NUL" ) ).redirectErrorStream( true );
+        pb.redirectError( new File( "NUL" ) ).redirectErrorStream( true );
+
         try
         {
             Process p = pb.start();

@@ -1,5 +1,7 @@
 package soinc.rollercoaster.ui;
 
+import java.awt.Dialog.ModalityType;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 
 import javax.swing.Action;
@@ -16,6 +18,8 @@ import javax.swing.KeyStroke;
 import org.jutils.IconConstants;
 import org.jutils.SwingUtils;
 import org.jutils.io.options.OptionsSerializer;
+import org.jutils.ui.OkDialogView;
+import org.jutils.ui.OkDialogView.OkDialogButtons;
 import org.jutils.ui.StandardFrameView;
 import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.model.IView;
@@ -110,7 +114,8 @@ public class RollercoasterFrameView implements IView<JFrame>
     {
         int row = 0;
 
-        fileMenu.add( new JMenuItem( createTestSuiteAction() ), row++ );
+        fileMenu.add( new JMenuItem( createTestGpioAction() ), row++ );
+        fileMenu.add( new JMenuItem( createTestRelayAction() ), row++ );
         fileMenu.add( new JSeparator(), row++ );
         fileMenu.add( mockIoMenuItem, row++ );
         fileMenu.add( new JSeparator(), row++ );
@@ -169,8 +174,12 @@ public class RollercoasterFrameView implements IView<JFrame>
 
                 JFrame frame = competitionView.getView();
 
-                UiUtils.addHotKey( ( JComponent )frame.getContentPane(), "F8",
-                    ( e ) -> showCompetition( this.competitionView == null ) );
+                JComponent comp = ( JComponent )frame.getContentPane();
+                ActionListener hideListener = ( e ) -> showCompetition(
+                    this.competitionView == null );
+
+                UiUtils.addHotKey( comp, "F8", hideListener );
+                UiUtils.addHotKey( comp, "ESCAPE", hideListener );
 
                 // setFullScreen( true );
 
@@ -193,11 +202,43 @@ public class RollercoasterFrameView implements IView<JFrame>
     /***************************************************************************
      * @return
      **************************************************************************/
-    private Action createTestSuiteAction()
+    private Action createTestGpioAction()
     {
         return new ActionAdapter(
-            ( e ) -> UiUtils.showTestSuiteScreen( getView() ), "Test I/O",
+            ( e ) -> UiUtils.showTestGpioScreen( getView() ), "Test GPIO",
             IconConstants.getIcon( IconConstants.CHECK_16 ) );
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    private Action createTestRelayAction()
+    {
+        return new ActionAdapter( ( e ) -> showTestRelayScreen( getView() ),
+            "Test Relay", IconConstants.getIcon( IconConstants.CHECK_16 ) );
+    }
+
+    /***************************************************************************
+     * @param frame
+     **************************************************************************/
+    private static void showTestRelayScreen( JFrame parent )
+    {
+        RelayTestView view = new RelayTestView();
+        OkDialogView okView = new OkDialogView( parent, view.getView(),
+            ModalityType.DOCUMENT_MODAL, OkDialogButtons.OK_ONLY );
+
+        try
+        {
+            SciolyGpio.startup();
+        }
+        catch( IllegalStateException ex )
+        {
+            SwingUtils.showErrorMessage( parent, "Setup Error",
+                "Pi4j library was not found" );
+            return;
+        }
+
+        okView.show( "Relay Test", new Dimension( 400, 400 ) );
     }
 
     /***************************************************************************

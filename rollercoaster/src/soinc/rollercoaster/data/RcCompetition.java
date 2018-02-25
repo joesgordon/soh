@@ -94,4 +94,10 @@ public class RcCompetition
     {
         return team;
     }
+
+    public void loadTeam( RcTeam team )
+    {
+        this.periodTime = -1;
+        this.team = team;
+    }
 }

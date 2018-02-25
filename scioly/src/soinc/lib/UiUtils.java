@@ -65,7 +65,7 @@ public class UiUtils
     /***************************************************************************
      * 
      **************************************************************************/
-    public static void showTestSuiteScreen( Component parent )
+    public static void showTestGpioScreen( Component parent )
     {
         PinTestSuiteView view = new PinTestSuiteView();
         OkDialogView okView = new OkDialogView( parent, view.getView(),

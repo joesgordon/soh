@@ -36,6 +36,7 @@ public class MockRelay implements IRelay
     @Override
     public void turnRelayOn( int index )
     {
+        setRelay( index, true );
     }
 
     /***************************************************************************
@@ -44,6 +45,7 @@ public class MockRelay implements IRelay
     @Override
     public void turnRelayOff( int index )
     {
+        setRelay( index, false );
     }
 
     /***************************************************************************
@@ -52,6 +54,7 @@ public class MockRelay implements IRelay
     @Override
     public void setRelay( int index, boolean isOn )
     {
+        relays[index] = isOn;
     }
 
     /***************************************************************************
@@ -60,6 +63,10 @@ public class MockRelay implements IRelay
     @Override
     public void turnAllOn()
     {
+        for( int i = 0; i < relays.length; i++ )
+        {
+            relays[i] = true;
+        }
     }
 
     /***************************************************************************
@@ -68,5 +75,9 @@ public class MockRelay implements IRelay
     @Override
     public void turnAllOff()
     {
+        for( int i = 0; i < relays.length; i++ )
+        {
+            relays[i] = true;
+        }
     }
 }

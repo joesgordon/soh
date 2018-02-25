@@ -182,6 +182,9 @@ public class RcCompetitionView implements IView<JFrame>
         teamButton.addMouseListener(
             new RightClickListener( ( e ) -> showTeamPopup( e ) ) );
         // teamButton.setBorderPainted( false );
+        teamButton.setMinimumSize( teamButton.getPreferredSize() );
+        teamButton.setMaximumSize( teamButton.getPreferredSize() );
+        teamButton.setPreferredSize( teamButton.getPreferredSize() );
 
         constraints = new GridBagConstraints( 0, 0, 2, 1, 0.0, 0.0,
             GridBagConstraints.CENTER, GridBagConstraints.NONE,
@@ -324,7 +327,7 @@ public class RcCompetitionView implements IView<JFrame>
 
         // ---------------------------------------------------------------------
 
-        JLabel averageLabel = UiUtils.createTextLabel( "Average:" );
+        JLabel averageLabel = UiUtils.createTextLabel( "Official Time:" );
 
         constraints = new GridBagConstraints( 0, 3, 1, 1, 0.0, 0.0,
             GridBagConstraints.EAST, GridBagConstraints.NONE,
@@ -381,7 +384,7 @@ public class RcCompetitionView implements IView<JFrame>
 
         // ---------------------------------------------------------------------
 
-        JLabel run2Label = UiUtils.createTextLabel( "Run 1:" );
+        JLabel run2Label = UiUtils.createTextLabel( "Run 2:" );
 
         constraints = new GridBagConstraints( 0, 1, 1, 1, 0.0, 0.0,
             GridBagConstraints.EAST, GridBagConstraints.NONE,
@@ -456,11 +459,17 @@ public class RcCompetitionView implements IView<JFrame>
 
     private void unloadTeam()
     {
-        // TODO Auto-generated method stub
+        competition.reset();
+        reset();
     }
 
-    private void setTeamData( RcTeam t )
+    private void setTeamData( RcTeam team )
     {
+        teamButton.setText( team.name );
+        teamButton.setEnabled( false );
+
+        competition.loadTeam( team );
+
         // TODO Auto-generated method stub
     }
 

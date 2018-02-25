@@ -253,7 +253,7 @@ public class HovercraftFrameView implements IView<JFrame>
     private Action createTestSuiteAction()
     {
         return new ActionAdapter(
-            ( e ) -> UiUtils.showTestSuiteScreen( getView() ), "Test I/O",
+            ( e ) -> UiUtils.showTestGpioScreen( getView() ), "Test I/O",
             IconConstants.getIcon( IconConstants.CHECK_16 ) );
     }
 
