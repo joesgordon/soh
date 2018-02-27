@@ -12,16 +12,16 @@ import soinc.lib.SciolyIcons;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class RollercoasterIcons
+public class RcIcons
 {
     /**  */
     private static final IconLoader loader = new IconLoader(
-        RollercoasterIcons.class, "icons" );
+        RcIcons.class, "icons" );
 
     /***************************************************************************
      * Private constructor to prevent instantiation.
      **************************************************************************/
-    private RollercoasterIcons()
+    private RcIcons()
     {
     }
 

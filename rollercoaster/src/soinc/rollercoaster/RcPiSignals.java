@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.pi4j.io.gpio.GpioController;
 
-import soinc.rollercoaster.data.RollercoasterConfig;
+import soinc.rollercoaster.data.RcConfig;
 import soinc.rollercoaster.relay.IRelay;
 import soinc.rollercoaster.tasks.RcTimerPins;
 
@@ -24,9 +24,9 @@ public class RcPiSignals implements IRcSignals
     /**  */
     private final IRelay relay;
     /**  */
-    private final RollercoasterConfig config;
+    private final RcConfig config;
 
-    public RcPiSignals( GpioController gpio, RollercoasterConfig config )
+    public RcPiSignals( GpioController gpio, RcConfig config )
     {
         this.gpio = gpio;
         this.config = config;
@@ -34,7 +34,7 @@ public class RcPiSignals implements IRcSignals
         this.timerS = new RcTimerPins();
         this.timerD = new RcTimerPins();
         this.timerPins = new ArrayList<>();
-        this.relay = RollercoasterMain.getRelay();
+        this.relay = RcMain.getRelay();
 
         timerPins.add( timerA );
         timerPins.add( timerS );

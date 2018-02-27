@@ -4,12 +4,12 @@ import javax.swing.JFrame;
 
 import org.jutils.ui.app.IFrameApp;
 
-import soinc.rollercoaster.ui.RollercoasterFrameView;
+import soinc.rollercoaster.ui.RcFrameView;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class RollercoasterApp implements IFrameApp
+public class RcApp implements IFrameApp
 {
     /***************************************************************************
      * {@inheritDoc}
@@ -17,7 +17,7 @@ public class RollercoasterApp implements IFrameApp
     @Override
     public JFrame createFrame()
     {
-        RollercoasterFrameView frameView = new RollercoasterFrameView();
+        RcFrameView frameView = new RcFrameView();
 
         return frameView.getView();
     }

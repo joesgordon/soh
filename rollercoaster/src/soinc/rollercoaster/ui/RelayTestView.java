@@ -15,7 +15,7 @@ import org.jutils.ui.LedLabel;
 import org.jutils.ui.StandardFormView;
 import org.jutils.ui.model.IView;
 
-import soinc.rollercoaster.RollercoasterMain;
+import soinc.rollercoaster.RcMain;
 import soinc.rollercoaster.relay.IRelay;
 
 public class RelayTestView implements IView<JComponent>
@@ -25,7 +25,7 @@ public class RelayTestView implements IView<JComponent>
 
     public RelayTestView()
     {
-        this.relay = RollercoasterMain.getRelay();
+        this.relay = RcMain.getRelay();
         this.view = createView();
     }
 

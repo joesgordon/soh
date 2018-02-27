@@ -19,15 +19,15 @@ import org.jutils.ui.model.IDataView;
 
 import soinc.lib.ui.Pi3InputPinField;
 import soinc.lib.ui.Pi3OutputPinField;
-import soinc.rollercoaster.RollercoasterMain;
+import soinc.rollercoaster.RcMain;
 import soinc.rollercoaster.data.RcTeam;
-import soinc.rollercoaster.data.RollercoasterConfig;
-import soinc.rollercoaster.data.RollercoasterOptions;
+import soinc.rollercoaster.data.RcConfig;
+import soinc.rollercoaster.data.RcOptions;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
+public class RcConfigView implements IDataView<RcConfig>
 {
     /**  */
     private final JPanel view;
@@ -53,12 +53,12 @@ public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
     private final ListView<RcTeam> teamsView;
 
     /**  */
-    private RollercoasterConfig config;
+    private RcConfig config;
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public RollercoasterConfigView()
+    public RcConfigView()
     {
         this.periodTimeField = new IntegerFormField( "Period Time", "seconds",
             8, 10, 60 * 60 );
@@ -79,7 +79,7 @@ public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
 
         this.view = createView();
 
-        OptionsSerializer<RollercoasterOptions> options = RollercoasterMain.getOptions();
+        OptionsSerializer<RcOptions> options = RcMain.getOptions();
 
         this.config = options.getOptions().config;
 
@@ -159,7 +159,7 @@ public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public RollercoasterConfig getData()
+    public RcConfig getData()
     {
         return config;
     }
@@ -168,7 +168,7 @@ public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public void setData( RollercoasterConfig config )
+    public void setData( RcConfig config )
     {
         this.config = config;
 

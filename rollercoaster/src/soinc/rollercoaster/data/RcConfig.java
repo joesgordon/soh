@@ -12,7 +12,7 @@ import soinc.lib.data.PinResistance;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class RollercoasterConfig implements IRcCompetitionConfig
+public class RcConfig implements IRcCompetitionConfig
 {
     /**  */
     public int periodTime;
@@ -43,7 +43,7 @@ public class RollercoasterConfig implements IRcCompetitionConfig
     /***************************************************************************
      * 
      **************************************************************************/
-    public RollercoasterConfig()
+    public RcConfig()
     {
         this.periodTime = 8 * 60;
         this.runTimeout = 60;
@@ -67,7 +67,7 @@ public class RollercoasterConfig implements IRcCompetitionConfig
     /***************************************************************************
      * @param cfg
      **************************************************************************/
-    public RollercoasterConfig( RollercoasterConfig cfg )
+    public RcConfig( RcConfig cfg )
     {
         this();
 

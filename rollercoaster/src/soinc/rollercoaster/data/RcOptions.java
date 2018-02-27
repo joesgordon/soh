@@ -3,29 +3,29 @@ package soinc.rollercoaster.data;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class RollercoasterOptions
+public class RcOptions
 {
     /**  */
-    public final RollercoasterConfig config;
+    public final RcConfig config;
     /**  */
     public boolean useFauxGpio;
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public RollercoasterOptions()
+    public RcOptions()
     {
-        this.config = new RollercoasterConfig();
+        this.config = new RcConfig();
         this.useFauxGpio = false;
     }
 
     /***************************************************************************
      * @param data
      **************************************************************************/
-    public RollercoasterOptions( RollercoasterOptions data )
+    public RcOptions( RcOptions data )
     {
-        this.config = data.config == null ? new RollercoasterConfig()
-            : new RollercoasterConfig( data.config );
+        this.config = data.config == null ? new RcConfig()
+            : new RcConfig( data.config );
         this.useFauxGpio = data.useFauxGpio;
     }
 }

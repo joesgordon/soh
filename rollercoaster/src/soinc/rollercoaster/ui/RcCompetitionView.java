@@ -37,8 +37,8 @@ import org.jutils.ui.model.IView;
 import org.jutils.ui.model.LabelListCellRenderer.IListCellLabelDecorator;
 
 import soinc.lib.UiUtils;
-import soinc.rollercoaster.RollercoasterIcons;
-import soinc.rollercoaster.RollercoasterMain;
+import soinc.rollercoaster.RcIcons;
+import soinc.rollercoaster.RcMain;
 import soinc.rollercoaster.data.RcCompetition;
 import soinc.rollercoaster.data.RcTeam;
 import soinc.rollercoaster.data.CompetitionState;
@@ -222,7 +222,7 @@ public class RcCompetitionView implements IView<JFrame>
      **************************************************************************/
     private static Component createBannerPanel()
     {
-        Icon bannerIcon = RollercoasterIcons.getBannerImage();
+        Icon bannerIcon = RcIcons.getBannerImage();
         JLabel soLabel = new JLabel( bannerIcon );
 
         return soLabel;
@@ -598,7 +598,7 @@ public class RcCompetitionView implements IView<JFrame>
         {
             if( !view.competition.isRunning() )
             {
-                RollercoasterMain.getOptions().write();
+                RcMain.getOptions().write();
                 UiUtils.setFullScreen( false, view.frame );
                 view.frame.setVisible( false );
             }

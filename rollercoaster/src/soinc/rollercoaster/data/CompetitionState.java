@@ -6,7 +6,7 @@ import org.jutils.INamedItem;
 
 import com.sun.prism.paint.Color;
 
-import soinc.rollercoaster.RollercoasterIcons;
+import soinc.rollercoaster.RcIcons;
 
 /*******************************************************************************
  * 
@@ -42,7 +42,7 @@ public enum CompetitionState implements INamedItem
     {
         this.name = name;
         this.color = color;
-        this.icon = RollercoasterIcons.getIcon( iconName );
+        this.icon = RcIcons.getIcon( iconName );
     }
 
     /***************************************************************************

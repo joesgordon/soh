@@ -9,7 +9,7 @@ import org.jutils.io.options.OptionsSerializer;
 import org.jutils.ui.app.FrameRunner;
 
 import soinc.lib.gpio.SciolyGpio;
-import soinc.rollercoaster.data.RollercoasterOptions;
+import soinc.rollercoaster.data.RcOptions;
 import soinc.rollercoaster.relay.IRelay;
 import soinc.rollercoaster.relay.MockRelay;
 import soinc.rollercoaster.relay.Relay;
@@ -17,21 +17,21 @@ import soinc.rollercoaster.relay.Relay;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class RollercoasterMain
+public class RcMain
 {
     /**  */
     private static final File USERS_FILE = IOUtils.getUsersFile(
         ".ScienceOlympiad", "rollercoaster.xml" );
 
     /**  */
-    private static OptionsSerializer<RollercoasterOptions> userio;
+    private static OptionsSerializer<RcOptions> userio;
 
     /***************************************************************************
      * @param args ignored
      **************************************************************************/
     public static void main( String [] args )
     {
-        FrameRunner.invokeLater( new RollercoasterApp() );
+        FrameRunner.invokeLater( new RcApp() );
     }
 
     /***************************************************************************
@@ -59,7 +59,7 @@ public class RollercoasterMain
     /***************************************************************************
      * @return
      **************************************************************************/
-    public static OptionsSerializer<RollercoasterOptions> getOptions()
+    public static OptionsSerializer<RcOptions> getOptions()
     {
         if( userio == null )
         {
@@ -74,24 +74,24 @@ public class RollercoasterMain
      * 
      **************************************************************************/
     private static final class RudCreator
-        implements IOptionsCreator<RollercoasterOptions>
+        implements IOptionsCreator<RcOptions>
     {
         /**
          * {@inheritDoc}
          */
         @Override
-        public RollercoasterOptions createDefaultOptions()
+        public RcOptions createDefaultOptions()
         {
-            return new RollercoasterOptions();
+            return new RcOptions();
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public RollercoasterOptions initialize( RollercoasterOptions data )
+        public RcOptions initialize( RcOptions data )
         {
-            return new RollercoasterOptions( data );
+            return new RcOptions( data );
         }
 
         /**
