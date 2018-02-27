@@ -87,7 +87,7 @@ public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
 
         periodTimeField.setUpdater( ( d ) -> config.periodTime = d );
         targetTimeField.setUpdater( ( d ) -> config.targetTime = d );
-        trailTimeoutField.setUpdater( ( d ) -> config.trialTimeout = d );
+        trailTimeoutField.setUpdater( ( d ) -> config.runTimeout = d );
 
         timerAInField.setUpdater( ( d ) -> config.timerAIn.set( d ) );
         timerSInField.setUpdater( ( d ) -> config.timerSIn.set( d ) );
@@ -173,7 +173,7 @@ public class RollercoasterConfigView implements IDataView<RollercoasterConfig>
         this.config = config;
 
         periodTimeField.setValue( config.periodTime );
-        trailTimeoutField.setValue( config.trialTimeout );
+        trailTimeoutField.setValue( config.runTimeout );
         targetTimeField.setValue( config.targetTime );
 
         timerAInField.setValue( config.timerAIn );

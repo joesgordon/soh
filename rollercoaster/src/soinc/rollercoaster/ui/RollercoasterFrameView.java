@@ -28,6 +28,8 @@ import com.pi4j.io.gpio.GpioController;
 
 import soinc.lib.UiUtils;
 import soinc.lib.gpio.SciolyGpio;
+import soinc.rollercoaster.IRcSignals;
+import soinc.rollercoaster.RcPiSignals;
 import soinc.rollercoaster.RollercoasterIcons;
 import soinc.rollercoaster.RollercoasterMain;
 import soinc.rollercoaster.data.RcCompetition;
@@ -164,8 +166,9 @@ public class RollercoasterFrameView implements IView<JFrame>
             try
             {
                 GpioController gpio = SciolyGpio.startup();
+                IRcSignals signals = new RcPiSignals( gpio, options.config );
                 RcCompetition competition = new RcCompetition( options.config,
-                    gpio );
+                    signals );
 
                 competition.connect();
 

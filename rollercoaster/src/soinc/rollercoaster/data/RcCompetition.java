@@ -3,11 +3,7 @@ package soinc.rollercoaster.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pi4j.io.gpio.GpioController;
-
-import soinc.rollercoaster.RollercoasterMain;
-import soinc.rollercoaster.relay.IRelay;
-import soinc.rollercoaster.tasks.RcTimerPins;
+import soinc.rollercoaster.IRcSignals;
 
 /*******************************************************************************
  * 
@@ -15,61 +11,55 @@ import soinc.rollercoaster.tasks.RcTimerPins;
 public class RcCompetition
 {
     /**  */
-    public final RollercoasterConfig config;
-
+    public final IRcCompetitionConfig config;
     /**  */
-    private final GpioController gpio;
-    /**  */
-    private final RcTimerPins timerA;
-    /**  */
-    private final RcTimerPins timerS;
-    /**  */
-    private final RcTimerPins timerD;
-    /**  */
-    private final IRelay relay;
+    private final IRcSignals signals;
 
     /** Milliseconds */
-    private long periodTime;
+    private long periodStart;
+    /** Milliseconds */
+    private long runStart;
     /**  */
     private RcTeam team;
+    /** The state of the competition. It should never be {@code null}. */
+    private CompetitionState state;
 
     /***************************************************************************
      * @param config
      * @param gpio
      **************************************************************************/
-    public RcCompetition( RollercoasterConfig config, GpioController gpio )
+    public RcCompetition( IRcCompetitionConfig config, IRcSignals signals )
     {
         this.config = config;
-        this.gpio = gpio;
-        this.timerA = new RcTimerPins();
-        this.timerS = new RcTimerPins();
-        this.timerD = new RcTimerPins();
-        this.relay = RollercoasterMain.getRelay();
-        this.periodTime = -1;
-        this.team = null;
+        this.signals = signals;
 
         reset();
     }
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     public void connect()
     {
-        timerA.provision( gpio, config.timerAOut, config.timerAIn, 'A' );
-        timerS.provision( gpio, config.timerSOut, config.timerSIn, 'S' );
-        timerD.provision( gpio, config.timerDOut, config.timerDIn, 'D' );
+        signals.connect();
     }
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     public void disconnect()
     {
-        timerA.unprovisionAll( gpio );
-        timerS.unprovisionAll( gpio );
-        timerD.unprovisionAll( gpio );
+        signals.disconnect();
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
     public List<RcTeam> getAvailableTeams()
     {
         List<RcTeam> remaining = new ArrayList<>();
 
-        for( RcTeam team : config.teams )
+        for( RcTeam team : config.getTeams() )
         {
             if( !team.loaded )
             {
@@ -79,25 +69,38 @@ public class RcCompetition
         return remaining;
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
     public boolean isRunning()
     {
         return team != null;
     }
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     public void reset()
     {
-        this.periodTime = -1;
+        this.periodStart = -1L;
+        this.runStart = -1L;
         this.team = null;
+        this.state = CompetitionState.NO_TEAM;
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
     public RcTeam getTeam()
     {
         return team;
     }
 
+    /***************************************************************************
+     * @param team
+     **************************************************************************/
     public void loadTeam( RcTeam team )
     {
-        this.periodTime = -1;
         this.team = team;
     }
 }

@@ -41,12 +41,24 @@ public class RollercoasterIcons
         return loader.getIcon( "rc_016.png" );
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
     public static Icon getBannerImage()
     {
-        Image img = loader.getImage( "header.png" );
+        Image img = loader.getImage( "banner.png" );
         int w = 1200;
         float scale = w / ( float )img.getWidth( null );
         int h = Math.round( img.getHeight( null ) * scale );
         return SciolyIcons.getScaledIcon( img, w, h );
+    }
+
+    /***************************************************************************
+     * @param name
+     * @return
+     **************************************************************************/
+    public static Icon getIcon( String name )
+    {
+        return loader.getIcon( name );
     }
 }

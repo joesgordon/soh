@@ -12,7 +12,7 @@ import soinc.lib.data.PinResistance;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class RollercoasterConfig
+public class RollercoasterConfig implements IRcCompetitionConfig
 {
     /**  */
     public int periodTime;
@@ -23,7 +23,7 @@ public class RollercoasterConfig
      */
     public int targetTime;
     /**  */
-    public int trialTimeout;
+    public int runTimeout;
     /**  */
     public final List<RcTeam> teams;
 
@@ -46,7 +46,7 @@ public class RollercoasterConfig
     public RollercoasterConfig()
     {
         this.periodTime = 8 * 60;
-        this.trialTimeout = 60;
+        this.runTimeout = 60;
         this.targetTime = 20;
 
         this.timerAIn = new Pi3InputPin( Pi3GpioPin.GPIO_03,
@@ -72,7 +72,7 @@ public class RollercoasterConfig
         this();
 
         this.periodTime = cfg.periodTime;
-        this.trialTimeout = cfg.trialTimeout;
+        this.runTimeout = cfg.runTimeout;
         this.targetTime = cfg.targetTime;
 
         this.timerAIn.set( cfg.timerAIn );
@@ -88,5 +88,41 @@ public class RollercoasterConfig
         {
             this.teams.addAll( cfg.teams );
         }
+    }
+
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
+    @Override
+    public int getPeriodTime()
+    {
+        return periodTime;
+    }
+
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
+    @Override
+    public int getTargetTime()
+    {
+        return targetTime;
+    }
+
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
+    @Override
+    public int getRunTimeout()
+    {
+        return runTimeout;
+    }
+
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
+    @Override
+    public List<RcTeam> getTeams()
+    {
+        return teams;
     }
 }

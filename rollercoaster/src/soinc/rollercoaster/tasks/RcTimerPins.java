@@ -17,11 +17,14 @@ public class RcTimerPins
     private GpioPinDigitalOutput outPin;
     /**  */
     private GpioPinDigitalInput inPin;
+    /**  */
+    private Runnable callback;
 
     public RcTimerPins()
     {
         this.outPin = null;
         this.inPin = null;
+        this.callback = null;
     }
 
     /***************************************************************************
@@ -55,6 +58,14 @@ public class RcTimerPins
 
     private void togglePin()
     {
-        // TODO Auto-generated method stub
+        if( callback != null )
+        {
+            callback.run();
+        }
+    }
+
+    public void setCallback( Runnable callback )
+    {
+        this.callback = callback;
     }
 }
