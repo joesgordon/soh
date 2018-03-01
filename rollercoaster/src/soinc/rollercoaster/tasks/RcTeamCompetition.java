@@ -33,6 +33,9 @@ public class RcTeamCompetition
     /**  */
     private final Timer timer;
 
+    /**  */
+    private long periodStart;
+
     /***************************************************************************
      * @param config
      * @param gpio
@@ -43,7 +46,7 @@ public class RcTeamCompetition
         this.signals = signals;
         this.timers = new RcTimers( signals.getTimerCount() );
         this.stateMachine = new RcStateMachine( this );
-        this.data = new RcCompetitionData();
+        this.data = new RcCompetitionData( signals.getTimerCount() );
         this.timer = new Timer( "RC Competition" );
     }
 
@@ -83,6 +86,7 @@ public class RcTeamCompetition
      **************************************************************************/
     public void disconnect()
     {
+        timer.cancel();
         signals.disconnect();
     }
 
@@ -166,7 +170,7 @@ public class RcTeamCompetition
 
         if( msg == null )
         {
-            data.periodStart = startTime;
+            this.periodStart = startTime;
         }
         else
         {
@@ -207,6 +211,7 @@ public class RcTeamCompetition
         String msg = stateMachine.signalClearTeam();
         if( msg == null )
         {
+            this.periodStart = -1L;
             data.reset();
         }
         else

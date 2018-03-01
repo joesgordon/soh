@@ -14,24 +14,24 @@ import soinc.rollercoaster.RcIcons;
 public enum CompetitionState implements INamedItem
 {
     /** No team has been loaded. */
-    NO_TEAM( "New Run", Color.blue, "NO_TEAM.png" ),
+    NO_TEAM( "New Run", null, "NO_TEAM.png" ),
     /** Team has been loaded, but the competition has not yet started. */
-    LOADED( "Loaded", Color.blue, "NO_TEAM.png" ),
+    LOADED( "Loaded", null, "NO_TEAM.png" ),
     /** Competitors are not running for record. */
-    AWAITING( "New Run", Color.blue, "AWAITING.png" ),
+    AWAITING( "New Run", null, "AWAITING.png" ),
     /** Running before target time. */
-    SCORE_TIME( "New Run", Color.blue, "SCORE_TIME.png" ),
+    SCORE_TIME( "New Run", new Color( 0x22B14C ), "SCORE_TIME.png" ),
     /** Running after target time before trial time. */
-    PENALTY_TIME( "New Run", Color.blue, "PENALTY_TIME.png" ),
+    PENALTY_TIME( "New Run", new Color( 0xFFF200 ), "PENALTY_TIME.png" ),
     /** Running after trial time. */
-    FAILED_TIME( "New Run", Color.blue, "FAILED_TIME.png" ),
+    FAILED_TIME( "New Run", new Color( 0xED1C24 ), "FAILED_TIME.png" ),
     /** 2 runs completed. */
-    COMPLETE( "New Run", Color.blue, "COMPLETE.png" );
+    COMPLETE( "New Run", new Color( 0x3F48CC ), "COMPLETE.png" );
 
     /**  */
     public final String name;
     /**  */
-    public final Color color;
+    public final Color background;
     /**  */
     public final Icon icon;
 
@@ -43,7 +43,7 @@ public enum CompetitionState implements INamedItem
     private CompetitionState( String name, Color color, String iconName )
     {
         this.name = name;
-        this.color = color;
+        this.background = color;
         this.icon = RcIcons.getIcon( iconName );
     }
 

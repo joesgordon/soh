@@ -1,32 +1,75 @@
 package soinc.rollercoaster.data;
 
+import java.util.Arrays;
+
 public class RcCompetitionData
 {
     /**  */
     public RcTeam team;
+    /**  */
+    public CompetitionState state;
+
     /** Milliseconds */
-    public long periodStart;
+    public long periodTime;
+
+    /**  */
+    public long [] timers;
+
+    /**  */
+    public long officialTime;
+
     /**  */
     public long run1Time;
     /**  */
-    public boolean run1Complete;
+    public RunState run1State;
     /**  */
     public long run2Time;
     /**  */
-    public boolean run2Complete;
+    public RunState run2State;
 
-    public RcCompetitionData()
+    /**
+     * @param timerCount
+     */
+    public RcCompetitionData( int timerCount )
     {
+        this.timers = new long[timerCount];
         reset();
+    }
+
+    public RcCompetitionData( RcCompetitionData data )
+    {
+        this.team = data.team;
+        this.state = data.state;
+        this.periodTime = data.periodTime;
+        this.timers = Arrays.copyOf( data.timers, data.timers.length );
+        this.officialTime = data.officialTime;
+        this.run1Time = data.run1Time;
+        this.run1State = data.run1State;
+        this.run2Time = data.run2Time;
+        this.run2State = data.run2State;
     }
 
     public void reset()
     {
         this.team = null;
-        this.periodStart = -1L;
+        this.state = CompetitionState.NO_TEAM;
+        this.periodTime = -1L;
+        for( int i = 0; i < timers.length; i++ )
+        {
+            timers[i] = -1L;
+        }
+        this.officialTime = -1L;
         this.run1Time = -1L;
-        this.run1Complete = false;
+        this.run1State = RunState.NOT_RUN;
         this.run2Time = -1L;
-        this.run2Complete = false;
+        this.run2State = RunState.NOT_RUN;
+    }
+
+    public static enum RunState
+    {
+        NOT_RUN,
+        RUNNING,
+        FAILED,
+        SUCCESS;
     }
 }

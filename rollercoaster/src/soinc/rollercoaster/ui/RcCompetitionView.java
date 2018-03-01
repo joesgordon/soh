@@ -28,6 +28,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.border.LineBorder;
 
 import org.jutils.SwingUtils;
+import org.jutils.ui.ColorIcon;
 import org.jutils.ui.OkDialogView;
 import org.jutils.ui.OkDialogView.OkDialogButtons;
 import org.jutils.ui.event.ActionAdapter;
@@ -36,11 +37,14 @@ import org.jutils.ui.fields.ItemsListField;
 import org.jutils.ui.model.IView;
 import org.jutils.ui.model.LabelListCellRenderer.IListCellLabelDecorator;
 
+import soinc.lib.SciolyIcons;
 import soinc.lib.UiUtils;
 import soinc.rollercoaster.RcIcons;
 import soinc.rollercoaster.RcMain;
 import soinc.rollercoaster.data.RcCompetitionData;
+import soinc.rollercoaster.data.RcCompetitionData.RunState;
 import soinc.rollercoaster.data.RcTeam;
+import soinc.rollercoaster.data.TimeDuration;
 import soinc.rollercoaster.tasks.RcTeamCompetition;
 
 /*******************************************************************************
@@ -57,17 +61,24 @@ public class RcCompetitionView implements IView<JFrame>
     private final RcTeamCompetition competition;
 
     /**  */
+    private final Icon blankIcon;
+    /**  */
+    private final Icon checkIcon;
+    /**  */
+    private final Icon xIcon;
+
+    /**  */
     private final JFrame frame;
     /**  */
     private final JButton teamButton;
     /**  */
     private final JLabel periodField;
     /**  */
-    private final JLabel timer1Field;
+    private final JLabel timerAField;
     /**  */
-    private final JLabel timer2Field;
+    private final JLabel timerSField;
     /**  */
-    private final JLabel timer3Field;
+    private final JLabel timerDField;
     /**  */
     private final JLabel officialField;
     /**  */
@@ -75,11 +86,19 @@ public class RcCompetitionView implements IView<JFrame>
     /**  */
     private final JLabel run1Field;
     /**  */
+    private final JLabel run1Icon;
+    /**  */
     private final JLabel run2Field;
     /**  */
+    private final JLabel run2Icon;
+    /**  */
     private final JLabel scoreField;
+
     /**  */
     private final JComponent content;
+
+    /**  */
+    private RcCompetitionData compData;
 
     /***************************************************************************
      * @param competition
@@ -90,17 +109,24 @@ public class RcCompetitionView implements IView<JFrame>
         Dimension size )
     {
         this.competition = competition;
+
+        this.blankIcon = new ColorIcon( new Color( 20, 20, 20 ), 36 );
+        this.checkIcon = SciolyIcons.getCheckIcon( 36 );
+        this.xIcon = SciolyIcons.getXIcon( 36 );
+
         this.frame = new JFrame( "Roller Coaster Competition" );
 
         this.teamButton = new JButton( "No Teams Entered" );
         this.periodField = UiUtils.createNumLabel( "-:--", LRG_FONT );
-        this.timer1Field = UiUtils.createNumLabel( "--.- s", REG_FONT );
-        this.timer2Field = UiUtils.createNumLabel( "--.- s", REG_FONT );
-        this.timer3Field = UiUtils.createNumLabel( "--.- s", REG_FONT );
+        this.timerAField = UiUtils.createNumLabel( "--.- s", REG_FONT );
+        this.timerSField = UiUtils.createNumLabel( "--.- s", REG_FONT );
+        this.timerDField = UiUtils.createNumLabel( "--.- s", REG_FONT );
         this.officialField = UiUtils.createNumLabel( "--.- s", REG_FONT );
         this.stateField = UiUtils.createTextLabel( "-----", REG_FONT );
         this.run1Field = UiUtils.createNumLabel( "--.- s", REG_FONT );
+        this.run1Icon = new JLabel( blankIcon );
         this.run2Field = UiUtils.createNumLabel( "--.- s", REG_FONT );
+        this.run2Icon = new JLabel( blankIcon );
         this.scoreField = new JLabel();
 
         this.content = createCompetitionPanel();
@@ -315,7 +341,7 @@ public class RcCompetitionView implements IView<JFrame>
         constraints = new GridBagConstraints( 1, 0, 1, 1, 0.0, 0.0,
             GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
             new Insets( 0, 20, 0, 0 ), 0, 0 );
-        panel.add( timer1Field, constraints );
+        panel.add( timerAField, constraints );
 
         // ---------------------------------------------------------------------
 
@@ -329,7 +355,7 @@ public class RcCompetitionView implements IView<JFrame>
         constraints = new GridBagConstraints( 1, 1, 1, 1, 0.0, 0.0,
             GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
             new Insets( 10, 20, 0, 0 ), 0, 0 );
-        panel.add( timer2Field, constraints );
+        panel.add( timerSField, constraints );
 
         // ---------------------------------------------------------------------
 
@@ -343,7 +369,7 @@ public class RcCompetitionView implements IView<JFrame>
         constraints = new GridBagConstraints( 1, 2, 1, 1, 0.0, 0.0,
             GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
             new Insets( 10, 20, 0, 0 ), 0, 0 );
-        panel.add( timer3Field, constraints );
+        panel.add( timerDField, constraints );
 
         return panel;
     }
@@ -372,6 +398,11 @@ public class RcCompetitionView implements IView<JFrame>
             new Insets( 0, 20, 0, 0 ), 0, 0 );
         panel.add( run1Field, constraints );
 
+        constraints = new GridBagConstraints( 1, 1, 1, 1, 0.0, 0.0,
+            GridBagConstraints.WEST, GridBagConstraints.NONE,
+            new Insets( 10, 20, 0, 0 ), 0, 0 );
+        panel.add( run1Icon, constraints );
+
         // ---------------------------------------------------------------------
 
         JLabel run2Label = UiUtils.createTextLabel( "Run 2:", REG_FONT );
@@ -385,6 +416,11 @@ public class RcCompetitionView implements IView<JFrame>
             GridBagConstraints.WEST, GridBagConstraints.NONE,
             new Insets( 10, 20, 0, 0 ), 0, 0 );
         panel.add( run2Field, constraints );
+
+        constraints = new GridBagConstraints( 2, 1, 1, 1, 0.0, 0.0,
+            GridBagConstraints.WEST, GridBagConstraints.NONE,
+            new Insets( 10, 20, 0, 0 ), 0, 0 );
+        panel.add( run2Icon, constraints );
 
         return panel;
     }
@@ -557,9 +593,124 @@ public class RcCompetitionView implements IView<JFrame>
         }
     }
 
+    /***************************************************************************
+     * @param data
+     **************************************************************************/
     public void setData( RcCompetitionData data )
     {
+        RcCompetitionData compData = new RcCompetitionData( data );
 
+        if( data.team != compData.team )
+        {
+            boolean enabled = data.team == null ? true : false;
+            String name = data.team == null ? "Select Team" : data.team.name;
+
+            teamButton.setText( name );
+            teamButton.setEnabled( enabled );
+        }
+
+        if( data.periodTime != compData.periodTime )
+        {
+            TimeDuration d = new TimeDuration( data.periodTime );
+            String time = String.format( "%1d:%02d ", d.totalMinutes,
+                d.seconds );
+            periodField.setText( time );
+        }
+
+        setTimer( data, timerAField, 0 );
+        setTimer( data, timerSField, 1 );
+        setTimer( data, timerDField, 2 );
+
+        if( data.officialTime != compData.officialTime )
+        {
+            setTimeField( data.officialTime, officialField );
+        }
+
+        if( data.state != compData.state )
+        {
+            stateField.setText( data.state.name );
+            stateField.setBackground( data.state.background );
+        }
+
+        if( data.run1Time != compData.run1Time )
+        {
+            setTimeField( data.run1Time, run1Field );
+        }
+
+        if( data.run2Time != compData.run2Time )
+        {
+            setTimeField( data.run2Time, run2Field );
+        }
+
+        if( data.run1State != compData.run1State )
+        {
+            setFieldIcon( data.run1State, run1Icon );
+        }
+
+        if( data.run2State != compData.run2State )
+        {
+            setFieldIcon( data.run2State, run2Icon );
+        }
+
+        this.compData = compData;
+    }
+
+    /**
+     * @param state
+     * @param iconField
+     */
+    private void setFieldIcon( RunState state, JLabel iconField )
+    {
+        Icon icon = null;
+
+        switch( state )
+        {
+            case FAILED:
+                icon = xIcon;
+                break;
+
+            case SUCCESS:
+                icon = checkIcon;
+                break;
+
+            default:
+                icon = blankIcon;
+                break;
+        }
+
+        iconField.setIcon( icon );
+    }
+
+    /***************************************************************************
+     * @param data
+     * @param timerField
+     * @param index
+     **************************************************************************/
+    private void setTimer( RcCompetitionData data, JLabel timerField,
+        int index )
+    {
+        if( data.timers[index] != compData.timers[index] )
+        {
+            setTimeField( data.timers[index], timerField );
+        }
+    }
+
+    private void setTimeField( long duration, JLabel timeField )
+    {
+        String time = null;
+
+        if( duration < 0 )
+        {
+            time = "-:--.-";
+        }
+        else
+        {
+            TimeDuration d = new TimeDuration( duration );
+            time = String.format( "%01:%02d.%1d ", d.totalMinutes, d.seconds,
+                d.millis / 100 );
+        }
+
+        timeField.setText( time );
     }
 
     /**
@@ -607,13 +758,20 @@ public class RcCompetitionView implements IView<JFrame>
      **************************************************************************/
     private static final class CompetitionFrameListener extends WindowAdapter
     {
+        /**  */
         private final RcCompetitionView view;
 
+        /**
+         * @param view
+         */
         public CompetitionFrameListener( RcCompetitionView view )
         {
             this.view = view;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void windowClosing( WindowEvent e )
         {
@@ -626,6 +784,9 @@ public class RcCompetitionView implements IView<JFrame>
         }
     }
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     private static final class TeamsDecorator
         implements IListCellLabelDecorator<RcTeam>
     {
