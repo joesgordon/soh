@@ -1,14 +1,19 @@
 package soinc.rollercoaster;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.pi4j.io.gpio.GpioController;
 
+import soinc.lib.data.PinResistance;
 import soinc.rollercoaster.data.RcConfig;
-import soinc.rollercoaster.relay.IRelay;
+import soinc.rollercoaster.relay.IRelays;
 import soinc.rollercoaster.tasks.RcTimerPins;
 
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 public class RcPiSignals implements IRcSignals
 {
     /**  */
@@ -22,25 +27,39 @@ public class RcPiSignals implements IRcSignals
     /**  */
     private final List<RcTimerPins> timerPins;
     /**  */
-    private final IRelay relay;
+    private final IRelays relay;
     /**  */
     private final RcConfig config;
 
+    /***************************************************************************
+     * @param gpio
+     * @param config
+     * @throws IOException
+     **************************************************************************/
     public RcPiSignals( GpioController gpio, RcConfig config )
+        throws IOException
     {
         this.gpio = gpio;
         this.config = config;
-        this.timerA = new RcTimerPins();
-        this.timerS = new RcTimerPins();
-        this.timerD = new RcTimerPins();
+        this.timerA = new RcTimerPins(
+            config.timerAIn.resistance == PinResistance.PULL_DOWN );
+        this.timerS = new RcTimerPins(
+            config.timerSIn.resistance == PinResistance.PULL_DOWN );
+        this.timerD = new RcTimerPins(
+            config.timerDIn.resistance == PinResistance.PULL_DOWN );
         this.timerPins = new ArrayList<>();
         this.relay = RcMain.getRelay();
+
+        relay.initialize();
 
         timerPins.add( timerA );
         timerPins.add( timerS );
         timerPins.add( timerD );
     }
 
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
     @Override
     public void connect()
     {
@@ -49,6 +68,9 @@ public class RcPiSignals implements IRcSignals
         timerD.provision( gpio, config.timerDOut, config.timerDIn, 'D' );
     }
 
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
     @Override
     public void disconnect()
     {
@@ -57,6 +79,9 @@ public class RcPiSignals implements IRcSignals
         timerD.unprovisionAll( gpio );
     }
 
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
     @Override
     public void setLights( boolean red, boolean green, boolean blue )
     {
@@ -65,14 +90,20 @@ public class RcPiSignals implements IRcSignals
         relay.setRelay( 2, blue );
     }
 
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
     @Override
     public int getTimerCount()
     {
         return timerPins.size();
     }
 
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
     @Override
-    public void setTimerCallback( int index, Runnable callback )
+    public void setTimerCallback( int index, ITimerCallback callback )
     {
         timerPins.get( index ).setCallback( callback );
     }

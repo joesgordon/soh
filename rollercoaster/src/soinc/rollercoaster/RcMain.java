@@ -10,9 +10,9 @@ import org.jutils.ui.app.FrameRunner;
 
 import soinc.lib.gpio.SciolyGpio;
 import soinc.rollercoaster.data.RcOptions;
-import soinc.rollercoaster.relay.IRelay;
+import soinc.rollercoaster.relay.IRelays;
 import soinc.rollercoaster.relay.MockRelay;
-import soinc.rollercoaster.relay.Relay;
+import soinc.rollercoaster.relay.Relays;
 
 /*******************************************************************************
  * 
@@ -37,7 +37,7 @@ public class RcMain
     /***************************************************************************
      * @return
      **************************************************************************/
-    public static IRelay getRelay()
+    public static IRelays getRelay()
     {
         return getRelay( SciolyGpio.FAUX_CONNECT );
     }
@@ -46,14 +46,14 @@ public class RcMain
      * @param mock
      * @return
      **************************************************************************/
-    public static IRelay getRelay( boolean mock )
+    public static IRelays getRelay( boolean mock )
     {
         if( mock )
         {
             return new MockRelay();
         }
 
-        return new Relay();
+        return new Relays();
     }
 
     /***************************************************************************

@@ -261,6 +261,14 @@ public class PinDataTestView implements IDataView<PinData>
         // LogUtils.printDebug( "text: %s (%s)", pinLabel.getText(),
         // data.pinout.getName() );
 
+        if( data.gpio != null )
+        {
+            pullField.setValues( PinResistance.getValues(
+                data.gpio.hwPin.getSupportedPinPullResistance() ) );
+            dirField.setValues( GpioPinDirection.getValues(
+                data.gpio.hwPin.getSupportedPinModes() ) );
+        }
+
         dirField.setValue( data.direction );
         pullField.setValue( data.pullRes );
         levelField.setValue( data.defaultLevel );

@@ -103,4 +103,38 @@ public class RcCompetition
     {
         this.team = team;
     }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    public CompetitionState getState()
+    {
+        return state;
+    }
+
+    private static final class RcStateMachine
+    {
+        /**  */
+        private final RcCompetition competition;
+
+        /** The state of the competition. It should never be {@code null}. */
+        private CompetitionState state;
+
+        public RcStateMachine( RcCompetition competition )
+        {
+            this.competition = competition;
+
+            this.state = CompetitionState.NO_TEAM;
+        }
+
+        public void signalTeamLoaded()
+        {
+            // TODO set state
+        }
+
+        public void signalTimersStarted()
+        {
+            // TODO set state
+        }
+    }
 }

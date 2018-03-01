@@ -41,7 +41,6 @@ import soinc.rollercoaster.RcIcons;
 import soinc.rollercoaster.RcMain;
 import soinc.rollercoaster.data.RcCompetition;
 import soinc.rollercoaster.data.RcTeam;
-import soinc.rollercoaster.data.CompetitionState;
 
 /*******************************************************************************
  * 
@@ -99,7 +98,7 @@ public class RcCompetitionView implements IView<JFrame>
         this.stateField = UiUtils.createTextLabel( "-----", REG_FONT );
         this.run1Field = UiUtils.createNumLabel( "--.- s", REG_FONT );
         this.run2Field = UiUtils.createNumLabel( "--.- s", REG_FONT );
-        this.scoreField = new JLabel( CompetitionState.SCORE_TIME.icon );
+        this.scoreField = new JLabel();
 
         frame.setIconImages( icons );
         frame.setContentPane( createCompetitionPanel() );
@@ -174,12 +173,12 @@ public class RcCompetitionView implements IView<JFrame>
 
         constraints = new GridBagConstraints( 0, row, 1, 1, 0.5, 0.0,
             GridBagConstraints.NORTHEAST, GridBagConstraints.NONE,
-            new Insets( 20, 20, 0, 40 ), 0, 0 );
+            new Insets( 10, 20, 10, 40 ), 0, 0 );
         panel.add( timersPanel, constraints );
 
         constraints = new GridBagConstraints( 1, row++, 1, 1, 0.5, 0.0,
             GridBagConstraints.WEST, GridBagConstraints.NONE,
-            new Insets( 0, 40, 20, 20 ), 0, 0 );
+            new Insets( 10, 40, 10, 20 ), 0, 0 );
         panel.add( runsPanel, constraints );
 
         // ---------------------------------------------------------------------
@@ -412,8 +411,10 @@ public class RcCompetitionView implements IView<JFrame>
 
         // ---------------------------------------------------------------------
 
-        constraints = new GridBagConstraints( 1, 1, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
+        stateField.setText( competition.getState().name );
+
+        constraints = new GridBagConstraints( 0, 1, 2, 1, 0.0, 0.0,
+            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
             new Insets( 10, 20, 0, 0 ), 0, 0 );
         panel.add( stateField, constraints );
 
@@ -433,6 +434,8 @@ public class RcCompetitionView implements IView<JFrame>
         panel.setOpaque( false );
 
         // ---------------------------------------------------------------------
+
+        scoreField.setIcon( competition.getState().icon );
 
         constraints = new GridBagConstraints( 0, 0, 1, 1, 1.0, 1.0,
             GridBagConstraints.WEST, GridBagConstraints.NONE,

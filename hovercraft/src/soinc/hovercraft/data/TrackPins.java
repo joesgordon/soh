@@ -3,6 +3,7 @@ package soinc.hovercraft.data;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.PinEdge;
 
 import soinc.lib.gpio.SciolyGpio;
 
@@ -35,9 +36,9 @@ public class TrackPins
         this.config = config;
 
         this.startPin = SciolyGpio.provisionInputPin( gpio, config.startPin,
-            "Track Start", start );
+            "Track Start", start, PinEdge.RISING );
         this.stopPin = SciolyGpio.provisionInputPin( gpio, config.stopPin,
-            "Track Stop", stop );
+            "Track Stop", stop, PinEdge.RISING );
 
         this.redPin = SciolyGpio.provisionOuputPin( gpio, config.redPin,
             "Track Red" );

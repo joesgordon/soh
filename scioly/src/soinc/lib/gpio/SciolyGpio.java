@@ -77,36 +77,37 @@ public class SciolyGpio
     /***************************************************************************
      * @param gpio
      * @param pin
+     * @param shortName
+     * @param callback
+     * @return
+     **************************************************************************/
+    public static GpioPinDigitalInput provisionInputPin( GpioController gpio,
+        Pi3InputPin pin, String shortName, Runnable callback, PinEdge onEdge )
+    {
+        String name = shortName + ":" + pin.gpioPin.pin.pinout;
+        return provisionInputPin( gpio, pin.gpioPin, pin.resistance, name,
+            callback, onEdge );
+    }
+
+    /***************************************************************************
+     * @param gpio
+     * @param pin
      * @param name
      * @param callback
      * @return
      **************************************************************************/
     public static GpioPinDigitalInput provisionInputPin( GpioController gpio,
-        Pi3GpioPin pin, PinResistance res, String name, Runnable callback )
+        Pi3GpioPin pin, PinResistance res, String name, Runnable callback,
+        PinEdge onEdge )
     {
         GpioPinDigitalInput inputPin = gpio.provisionDigitalInputPin( pin.hwPin,
             name, res.res );
 
         inputPin.setShutdownOptions( true, PinState.LOW,
             PinPullResistance.OFF );
-        inputPin.addListener( new PhotogatePinListener( callback ) );
+        inputPin.addListener( new Pi3PinListener( callback, onEdge ) );
 
         return inputPin;
-    }
-
-    /***************************************************************************
-     * @param gpio
-     * @param pin
-     * @param shortName
-     * @param callback
-     * @return
-     **************************************************************************/
-    public static GpioPinDigitalInput provisionInputPin( GpioController gpio,
-        Pi3InputPin pin, String shortName, Runnable callback )
-    {
-        String name = shortName + ":" + pin.gpioPin.pin.pinout;
-        return provisionInputPin( gpio, pin.gpioPin, pin.resistance, name,
-            callback );
     }
 
     /***************************************************************************
@@ -142,16 +143,30 @@ public class SciolyGpio
     }
 
     /***************************************************************************
+     * @return
+     **************************************************************************/
+    public static GpioController getController()
+    {
+        return gpio;
+    }
+
+    /***************************************************************************
      * 
      **************************************************************************/
-    private static final class PhotogatePinListener
-        implements GpioPinListenerDigital
+    private static final class Pi3PinListener implements GpioPinListenerDigital
     {
-        private final Runnable r;
+        private final Runnable callback;
+        private final PinEdge onEdge;
 
-        public PhotogatePinListener( Runnable r )
+        public Pi3PinListener( Runnable callback )
         {
-            this.r = r;
+            this( callback, PinEdge.RISING );
+        }
+
+        public Pi3PinListener( Runnable callback, PinEdge onEdge )
+        {
+            this.callback = callback;
+            this.onEdge = onEdge;
         }
 
         @Override
@@ -165,18 +180,10 @@ public class SciolyGpio
             // p.getPin().getName(),
             // p.getPin().getAddress(), edge.getName() );
 
-            if( edge == PinEdge.RISING )
+            if( onEdge == null || edge == onEdge )
             {
-                r.run();
+                callback.run();
             }
         }
-    }
-
-    /***************************************************************************
-     * @return
-     **************************************************************************/
-    public static GpioController getController()
-    {
-        return gpio;
     }
 }

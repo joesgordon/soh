@@ -3,10 +3,12 @@ package soinc.rollercoaster.tasks;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.PinEdge;
 
 import soinc.lib.data.Pi3InputPin;
 import soinc.lib.data.Pi3OutputPin;
 import soinc.lib.gpio.SciolyGpio;
+import soinc.rollercoaster.IRcSignals.ITimerCallback;
 
 /*******************************************************************************
  * 
@@ -14,17 +16,25 @@ import soinc.lib.gpio.SciolyGpio;
 public class RcTimerPins
 {
     /**  */
+    private final boolean isInverted;
+
+    /**  */
     private GpioPinDigitalOutput outPin;
     /**  */
     private GpioPinDigitalInput inPin;
     /**  */
-    private Runnable callback;
+    private ITimerCallback callback;
 
-    public RcTimerPins()
+    /** */
+    private boolean started;
+
+    public RcTimerPins( boolean isInverted )
     {
+        this.isInverted = isInverted;
         this.outPin = null;
         this.inPin = null;
         this.callback = null;
+        this.started = false;
     }
 
     /***************************************************************************
@@ -40,11 +50,12 @@ public class RcTimerPins
         Pi3InputPin inputPin, char timer )
     {
         String timerStr = "Timer " + timer;
+        PinEdge edge = isInverted ? PinEdge.RISING : PinEdge.FALLING;
 
         this.outPin = SciolyGpio.provisionOuputPin( gpio, outputPin,
             timerStr + " Out" );
         this.inPin = SciolyGpio.provisionInputPin( gpio, inputPin,
-            timerStr + " In", () -> togglePin() );
+            timerStr + " In", () -> togglePin(), edge );
     }
 
     /***************************************************************************
@@ -58,13 +69,14 @@ public class RcTimerPins
 
     private void togglePin()
     {
+        this.started = !started;
         if( callback != null )
         {
-            callback.run();
+            callback.setTimerStarted( started );
         }
     }
 
-    public void setCallback( Runnable callback )
+    public void setCallback( ITimerCallback callback )
     {
         this.callback = callback;
     }

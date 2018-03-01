@@ -16,11 +16,11 @@ import org.jutils.ui.StandardFormView;
 import org.jutils.ui.model.IView;
 
 import soinc.rollercoaster.RcMain;
-import soinc.rollercoaster.relay.IRelay;
+import soinc.rollercoaster.relay.IRelays;
 
 public class RelayTestView implements IView<JComponent>
 {
-    private final IRelay relay;
+    private final IRelays relay;
     private final JPanel view;
 
     public RelayTestView()
@@ -63,12 +63,12 @@ public class RelayTestView implements IView<JComponent>
         private static final Color ON_COLOR = Color.GREEN;
         private static final Color OFF_COLOR = ON_COLOR.darker().darker().darker();
 
-        private final IRelay relay;
+        private final IRelays relay;
         private final int index;
         private final JPanel view;
         private final LedLabel statusLabel;
 
-        public RelayView( IRelay relay, int index )
+        public RelayView( IRelays relay, int index )
         {
             this.relay = relay;
             this.index = index;

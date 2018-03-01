@@ -2,7 +2,10 @@ package soinc.rollercoaster.relay;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.jutils.io.IOUtils;
@@ -10,12 +13,16 @@ import org.jutils.io.IOUtils;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class Relay implements IRelay
+public class Relays implements IRelays
 {
     /**  */
     public static final int BOARD_COUNT = 2;
     /**  */
+    private static final File RELAY_EXE = IOUtils.getInstallFile( "set_relay" );
+    /**  */
     public static final int RELAY_COUNT = BOARD_COUNT * 2;
+    /**  */
+    private static final String PREFIX = "usb-Devantec_Ltd._USB-RLY02._000";
 
     /**  */
     private final List<RelayBoard> boards;
@@ -23,15 +30,9 @@ public class Relay implements IRelay
     /***************************************************************************
      * 
      **************************************************************************/
-    public Relay()
+    public Relays()
     {
         this.boards = new ArrayList<>();
-
-        for( int b = 0; b < BOARD_COUNT; b++ )
-        {
-            File file = IOUtils.getInstallFile( "relay" + ( b + 1 ) );
-            boards.add( new RelayBoard( file.getAbsolutePath() ) );
-        }
     }
 
     /***************************************************************************
@@ -39,10 +40,10 @@ public class Relay implements IRelay
      **************************************************************************/
     private void runProcess( RelayBoard board )
     {
-        ProcessBuilder pb = new ProcessBuilder( board.file, board.getArg() );
+        ProcessBuilder pb = new ProcessBuilder( RELAY_EXE.getAbsolutePath(),
+            board.getArg() );
 
-        pb.redirectOutput( new File( "NUL" ) ).redirectErrorStream( true );
-        pb.redirectError( new File( "NUL" ) ).redirectErrorStream( true );
+        pb.inheritIO();
 
         try
         {
@@ -71,9 +72,66 @@ public class Relay implements IRelay
      * {@inheritDoc}
      **************************************************************************/
     @Override
+    public void initialize() throws IOException
+    {
+        File serialsDir = new File( "/dev/serial/by-id" );
+
+        if( !RELAY_EXE.isFile() )
+        {
+            throw new IOException( "Relay executable does not exist: " +
+                RELAY_EXE.getAbsolutePath() );
+        }
+
+        if( !serialsDir.isDirectory() )
+        {
+            throw new IOException(
+                "Directory does not exist: " + serialsDir.getAbsolutePath() );
+        }
+
+        File [] files = serialsDir.listFiles();
+
+        if( files == null )
+        {
+            throw new IOException(
+                "Unable to list files in " + serialsDir.getAbsolutePath() );
+        }
+
+        Arrays.sort( files );
+
+        for( File file : files )
+        {
+            if( file.getName().startsWith( PREFIX ) )
+            {
+                String relaySerial = file.getName().substring( PREFIX.length(),
+                    PREFIX.length() + 5 );
+                Path link = file.toPath();
+                try
+                {
+                    Path target = Files.readSymbolicLink( link );
+                    File targetFile = target.toFile();
+                    System.out.format( "Board %s links to %s", relaySerial,
+                        target.getFileName() );
+                    boards.add( new RelayBoard( targetFile.getName() ) );
+                }
+                catch( IOException x )
+                {
+                    System.err.println( x );
+                }
+            }
+        }
+
+        for( int b = 0; b < BOARD_COUNT; b++ )
+        {
+        }
+    }
+
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
+    @Override
     public int getRelayCount()
     {
-        return RELAY_COUNT;
+        return boards.size();
     }
 
     /***************************************************************************
@@ -198,7 +256,7 @@ public class Relay implements IRelay
 
         public String getArg()
         {
-            return ( relay1 ? "1" : "0" ) + ( relay2 ? "1" : "0" );
+            return file + " " + ( relay1 ? "1" : "0" ) + ( relay2 ? "1" : "0" );
         }
     }
 }

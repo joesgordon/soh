@@ -1,5 +1,9 @@
 package soinc.lib.data;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.jutils.INamedItem;
 
 import com.pi4j.io.gpio.PinPullResistance;
@@ -45,5 +49,21 @@ public enum PinResistance implements INamedItem
     public String getName()
     {
         return name;
+    }
+
+    public static List<PinResistance> getValues( Set<PinPullResistance> rset )
+    {
+        List<PinResistance> prs = new ArrayList<>( values().length );
+        for( PinPullResistance ppr : rset )
+        {
+            for( PinResistance pr : values() )
+            {
+                if( pr.res == ppr )
+                {
+                    prs.add( pr );
+                }
+            }
+        }
+        return prs;
     }
 }

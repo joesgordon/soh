@@ -3,6 +3,7 @@ package soinc.rollercoaster.ui;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.Action;
 import javax.swing.Icon;
@@ -29,9 +30,9 @@ import com.pi4j.io.gpio.GpioController;
 import soinc.lib.UiUtils;
 import soinc.lib.gpio.SciolyGpio;
 import soinc.rollercoaster.IRcSignals;
-import soinc.rollercoaster.RcPiSignals;
 import soinc.rollercoaster.RcIcons;
 import soinc.rollercoaster.RcMain;
+import soinc.rollercoaster.RcPiSignals;
 import soinc.rollercoaster.data.RcCompetition;
 import soinc.rollercoaster.data.RcOptions;
 
@@ -64,8 +65,7 @@ public class RcFrameView implements IView<JFrame>
         createMenubar( view.getMenuBar(), view.getFileMenu() );
 
         view.setContent( configView.getView() );
-        view.getView().setIconImages(
-            RcIcons.getRollercoasterIcons() );
+        view.getView().setIconImages( RcIcons.getRollercoasterIcons() );
         view.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         view.setSize( 1280, 800 );
         view.setTitle( "Roller Coaster" );
@@ -166,7 +166,17 @@ public class RcFrameView implements IView<JFrame>
             try
             {
                 GpioController gpio = SciolyGpio.startup();
-                IRcSignals signals = new RcPiSignals( gpio, options.config );
+                IRcSignals signals;
+                try
+                {
+                    signals = new RcPiSignals( gpio, options.config );
+                }
+                catch( IOException ex )
+                {
+                    // TODO Auto-generated catch block
+                    ex.printStackTrace();
+                    return;
+                }
                 RcCompetition competition = new RcCompetition( options.config,
                     signals );
 

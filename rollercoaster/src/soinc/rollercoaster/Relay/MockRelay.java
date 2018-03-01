@@ -1,15 +1,29 @@
 package soinc.rollercoaster.relay;
 
+import java.io.IOException;
+
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class MockRelay implements IRelay
+public class MockRelay implements IRelays
 {
+    /**  */
     private final boolean [] relays;
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     public MockRelay()
     {
-        this.relays = new boolean[Relay.RELAY_COUNT];
+        this.relays = new boolean[Relays.RELAY_COUNT];
+    }
+
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
+    @Override
+    public void initialize() throws IOException
+    {
     }
 
     /***************************************************************************
