@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 
 import org.jutils.SwingUtils;
 
@@ -13,16 +14,16 @@ import com.pi4j.io.gpio.GpioController;
 
 import soinc.lib.data.PinResistance;
 import soinc.rollercoaster.RcMain;
+import soinc.rollercoaster.data.RcCompetitionData;
 import soinc.rollercoaster.data.RcConfig;
 import soinc.rollercoaster.relay.IRelays;
+import soinc.rollercoaster.ui.RcCompetitionView;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
 public class RcPiSignals implements IRcSignals
 {
-    /**  */
-    private final JComponent view;
     /**  */
     private final GpioController gpio;
     /**  */
@@ -38,14 +39,16 @@ public class RcPiSignals implements IRcSignals
     /**  */
     private final RcConfig config;
 
+    /**  */
+    private RcCompetitionView view;
+
     /***************************************************************************
      * @param gpio
      * @param config
      * @throws IOException
      **************************************************************************/
-    public RcPiSignals( JComponent view, GpioController gpio, RcConfig config )
+    public RcPiSignals( GpioController gpio, RcConfig config )
     {
-        this.view = view;
         this.gpio = gpio;
         this.config = config;
         this.timerA = new RcTimerPins(
@@ -67,49 +70,58 @@ public class RcPiSignals implements IRcSignals
      * @param view
      **************************************************************************/
     @Override
-    public void connect( RcTeamCompetition competition ) throws IOException
+    public void connect( RcTeamCompetition competition, RcCompetitionView view )
+        throws IOException
     {
+        this.view = view;
+
         relay.initialize();
+
+        JComponent jview = view.getContent();
 
         ActionListener callback;
 
         // ---------------------------------------------------------------------
 
         callback = ( e ) -> competition.signalPeriodStart();
-        SwingUtils.addKeyListener( view, "F1", true, callback, "Period Start" );
+        SwingUtils.addKeyListener( jview, "F1", true, callback,
+            "Period Start" );
 
         // ---------------------------------------------------------------------
 
         callback = ( e ) -> competition.signalRunFinished( false );
-        SwingUtils.addKeyListener( view, "f", true, callback, "Fail Run" );
+        SwingUtils.addKeyListener( jview, "F", true, callback, "Fail Run" );
 
         callback = ( e ) -> competition.signalRunFinished( true );
-        SwingUtils.addKeyListener( view, "g", true, callback, "Accept Run" );
+        SwingUtils.addKeyListener( jview, "G", true, callback, "Accept Run" );
 
         // ---------------------------------------------------------------------
 
         callback = ( e ) -> timerA.togglePin();
-        SwingUtils.addKeyListener( view, "a", true, callback, "TimerA toggle" );
+        SwingUtils.addKeyListener( jview, "A", true, callback,
+            "TimerA toggle" );
 
         callback = ( e ) -> timerA.clear();
-        SwingUtils.addKeyListener( view, "j", true, callback, "TimerA clear" );
+        SwingUtils.addKeyListener( jview, "J", true, callback, "TimerA clear" );
 
         callback = ( e ) -> timerS.togglePin();
-        SwingUtils.addKeyListener( view, "s", true, callback, "TimerS toggle" );
+        SwingUtils.addKeyListener( jview, "S", true, callback,
+            "TimerS toggle" );
 
         callback = ( e ) -> timerS.clear();
-        SwingUtils.addKeyListener( view, "k", true, callback, "TimerS clear" );
+        SwingUtils.addKeyListener( jview, "K", true, callback, "TimerS clear" );
 
         callback = ( e ) -> timerD.togglePin();
-        SwingUtils.addKeyListener( view, "d", true, callback, "TimerD toggle" );
+        SwingUtils.addKeyListener( jview, "D", true, callback,
+            "TimerD toggle" );
 
         callback = ( e ) -> timerD.clear();
-        SwingUtils.addKeyListener( view, "l", true, callback, "TimerD clear" );
+        SwingUtils.addKeyListener( jview, "L", true, callback, "TimerD clear" );
 
         // ---------------------------------------------------------------------
 
         callback = ( e ) -> competition.signalClearTeam();
-        SwingUtils.addKeyListener( view, "F4", true, callback, "Clear team" );
+        SwingUtils.addKeyListener( jview, "F4", true, callback, "Clear team" );
 
         // ---------------------------------------------------------------------
 
@@ -156,5 +168,11 @@ public class RcPiSignals implements IRcSignals
     public void setTimerCallback( int index, ITimerCallback callback )
     {
         timerPins.get( index ).setCallback( callback );
+    }
+
+    @Override
+    public void updateUI( RcCompetitionData data )
+    {
+        SwingUtilities.invokeLater( () -> view.setData( data ) );
     }
 }

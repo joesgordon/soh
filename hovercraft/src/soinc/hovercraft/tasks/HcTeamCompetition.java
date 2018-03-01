@@ -18,7 +18,7 @@ import soinc.hovercraft.data.TrackState;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class TeamCompetition
+public class HcTeamCompetition
 {
     /**  */
     private final HoverConfig config;
@@ -42,7 +42,7 @@ public class TeamCompetition
      * @param track
      * @param gpio
      **************************************************************************/
-    public TeamCompetition( HoverConfig config, TrackCfg track,
+    public HcTeamCompetition( HoverConfig config, TrackCfg track,
         GpioController gpio )
     {
         Runnable start = () -> signalStartRun();

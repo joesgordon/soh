@@ -39,6 +39,7 @@ import org.jutils.ui.model.LabelListCellRenderer.IListCellLabelDecorator;
 import soinc.lib.UiUtils;
 import soinc.rollercoaster.RcIcons;
 import soinc.rollercoaster.RcMain;
+import soinc.rollercoaster.data.RcCompetitionData;
 import soinc.rollercoaster.data.RcTeam;
 import soinc.rollercoaster.tasks.RcTeamCompetition;
 
@@ -77,6 +78,8 @@ public class RcCompetitionView implements IView<JFrame>
     private final JLabel run2Field;
     /**  */
     private final JLabel scoreField;
+    /**  */
+    private final JComponent content;
 
     /***************************************************************************
      * @param competition
@@ -100,8 +103,10 @@ public class RcCompetitionView implements IView<JFrame>
         this.run2Field = UiUtils.createNumLabel( "--.- s", REG_FONT );
         this.scoreField = new JLabel();
 
+        this.content = createCompetitionPanel();
+
         frame.setIconImages( icons );
-        frame.setContentPane( createCompetitionPanel() );
+        frame.setContentPane( content );
         frame.setDefaultCloseOperation( JDialog.DO_NOTHING_ON_CLOSE );
         frame.addWindowListener( new CompetitionFrameListener( this ) );
         frame.setUndecorated( true );
@@ -471,6 +476,9 @@ public class RcCompetitionView implements IView<JFrame>
         }
     }
 
+    /**
+     * 
+     */
     private void showTeamChooser()
     {
         if( competition.isRunning() )
@@ -521,6 +529,11 @@ public class RcCompetitionView implements IView<JFrame>
         return frame;
     }
 
+    public JComponent getContent()
+    {
+        return content;
+    }
+
     /***************************************************************************
      * @param visible
      **************************************************************************/
@@ -542,6 +555,11 @@ public class RcCompetitionView implements IView<JFrame>
             frame.setVisible( false );
             frame.dispose();
         }
+    }
+
+    public void setData( RcCompetitionData data )
+    {
+
     }
 
     /**

@@ -166,15 +166,18 @@ public class RcFrameView implements IView<JFrame>
             try
             {
                 GpioController gpio = SciolyGpio.startup();
-                JComponent jview = ( JComponent )getView().getContentPane();
-                IRcSignals signals = new RcPiSignals( jview, gpio,
-                    options.config );
-                RcTeamCompetition competition = new RcTeamCompetition( options.config,
-                    signals );
+
+                IRcSignals signals = new RcPiSignals( gpio, options.config );
+
+                RcTeamCompetition competition = new RcTeamCompetition(
+                    options.config, signals );
+
+                this.competitionView = new RcCompetitionView( competition,
+                    getView().getIconImages(), getView().getSize() );
 
                 try
                 {
-                    competition.connect();
+                    competition.connect( competitionView );
                 }
                 catch( IOException ex )
                 {
@@ -182,9 +185,6 @@ public class RcFrameView implements IView<JFrame>
                         "Unable to connect to Pi " + ex.getMessage(),
                         "I/O Error" );
                 }
-
-                this.competitionView = new RcCompetitionView( competition,
-                    getView().getIconImages(), getView().getSize() );
 
                 JFrame frame = competitionView.getView();
 

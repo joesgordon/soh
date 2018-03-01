@@ -4,10 +4,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+
+import org.jutils.io.LogUtils;
 
 import soinc.rollercoaster.data.CompetitionState;
 import soinc.rollercoaster.data.IRcCompetitionConfig;
+import soinc.rollercoaster.data.RcCompetitionData;
 import soinc.rollercoaster.data.RcTeam;
+import soinc.rollercoaster.ui.RcCompetitionView;
 
 /*******************************************************************************
  * 
@@ -23,11 +28,10 @@ public class RcTeamCompetition
     private final RcTimers timers;
     /** The state of the competition. It should never be {@code null}. */
     private final RcStateMachine stateMachine;
-
-    /** Milliseconds */
-    private long periodStart;
     /**  */
-    private RcTeam team;
+    private final RcCompetitionData data;
+    /**  */
+    private final Timer timer;
 
     /***************************************************************************
      * @param config
@@ -39,6 +43,28 @@ public class RcTeamCompetition
         this.signals = signals;
         this.timers = new RcTimers( signals.getTimerCount() );
         this.stateMachine = new RcStateMachine( this );
+        this.data = new RcCompetitionData();
+        this.timer = new Timer( "RC Competition" );
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void updateState()
+    {
+        LogUtils.printDebug( "updating" );
+        // TODO Auto-generated method stub
+    }
+
+    /***************************************************************************
+     * @param competitionView
+     * @throws IOException
+     **************************************************************************/
+    public void connect( RcCompetitionView competitionView ) throws IOException
+    {
+
+        timer.scheduleAtFixedRate( new RunnableTask( () -> updateState() ), 100,
+            100 );
 
         for( int i = 0; i < signals.getTimerCount(); i++ )
         {
@@ -48,14 +74,8 @@ public class RcTeamCompetition
         }
 
         signalClearTeam();
-    }
 
-    /***************************************************************************
-     * @throws IOException
-     **************************************************************************/
-    public void connect() throws IOException
-    {
-        signals.connect( this );
+        signals.connect( this, competitionView );
     }
 
     /***************************************************************************
@@ -88,7 +108,7 @@ public class RcTeamCompetition
      **************************************************************************/
     public RcTeam getTeam()
     {
-        return team;
+        return data.team;
     }
 
     /***************************************************************************
@@ -104,7 +124,7 @@ public class RcTeamCompetition
      **************************************************************************/
     public boolean isRunning()
     {
-        return team != null;
+        return data.team != null;
     }
 
     public boolean areTimersComplete()
@@ -128,7 +148,7 @@ public class RcTeamCompetition
         String msg = stateMachine.signalTeamLoaded();
         if( msg != null )
         {
-            this.team = team;
+            data.team = team;
         }
         else
         {
@@ -146,7 +166,7 @@ public class RcTeamCompetition
 
         if( msg == null )
         {
-            this.periodStart = startTime;
+            data.periodStart = startTime;
         }
         else
         {
@@ -187,8 +207,7 @@ public class RcTeamCompetition
         String msg = stateMachine.signalClearTeam();
         if( msg == null )
         {
-            this.periodStart = -1L;
-            this.team = null;
+            data.reset();
         }
         else
         {

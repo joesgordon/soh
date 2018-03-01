@@ -18,7 +18,7 @@ import org.jutils.ui.model.IView;
 import soinc.hovercraft.HovercraftIcons;
 import soinc.hovercraft.data.HoverConfig;
 import soinc.hovercraft.tasks.HovercraftCompetition;
-import soinc.hovercraft.tasks.TeamCompetition;
+import soinc.hovercraft.tasks.HcTeamCompetition;
 import soinc.lib.UiUtils;
 
 /*******************************************************************************
@@ -29,17 +29,17 @@ public class HcCompetitionView implements IView<JComponent>
     /**  */
     private final JPanel view;
     /**  */
-    private final TeamCompetitionView track1View;
+    private final HcTeamCompetitionView track1View;
     /**  */
-    private final TeamCompetitionView track2View;
+    private final HcTeamCompetitionView track2View;
 
     /***************************************************************************
      * 
      **************************************************************************/
     public HcCompetitionView( HoverConfig config, HovercraftCompetition hc )
     {
-        this.track1View = new TeamCompetitionView( "Track 1", config, hc.track1 );
-        this.track2View = new TeamCompetitionView( "Track 2", config, hc.track2 );
+        this.track1View = new HcTeamCompetitionView( "Track 1", config, hc.track1 );
+        this.track2View = new HcTeamCompetitionView( "Track 2", config, hc.track2 );
 
         this.view = createView();
 
@@ -67,7 +67,7 @@ public class HcCompetitionView implements IView<JComponent>
      * @param startRunKey
      * @param stopRunKey
      **************************************************************************/
-    private static void addHotKeys( JComponent comp, TeamCompetition track,
+    private static void addHotKeys( JComponent comp, HcTeamCompetition track,
         String startPeriodKey, String failKey, String resetKey, String clearKey,
         String startRunKey, String stopRunKey )
     {
