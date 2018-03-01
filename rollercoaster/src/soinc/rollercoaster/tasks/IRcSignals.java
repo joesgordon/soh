@@ -1,4 +1,4 @@
-package soinc.rollercoaster;
+package soinc.rollercoaster.tasks;
 
 import java.io.IOException;
 
@@ -10,7 +10,7 @@ public interface IRcSignals
     /***************************************************************************
      * @throws IOException
      **************************************************************************/
-    public void connect() throws IOException;
+    public void connect( RcTeamCompetition competition ) throws IOException;
 
     /***************************************************************************
      * 

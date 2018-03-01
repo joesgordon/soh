@@ -37,7 +37,7 @@ import soinc.hovercraft.data.HoverConfig;
 import soinc.hovercraft.data.Team;
 import soinc.hovercraft.data.TrackData;
 import soinc.hovercraft.data.TrackState;
-import soinc.hovercraft.tasks.TrackCompetition;
+import soinc.hovercraft.tasks.TeamCompetition;
 import soinc.hovercraft.ui.RightClickMouseListener;
 import soinc.hovercraft.ui.TeamsView;
 import soinc.lib.SciolyIcons;
@@ -46,7 +46,7 @@ import soinc.lib.UiUtils;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class TrackView implements IView<JComponent>
+public class TeamCompetitionView implements IView<JComponent>
 {
     /**  */
     private static final Color WARNING_COLOR = new Color( 233, 153, 33 );
@@ -56,7 +56,7 @@ public class TrackView implements IView<JComponent>
     /**  */
     private final HoverConfig config;
     /**  */
-    private final TrackCompetition competition;
+    private final TeamCompetition competition;
     /**  */
     private final javax.swing.Timer updateTimer;
     /**  */
@@ -103,8 +103,8 @@ public class TrackView implements IView<JComponent>
     /***************************************************************************
      * @param trackName
      **************************************************************************/
-    public TrackView( String trackName, HoverConfig config,
-        TrackCompetition competition )
+    public TeamCompetitionView( String trackName, HoverConfig config,
+        TeamCompetition competition )
     {
         this.config = config;
         this.competition = competition;

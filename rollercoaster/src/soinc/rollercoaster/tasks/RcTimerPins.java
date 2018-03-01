@@ -8,7 +8,7 @@ import com.pi4j.io.gpio.PinEdge;
 import soinc.lib.data.Pi3InputPin;
 import soinc.lib.data.Pi3OutputPin;
 import soinc.lib.gpio.SciolyGpio;
-import soinc.rollercoaster.IRcSignals.ITimerCallback;
+import soinc.rollercoaster.tasks.IRcSignals.ITimerCallback;
 
 /*******************************************************************************
  * 
@@ -25,7 +25,7 @@ public class RcTimerPins
     /**  */
     private ITimerCallback callback;
 
-    /** */
+    /**  */
     private boolean started;
 
     public RcTimerPins( boolean isInverted )
@@ -67,7 +67,10 @@ public class RcTimerPins
         gpio.unprovisionPin( inPin );
     }
 
-    private void togglePin()
+    /**
+     * 
+     */
+    public void togglePin()
     {
         this.started = !started;
         if( callback != null )
@@ -79,5 +82,14 @@ public class RcTimerPins
     public void setCallback( ITimerCallback callback )
     {
         this.callback = callback;
+    }
+
+    public void clear()
+    {
+        if( started )
+        {
+            togglePin();
+        }
+
     }
 }

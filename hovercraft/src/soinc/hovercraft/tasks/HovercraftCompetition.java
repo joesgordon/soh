@@ -14,16 +14,16 @@ public class HovercraftCompetition
     public static HovercraftCompetition competition;
 
     /**  */
-    public final TrackCompetition track1;
+    public final TeamCompetition track1;
     /**  */
-    public final TrackCompetition track2;
+    public final TeamCompetition track2;
 
     /***************************************************************************
      * @param track1
      * @param track2
      **************************************************************************/
-    public HovercraftCompetition( TrackCompetition track1,
-        TrackCompetition track2 )
+    public HovercraftCompetition( TeamCompetition track1,
+        TeamCompetition track2 )
     {
         this.track1 = track1;
         this.track2 = track2;
@@ -51,9 +51,9 @@ public class HovercraftCompetition
 
         GpioController controller = SciolyGpio.startup();
 
-        TrackCompetition tc1 = new TrackCompetition( config, config.track1,
+        TeamCompetition tc1 = new TeamCompetition( config, config.track1,
             controller );
-        TrackCompetition tc2 = new TrackCompetition( config, config.track2,
+        TeamCompetition tc2 = new TeamCompetition( config, config.track2,
             controller );
 
         competition = new HovercraftCompetition( tc1, tc2 );

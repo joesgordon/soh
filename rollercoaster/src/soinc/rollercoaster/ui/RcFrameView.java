@@ -29,12 +29,12 @@ import com.pi4j.io.gpio.GpioController;
 
 import soinc.lib.UiUtils;
 import soinc.lib.gpio.SciolyGpio;
-import soinc.rollercoaster.IRcSignals;
 import soinc.rollercoaster.RcIcons;
 import soinc.rollercoaster.RcMain;
-import soinc.rollercoaster.RcPiSignals;
-import soinc.rollercoaster.data.RcCompetition;
 import soinc.rollercoaster.data.RcOptions;
+import soinc.rollercoaster.tasks.IRcSignals;
+import soinc.rollercoaster.tasks.RcPiSignals;
+import soinc.rollercoaster.tasks.RcTeamCompetition;
 
 /*******************************************************************************
  *
@@ -166,8 +166,10 @@ public class RcFrameView implements IView<JFrame>
             try
             {
                 GpioController gpio = SciolyGpio.startup();
-                IRcSignals signals = new RcPiSignals( gpio, options.config );
-                RcCompetition competition = new RcCompetition( options.config,
+                JComponent jview = ( JComponent )getView().getContentPane();
+                IRcSignals signals = new RcPiSignals( jview, gpio,
+                    options.config );
+                RcTeamCompetition competition = new RcTeamCompetition( options.config,
                     signals );
 
                 try

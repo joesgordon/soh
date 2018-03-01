@@ -39,8 +39,8 @@ import org.jutils.ui.model.LabelListCellRenderer.IListCellLabelDecorator;
 import soinc.lib.UiUtils;
 import soinc.rollercoaster.RcIcons;
 import soinc.rollercoaster.RcMain;
-import soinc.rollercoaster.data.RcCompetition;
 import soinc.rollercoaster.data.RcTeam;
+import soinc.rollercoaster.tasks.RcTeamCompetition;
 
 /*******************************************************************************
  * 
@@ -53,7 +53,7 @@ public class RcCompetitionView implements IView<JFrame>
     private static final float REG_FONT = UiUtils.DEFAULT_FONT_SIZE;
 
     /**  */
-    private final RcCompetition competition;
+    private final RcTeamCompetition competition;
 
     /**  */
     private final JFrame frame;
@@ -83,7 +83,7 @@ public class RcCompetitionView implements IView<JFrame>
      * @param icons
      * @param dimension
      **************************************************************************/
-    public RcCompetitionView( RcCompetition competition, List<Image> icons,
+    public RcCompetitionView( RcTeamCompetition competition, List<Image> icons,
         Dimension size )
     {
         this.competition = competition;
@@ -549,7 +549,7 @@ public class RcCompetitionView implements IView<JFrame>
      */
     private void reset()
     {
-        competition.reset();
+        competition.signalClearTeam();
 
         if( competition.config.getTeams().isEmpty() )
         {
@@ -570,7 +570,7 @@ public class RcCompetitionView implements IView<JFrame>
 
     private void unloadTeam()
     {
-        competition.reset();
+        competition.signalClearTeam();
         reset();
     }
 
@@ -579,7 +579,7 @@ public class RcCompetitionView implements IView<JFrame>
         teamButton.setText( team.name );
         teamButton.setEnabled( false );
 
-        competition.loadTeam( team );
+        competition.signalLoadTeam( team );
 
         // TODO Auto-generated method stub
     }
