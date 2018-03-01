@@ -37,7 +37,6 @@ public class RcPiSignals implements IRcSignals
      * @throws IOException
      **************************************************************************/
     public RcPiSignals( GpioController gpio, RcConfig config )
-        throws IOException
     {
         this.gpio = gpio;
         this.config = config;
@@ -50,8 +49,6 @@ public class RcPiSignals implements IRcSignals
         this.timerPins = new ArrayList<>();
         this.relay = RcMain.getRelay();
 
-        relay.initialize();
-
         timerPins.add( timerA );
         timerPins.add( timerS );
         timerPins.add( timerD );
@@ -61,8 +58,10 @@ public class RcPiSignals implements IRcSignals
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public void connect()
+    public void connect() throws IOException
     {
+        relay.initialize();
+
         timerA.provision( gpio, config.timerAOut, config.timerAIn, 'A' );
         timerS.provision( gpio, config.timerSOut, config.timerSIn, 'S' );
         timerD.provision( gpio, config.timerDOut, config.timerDIn, 'D' );

@@ -158,10 +158,10 @@ public class SciolyGpio
         private final Runnable callback;
         private final PinEdge onEdge;
 
-        public Pi3PinListener( Runnable callback )
-        {
-            this( callback, PinEdge.RISING );
-        }
+        // public Pi3PinListener( Runnable callback )
+        // {
+        // this( callback, PinEdge.RISING );
+        // }
 
         public Pi3PinListener( Runnable callback, PinEdge onEdge )
         {

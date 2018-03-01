@@ -1,5 +1,6 @@
 package soinc.rollercoaster.data;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,9 +38,9 @@ public class RcCompetition
     }
 
     /***************************************************************************
-     * 
+     * @throws IOException
      **************************************************************************/
-    public void connect()
+    public void connect() throws IOException
     {
         signals.connect();
     }
