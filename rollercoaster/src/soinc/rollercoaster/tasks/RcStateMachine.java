@@ -115,9 +115,7 @@ public class RcStateMachine
             this.state = CompetitionState.COMPLETE;
             return null;
         }
-        else if( this.state == CompetitionState.SCORE_TIME ||
-            this.state == CompetitionState.PENALTY_TIME ||
-            this.state == CompetitionState.FAILED_TIME )
+        else if( this.state.isRunning )
         {
             return null;
         }
@@ -130,9 +128,7 @@ public class RcStateMachine
      **************************************************************************/
     public String signalRunFinished()
     {
-        if( this.state == CompetitionState.SCORE_TIME ||
-            this.state == CompetitionState.PENALTY_TIME ||
-            this.state == CompetitionState.FAILED_TIME )
+        if( this.state.isRunning )
         {
             RcCompetitionData data = competition.getData();
             if( data.run1State.isComplete )
@@ -174,8 +170,9 @@ public class RcStateMachine
             this.state == CompetitionState.NO_TEAM )
         {
             this.state = CompetitionState.NO_TEAM;
+            return null;
         }
 
-        return "Unable to clear track from state " + this.state;
+        return "Unable to clear team from state " + this.state;
     }
 }

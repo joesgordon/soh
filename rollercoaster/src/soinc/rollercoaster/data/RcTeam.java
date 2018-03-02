@@ -12,6 +12,8 @@ public class RcTeam
     public int run2Time;
     /**  */
     public boolean loaded;
+    /**  */
+    public boolean complete;
 
     /***************************************************************************
      * @param name
@@ -22,10 +24,6 @@ public class RcTeam
         this.run1Time = -1;
         this.run2Time = -1;
         this.loaded = false;
-    }
-
-    public boolean isRunsComplete()
-    {
-        return ( run1Time > 0 && run2Time > 0 );
+        this.complete = false;
     }
 }

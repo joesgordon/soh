@@ -622,10 +622,17 @@ public class RcCompetitionView implements IView<JFrame>
 
         if( data.periodTime != compData.periodTime )
         {
-            TimeDuration d = new TimeDuration( data.periodTime );
-            String time = String.format( "%1d:%02d ", d.totalMinutes,
-                d.seconds );
-            periodField.setText( time );
+            if( data.periodTime > -1 )
+            {
+                TimeDuration d = new TimeDuration( data.periodTime );
+                String time = String.format( "%1d:%02d", d.totalMinutes,
+                    d.seconds );
+                periodField.setText( time );
+            }
+            else
+            {
+                periodField.setText( "-:--" );
+            }
         }
 
         setTimer( data, timerAField, 0 );
@@ -713,7 +720,7 @@ public class RcCompetitionView implements IView<JFrame>
 
         if( duration < 0 )
         {
-            time = "-:--.-";
+            time = "--.- s";
         }
         else
         {

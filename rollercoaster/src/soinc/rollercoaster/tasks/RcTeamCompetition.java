@@ -72,28 +72,18 @@ public class RcTeamCompetition
             if( data.officialTime > config.getTargetTime() * 1000 &&
                 data.state == CompetitionState.SCORE_TIME )
             {
-                String msg = stateMachine.signalTargetTimeElapsed();
-                if( msg == null )
-                {
-                    data.state = stateMachine.getState();
-                }
-                else
-                {
-                    showErrorMessage( msg );
-                }
+                signalTargetTimeElapsed();
             }
             else if( data.officialTime > config.getRunTimeout() * 1000 &&
                 data.state == CompetitionState.PENALTY_TIME )
             {
-                String msg = stateMachine.signalMaxRunTimeElapsed();
-                if( msg == null )
-                {
-                    data.state = stateMachine.getState();
-                }
-                else
-                {
-                    showErrorMessage( msg );
-                }
+                signalMaxRunTimeElapsed();
+            }
+
+            if( data.periodTime > config.getPeriodTime() * 1000 &&
+                !data.state.isRunning )
+            {
+                signalPeriodElapsed();
             }
         }
 
@@ -106,7 +96,6 @@ public class RcTeamCompetition
      **************************************************************************/
     public void connect( RcCompetitionView competitionView ) throws IOException
     {
-
         timer.scheduleAtFixedRate( new RunnableTask( () -> updateState() ), 100,
             100 );
 
@@ -181,6 +170,26 @@ public class RcTeamCompetition
     }
 
     /***************************************************************************
+     * 
+     **************************************************************************/
+    private void setPeriodComplete()
+    {
+        periodTimer.stop();
+        if( data.run1State == RunState.NOT_RUN )
+        {
+            data.run1State = RunState.FAILED;
+        }
+        if( data.run2State == RunState.NOT_RUN )
+        {
+            data.run2State = RunState.FAILED;
+        }
+        timers.clear();
+        timers.setData( data );
+
+        data.team.complete = true;
+    }
+
+    /***************************************************************************
      * @param message
      **************************************************************************/
     private void showErrorMessage( String message )
@@ -200,6 +209,7 @@ public class RcTeamCompetition
         {
             this.data.state = stateMachine.getState();
             data.team = team;
+            data.team.loaded = true;
         }
         else
         {
@@ -229,7 +239,6 @@ public class RcTeamCompetition
         }
         else
         {
-            periodTimer.stop();
             showErrorMessage( msg );
         }
     }
@@ -313,6 +322,55 @@ public class RcTeamCompetition
             this.data.state = stateMachine.getState();
 
             timers.clear();
+
+            if( data.state == CompetitionState.COMPLETE )
+            {
+                setPeriodComplete();
+            }
+        }
+        else
+        {
+            showErrorMessage( msg );
+        }
+    }
+
+    private void signalTargetTimeElapsed()
+    {
+        String msg = stateMachine.signalTargetTimeElapsed();
+        if( msg == null )
+        {
+            data.state = stateMachine.getState();
+        }
+        else
+        {
+            showErrorMessage( msg );
+        }
+    }
+
+    private void signalMaxRunTimeElapsed()
+    {
+        String msg = stateMachine.signalMaxRunTimeElapsed();
+        if( msg == null )
+        {
+            data.state = stateMachine.getState();
+        }
+        else
+        {
+            showErrorMessage( msg );
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void signalPeriodElapsed()
+    {
+        String msg = stateMachine.signalPeriodTimeElapsed();
+
+        if( msg == null )
+        {
+            setPeriodComplete();
+            this.data.state = stateMachine.getState();
         }
         else
         {

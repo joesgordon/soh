@@ -20,9 +20,9 @@ import org.jutils.ui.model.IDataView;
 import soinc.lib.ui.Pi3InputPinField;
 import soinc.lib.ui.Pi3OutputPinField;
 import soinc.rollercoaster.RcMain;
-import soinc.rollercoaster.data.RcTeam;
 import soinc.rollercoaster.data.RcConfig;
 import soinc.rollercoaster.data.RcOptions;
+import soinc.rollercoaster.data.RcTeam;
 
 /*******************************************************************************
  * 
@@ -38,17 +38,17 @@ public class RcConfigView implements IDataView<RcConfig>
     /**  */
     private final IntegerFormField trailTimeoutField;
     /**  */
-    private final Pi3InputPinField timerAInField;
-    /**  */
-    private final Pi3InputPinField timerSInField;
-    /**  */
-    private final Pi3InputPinField timerDInField;
-    /**  */
     private final Pi3OutputPinField timerAOutField;
     /**  */
     private final Pi3OutputPinField timerSOutField;
     /**  */
     private final Pi3OutputPinField timerDOutField;
+    /**  */
+    private final Pi3InputPinField timerAInField;
+    /**  */
+    private final Pi3InputPinField timerSInField;
+    /**  */
+    private final Pi3InputPinField timerDInField;
     /**  */
     private final ListView<RcTeam> teamsView;
 
@@ -134,14 +134,14 @@ public class RcConfigView implements IDataView<RcConfig>
         form.addField( trailTimeoutField );
         form.addField( targetTimeField );
 
-        form.addField( timerAInField );
         form.addField( timerAOutField );
+        form.addField( timerAInField );
 
-        form.addField( timerSInField );
         form.addField( timerSOutField );
+        form.addField( timerSInField );
 
-        form.addField( timerDInField );
         form.addField( timerDOutField );
+        form.addField( timerDInField );
 
         return form.getView();
     }

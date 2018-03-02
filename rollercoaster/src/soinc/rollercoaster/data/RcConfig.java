@@ -28,17 +28,19 @@ public class RcConfig implements IRcCompetitionConfig
     public final List<RcTeam> teams;
 
     /**  */
-    public final Pi3InputPin timerAIn;
-    /**  */
     public final Pi3OutputPin timerAOut;
     /**  */
-    public final Pi3InputPin timerSIn;
+    public final Pi3InputPin timerAIn;
+
     /**  */
     public final Pi3OutputPin timerSOut;
     /**  */
-    public final Pi3InputPin timerDIn;
+    public final Pi3InputPin timerSIn;
+
     /**  */
     public final Pi3OutputPin timerDOut;
+    /**  */
+    public final Pi3InputPin timerDIn;
 
     /***************************************************************************
      * 
