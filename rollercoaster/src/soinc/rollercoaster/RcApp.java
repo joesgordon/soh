@@ -11,13 +11,15 @@ import soinc.rollercoaster.ui.RcFrameView;
  ******************************************************************************/
 public class RcApp implements IFrameApp
 {
+    private RcFrameView frameView = null;
+
     /***************************************************************************
      * {@inheritDoc}
      **************************************************************************/
     @Override
     public JFrame createFrame()
     {
-        RcFrameView frameView = new RcFrameView();
+        frameView = new RcFrameView();
 
         return frameView.getView();
     }
@@ -28,5 +30,6 @@ public class RcApp implements IFrameApp
     @Override
     public void finalizeGui()
     {
+        frameView.getView().setLocation( 0, 0 );
     }
 }

@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Timer;
 
 import org.jutils.io.LogUtils;
+import org.jutils.utils.Stopwatch;
 
 import soinc.rollercoaster.data.CompetitionState;
 import soinc.rollercoaster.data.IRcCompetitionConfig;
 import soinc.rollercoaster.data.RcCompetitionData;
+import soinc.rollercoaster.data.RcCompetitionData.RunState;
 import soinc.rollercoaster.data.RcTeam;
 import soinc.rollercoaster.ui.RcCompetitionView;
 
@@ -34,7 +36,7 @@ public class RcTeamCompetition
     private final Timer timer;
 
     /**  */
-    private long periodStart;
+    private final Stopwatch periodTimer;
 
     /***************************************************************************
      * @param config
@@ -48,6 +50,11 @@ public class RcTeamCompetition
         this.stateMachine = new RcStateMachine( this );
         this.data = new RcCompetitionData( signals.getTimerCount() );
         this.timer = new Timer( "RC Competition" );
+        this.periodTimer = new Stopwatch();
+
+        this.periodTimer.stop();
+
+        signalClearTeam();
     }
 
     /***************************************************************************
@@ -55,8 +62,42 @@ public class RcTeamCompetition
      **************************************************************************/
     private void updateState()
     {
-        LogUtils.printDebug( "updating" );
-        // TODO Auto-generated method stub
+        // LogUtils.printDebug( "updating" );
+
+        if( !periodTimer.isStopped() )
+        {
+            this.data.periodTime = periodTimer.getElapsed();
+            timers.setData( data );
+
+            if( data.officialTime > config.getTargetTime() * 1000 &&
+                data.state == CompetitionState.SCORE_TIME )
+            {
+                String msg = stateMachine.signalTargetTimeElapsed();
+                if( msg == null )
+                {
+                    data.state = stateMachine.getState();
+                }
+                else
+                {
+                    showErrorMessage( msg );
+                }
+            }
+            else if( data.officialTime > config.getRunTimeout() * 1000 &&
+                data.state == CompetitionState.PENALTY_TIME )
+            {
+                String msg = stateMachine.signalMaxRunTimeElapsed();
+                if( msg == null )
+                {
+                    data.state = stateMachine.getState();
+                }
+                else
+                {
+                    showErrorMessage( msg );
+                }
+            }
+        }
+
+        signals.updateUI( new RcCompetitionData( data ) );
     }
 
     /***************************************************************************
@@ -131,16 +172,20 @@ public class RcTeamCompetition
         return data.team != null;
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
     public boolean areTimersComplete()
     {
         return timers.areComplete();
     }
 
-    /**
+    /***************************************************************************
      * @param message
-     */
+     **************************************************************************/
     private void showErrorMessage( String message )
     {
+        LogUtils.printError( message );
         // TODO show error
     }
 
@@ -150,8 +195,10 @@ public class RcTeamCompetition
     public void signalLoadTeam( RcTeam team )
     {
         String msg = stateMachine.signalTeamLoaded();
-        if( msg != null )
+
+        if( msg == null )
         {
+            this.data.state = stateMachine.getState();
             data.team = team;
         }
         else
@@ -160,47 +207,117 @@ public class RcTeamCompetition
         }
     }
 
-    /**
+    /***************************************************************************
      * 
-     */
+     **************************************************************************/
     public void signalPeriodStart()
     {
-        long startTime = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
         String msg = stateMachine.signalPeriodStarted();
 
         if( msg == null )
         {
-            this.periodStart = startTime;
+            if( periodTimer.isStopped() )
+            {
+                periodTimer.start( now );
+            }
+            else
+            {
+                periodTimer.pauseResume( now );
+            }
+            this.data.state = stateMachine.getState();
         }
         else
         {
+            periodTimer.stop();
             showErrorMessage( msg );
         }
     }
 
-    /**
+    /***************************************************************************
      * @param index
-     * @param started
-     */
-    public void signalTimerStart( int index, boolean started )
+     * @param start
+     **************************************************************************/
+    public void signalTimerStart( int index, boolean start )
     {
-        String msg = stateMachine.signalTimersStarted();
-        if( msg != null )
+        if( !timers.hasStarted() )
         {
-            timers.setTimerStarted( index, started );
+            String msg = stateMachine.signalTimersStarted();
+            if( msg == null )
+            {
+                this.data.state = stateMachine.getState();
+                if( data.run1State.isComplete )
+                {
+                    data.run2State = RunState.RUNNING;
+                }
+                else
+                {
+                    data.run1State = RunState.RUNNING;
+                }
+                timers.setTimerStarted( index, start );
+            }
+            else
+            {
+                showErrorMessage( msg );
+            }
         }
         else
         {
-            showErrorMessage( msg );
+            boolean timerHasStopped = timers.hasStopped( index );
+
+            boolean timerHasStarted = timers.hasStarted( index );
+
+            if( start && !timerHasStarted )
+            {
+                timers.setTimerStarted( index, start );
+            }
+            else if( !start && timerHasStarted && !timerHasStopped )
+            {
+                timers.setTimerStarted( index, start );
+            }
+            else
+            {
+                String action = start ? "start" : "stop";
+                String state = timerHasStarted ? "has started"
+                    : "has not started";
+                String msg = "Unable to " + action + " when " + index + " " +
+                    state;
+
+                showErrorMessage( msg );
+            }
         }
     }
 
-    /**
+    /***************************************************************************
      * @param goodRun
-     */
+     **************************************************************************/
     public void signalRunFinished( boolean goodRun )
     {
-        // TODO Auto-generated method stub
+        String msg = stateMachine.signalRunFinished();
+
+        if( msg == null )
+        {
+            RunState rs = goodRun ? RunState.SUCCESS : RunState.FAILED;
+
+            if( data.run1State == RunState.RUNNING )
+            {
+                data.run1State = rs;
+                data.run1Time = timers.getOfficialDuration();
+            }
+            else if( data.run2State == RunState.RUNNING )
+            {
+                data.run2State = rs;
+                data.run2Time = timers.getOfficialDuration();
+            }
+
+            this.data.state = stateMachine.getState();
+
+            timers.clear();
+        }
+        else
+        {
+            showErrorMessage( msg );
+        }
     }
 
     /***************************************************************************
@@ -209,9 +326,12 @@ public class RcTeamCompetition
     public void signalClearTeam()
     {
         String msg = stateMachine.signalClearTeam();
+
         if( msg == null )
         {
-            this.periodStart = -1L;
+            this.data.state = stateMachine.getState();
+            periodTimer.stop();
+            timers.clear();
             data.reset();
         }
         else
@@ -225,40 +345,91 @@ public class RcTeamCompetition
      **************************************************************************/
     private static final class RcTimers
     {
-        private final long [] startTimes;
-        private final long [] stopTimes;
-        private final long [] durations;
+        /**  */
+        private final Stopwatch [] timers;
+        /**  */
+        private final boolean [] used;
 
+        /**
+         * @param timerCount
+         */
         public RcTimers( int timerCount )
         {
-            this.startTimes = new long[timerCount];
-            this.stopTimes = new long[timerCount];
-            this.durations = new long[timerCount];
+            this.timers = new Stopwatch[timerCount];
+            this.used = new boolean[timerCount];
 
-            for( int i = 0; i < startTimes.length; i++ )
+            for( int i = 0; i < timers.length; i++ )
             {
-                startTimes[i] = -1L;
-                stopTimes[i] = -1L;
-                durations[i] = 0L;
+                timers[i] = new Stopwatch();
+                timers[i].stop();
+                used[i] = false;
             }
         }
 
+        public boolean hasStopped( int index )
+        {
+            return used[index] && timers[index].isStopped();
+        }
+
+        public void setData( RcCompetitionData data )
+        {
+            long now = System.currentTimeMillis();
+            for( int i = 0; i < timers.length; i++ )
+            {
+                if( used[i] )
+                {
+                    data.timers[i] = timers[i].getElapsed( now );
+                }
+                else
+                {
+                    data.timers[i] = -1L;
+                }
+            }
+
+            data.officialTime = getOfficialDuration( now );
+        }
+
+        /**
+         * @return
+         */
         public boolean areComplete()
         {
-            // TODO Auto-generated method stub
-            return false;
+            for( int i = 0; i < timers.length; i++ )
+            {
+                if( !timers[i].isStopped() )
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
+        /**
+         * @param index
+         * @param started
+         */
         public void setTimerStarted( int index, boolean started )
         {
-            startTimes[index] = started ? System.currentTimeMillis() : -1;
+            if( started )
+            {
+                timers[index].start();
+                used[index] = true;
+            }
+            else
+            {
+                timers[index].stop();
+            }
         }
 
+        /**
+         * @return
+         */
         public boolean hasStarted()
         {
-            for( int i = 0; i < startTimes.length; i++ )
+            for( int i = 0; i < timers.length; i++ )
             {
-                if( startTimes[i] > -1 )
+                if( used[i] )
                 {
                     return true;
                 }
@@ -267,34 +438,50 @@ public class RcTeamCompetition
             return false;
         }
 
+        public boolean hasStarted( int index )
+        {
+            return used[index];
+        }
+
+        /**
+         * @return
+         */
         public long getOfficialDuration()
         {
             return getOfficialDuration( -1L );
         }
 
+        /**
+         * @param end
+         * @return
+         */
         private long getOfficialDuration( long end )
         {
             long sum = 0L;
             int count = 0;
+            long [] durations = new long[timers.length];
 
-            for( int i = 0; i < startTimes.length; i++ )
+            for( int i = 0; i < timers.length; i++ )
             {
-                long start = startTimes[i];
-                if( start > -1L )
+                if( used[i] )
                 {
-                    long stop = end < 0 ? stopTimes[i] : end;
-
-                    durations[i] = stop - start;
-
+                    if( end > -1L )
+                    {
+                        durations[i] = timers[i].getElapsed( end );
+                    }
+                    else
+                    {
+                        durations[i] = timers[i].getElapsed();
+                    }
+                    sum += durations[i];
                     count++;
-                    sum += start;
                 }
             }
 
             switch( ( int )count )
             {
                 case 0:
-                    return 0L;
+                    return -1L;
 
                 case 1:
                 {
@@ -312,8 +499,22 @@ public class RcTeamCompetition
 
                 default:
                     Arrays.sort( durations );
-                    return durations[count + ( durations.length - count ) / 2];
+                    return durations[durations.length - count + ( count ) / 2];
             }
         }
+
+        public void clear()
+        {
+            for( int i = 0; i < timers.length; i++ )
+            {
+                timers[i].stop();
+                used[i] = false;
+            }
+        }
+    }
+
+    public RcCompetitionData getData()
+    {
+        return new RcCompetitionData( data );
     }
 }

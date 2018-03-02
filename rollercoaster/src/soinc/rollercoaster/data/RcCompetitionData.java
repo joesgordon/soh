@@ -67,9 +67,16 @@ public class RcCompetitionData
 
     public static enum RunState
     {
-        NOT_RUN,
-        RUNNING,
-        FAILED,
-        SUCCESS;
+        NOT_RUN( false ),
+        RUNNING( false ),
+        FAILED( true ),
+        SUCCESS( true );
+
+        public final boolean isComplete;
+
+        private RunState( boolean isComplete )
+        {
+            this.isComplete = isComplete;
+        }
     }
 }

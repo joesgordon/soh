@@ -28,6 +28,9 @@ public class RcTimerPins
     /**  */
     private boolean started;
 
+    /***************************************************************************
+     * @param isInverted
+     **************************************************************************/
     public RcTimerPins( boolean isInverted )
     {
         this.isInverted = isInverted;
@@ -67,9 +70,9 @@ public class RcTimerPins
         gpio.unprovisionPin( inPin );
     }
 
-    /**
+    /***************************************************************************
      * 
-     */
+     **************************************************************************/
     public void togglePin()
     {
         this.started = !started;
@@ -79,17 +82,22 @@ public class RcTimerPins
         }
     }
 
+    /***************************************************************************
+     * @param callback
+     **************************************************************************/
     public void setCallback( ITimerCallback callback )
     {
         this.callback = callback;
     }
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     public void clear()
     {
         if( started )
         {
             togglePin();
         }
-
     }
 }

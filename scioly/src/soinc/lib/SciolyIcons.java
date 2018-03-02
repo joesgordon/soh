@@ -48,7 +48,7 @@ public class SciolyIcons
      **************************************************************************/
     public static Icon getCheckIcon( int size )
     {
-        return getScaledIcon( loader.getImage( "check.png" ), size, size );
+        return getScaledIcon( loader.getImage( "check36.png" ), size, size );
     }
 
     /***************************************************************************
@@ -57,7 +57,7 @@ public class SciolyIcons
      **************************************************************************/
     public static Icon getXIcon( int size )
     {
-        return getScaledIcon( loader.getImage( "fail2.png" ), size, size );
+        return getScaledIcon( loader.getImage( "fail36.png" ), size, size );
     }
 
     /***************************************************************************

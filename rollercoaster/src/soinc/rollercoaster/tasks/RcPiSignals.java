@@ -170,6 +170,21 @@ public class RcPiSignals implements IRcSignals
         timerPins.get( index ).setCallback( callback );
     }
 
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
+    @Override
+    public void clearTimers()
+    {
+        for( RcTimerPins pin : timerPins )
+        {
+            pin.clear();
+        }
+    }
+
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
     @Override
     public void updateUI( RcCompetitionData data )
     {

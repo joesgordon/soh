@@ -69,6 +69,7 @@ public class RcFrameView implements IView<JFrame>
         view.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         view.setSize( 1280, 800 );
         view.setTitle( "Roller Coaster" );
+        view.getView().setLocation( 0, 0 );
     }
 
     /***************************************************************************
