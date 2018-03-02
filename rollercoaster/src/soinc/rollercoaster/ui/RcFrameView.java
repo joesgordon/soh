@@ -197,6 +197,7 @@ public class RcFrameView implements IView<JFrame>
                 UiUtils.addHotKey( comp, "ESCAPE", hideListener );
 
                 // setFullScreen( true );
+                configView.deselectTeams();
 
                 competitionView.setVisible( true );
             }
@@ -207,7 +208,8 @@ public class RcFrameView implements IView<JFrame>
                 return;
             }
         }
-        else if( !show && competitionView != null )
+        else if( !show && competitionView != null &&
+            !competitionView.isRunning() )
         {
             competitionView.setVisible( false );
             competitionView = null;

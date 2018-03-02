@@ -21,12 +21,12 @@ import org.jutils.ui.fields.StringFormField;
 import org.jutils.ui.model.IDataView;
 
 import soinc.hovercraft.data.Division;
-import soinc.hovercraft.data.Team;
+import soinc.hovercraft.data.HcTeam;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class TeamView implements IDataView<Team>
+public class TeamView implements IDataView<HcTeam>
 {
     /**  */
     private final JPanel view;
@@ -44,7 +44,7 @@ public class TeamView implements IDataView<Team>
     private final BooleanFormField loadedField;
 
     /**  */
-    private Team team;
+    private HcTeam team;
 
     /***************************************************************************
      * 
@@ -62,7 +62,7 @@ public class TeamView implements IDataView<Team>
         this.loadedField = new BooleanFormField( "Loaded" );
         this.view = createView();
 
-        setData( new Team() );
+        setData( new HcTeam() );
 
         nameField.setUpdater(
             new ReflectiveUpdater<>( this, "team.schoolCode" ) );
@@ -145,7 +145,7 @@ public class TeamView implements IDataView<Team>
      * 
      **************************************************************************/
     @Override
-    public Team getData()
+    public HcTeam getData()
     {
         return team;
     }
@@ -154,7 +154,7 @@ public class TeamView implements IDataView<Team>
      * 
      **************************************************************************/
     @Override
-    public void setData( Team data )
+    public void setData( HcTeam data )
     {
         this.team = data;
 

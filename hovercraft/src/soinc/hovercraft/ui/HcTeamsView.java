@@ -18,25 +18,25 @@ import javax.swing.ScrollPaneConstants;
 import org.jutils.ui.model.CollectionListModel;
 import org.jutils.ui.model.IView;
 
-import soinc.hovercraft.data.Team;
+import soinc.hovercraft.data.HcTeam;
 import soinc.lib.UiUtils;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class TeamsView implements IView<JComponent>
+public class HcTeamsView implements IView<JComponent>
 {
     /** The main component. */
     private final JPanel view;
     /** The model of the list. */
-    private final CollectionListModel<Team> itemsListModel;
+    private final CollectionListModel<HcTeam> itemsListModel;
     /** The component to display the list. */
-    private final JList<Team> itemsList;
+    private final JList<HcTeam> itemsList;
 
     /***************************************************************************
      * @param config
      **************************************************************************/
-    public TeamsView( List<Team> teams )
+    public HcTeamsView( List<HcTeam> teams )
     {
         this.itemsListModel = new CollectionListModel<>();
         this.itemsList = new JList<>( itemsListModel );
@@ -81,7 +81,7 @@ public class TeamsView implements IView<JComponent>
     /***************************************************************************
      * @return
      **************************************************************************/
-    public Team getSelected()
+    public HcTeam getSelected()
     {
         return itemsList.getSelectedValue();
     }
@@ -90,7 +90,7 @@ public class TeamsView implements IView<JComponent>
      * 
      **************************************************************************/
     private static final class TeamCellRenderer
-        implements ListCellRenderer<Team>
+        implements ListCellRenderer<HcTeam>
     {
         /**  */
         private final DefaultListCellRenderer renderer;
@@ -112,7 +112,7 @@ public class TeamsView implements IView<JComponent>
          */
         @Override
         public Component getListCellRendererComponent(
-            JList<? extends Team> list, Team value, int index,
+            JList<? extends HcTeam> list, HcTeam value, int index,
             boolean isSelected, boolean cellHasFocus )
         {
             renderer.getListCellRendererComponent( list, value, index,

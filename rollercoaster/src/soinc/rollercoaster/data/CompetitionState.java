@@ -14,11 +14,11 @@ import soinc.rollercoaster.RcIcons;
 public enum CompetitionState implements INamedItem
 {
     /** No team has been loaded. */
-    NO_TEAM( "New Run", null, "NO_TEAM.png", false ),
+    NO_TEAM( "New Run", Color.black, "NO_TEAM.png", false ),
     /** Team has been loaded, but the competition has not yet started. */
-    LOADED( "Loaded", null, "NO_TEAM.png", false ),
+    LOADED( "Loaded", Color.black, "NO_TEAM.png", false ),
     /** Competitors are not running for record. */
-    AWAITING( "Event", null, "AWAITING.png", false ),
+    AWAITING( "Event", Color.black, "AWAITING.png", false ),
     /** Running before target time. */
     SCORE_TIME( "Score Time", new Color( 0x22B14C ), "SCORE_TIME.png", true ),
     /** Running after target time before trial time. */

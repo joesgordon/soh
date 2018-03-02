@@ -23,6 +23,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.border.LineBorder;
@@ -461,6 +462,7 @@ public class RcCompetitionView implements IView<JFrame>
         // ---------------------------------------------------------------------
 
         stateField.setText( competition.getState().name );
+        stateField.setOpaque( true );
 
         constraints = new GridBagConstraints( 0, 1, 2, 1, 0.0, 0.0,
             GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
@@ -509,11 +511,20 @@ public class RcCompetitionView implements IView<JFrame>
             JPopupMenu menu = new JPopupMenu();
             List<RcTeam> teams = competition.getAvailableTeams();
 
-            for( RcTeam t : teams )
+            if( teams.isEmpty() )
             {
-                ActionListener listener = ( evt ) -> setTeamData( t );
-                Action a = new ActionAdapter( listener, t.name, null );
-                menu.add( a );
+                JMenuItem item = new JMenuItem( "No Teams Available" );
+                item.setEnabled( false );
+                menu.add( item );
+            }
+            else
+            {
+                for( RcTeam t : teams )
+                {
+                    ActionListener listener = ( evt ) -> setTeamData( t );
+                    Action a = new ActionAdapter( listener, t.name, null );
+                    menu.add( a );
+                }
             }
 
             menu.show( e.getComponent(), e.getX(), e.getY() );
@@ -616,6 +627,15 @@ public class RcCompetitionView implements IView<JFrame>
             boolean enabled = data.team == null ? true : false;
             String name = data.team == null ? "Select Team" : data.team.name;
 
+            if( data.team == null )
+            {
+                if( competition.getAvailableTeams().isEmpty() )
+                {
+                    name = "Teams Complete";
+                    enabled = false;
+                }
+            }
+
             teamButton.setText( name );
             teamButton.setEnabled( enabled );
         }
@@ -672,6 +692,14 @@ public class RcCompetitionView implements IView<JFrame>
         }
 
         this.compData = data;
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    public boolean isRunning()
+    {
+        return competition.isRunning();
     }
 
     /***************************************************************************

@@ -6,14 +6,20 @@ import java.awt.Insets;
 import java.awt.Window;
 import java.util.List;
 
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import org.jutils.IconConstants;
 import org.jutils.SwingUtils;
 import org.jutils.io.options.OptionsSerializer;
+import org.jutils.ui.ItemListView;
 import org.jutils.ui.ListView;
 import org.jutils.ui.ListView.IItemListModel;
 import org.jutils.ui.StandardFormView;
 import org.jutils.ui.TitleView;
+import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.fields.IntegerFormField;
 import org.jutils.ui.model.IDataView;
 
@@ -50,7 +56,7 @@ public class RcConfigView implements IDataView<RcConfig>
     /**  */
     private final Pi3InputPinField timerDInField;
     /**  */
-    private final ListView<RcTeam> teamsView;
+    private final ItemListView<RcTeam> teamsView;
 
     /**  */
     private RcConfig config;
@@ -75,7 +81,7 @@ public class RcConfigView implements IDataView<RcConfig>
         this.timerSOutField = new Pi3OutputPinField( "Timer B Output" );
         this.timerDOutField = new Pi3OutputPinField( "Timer C Output" );
 
-        this.teamsView = new ListView<>( new TeamsModel() );
+        this.teamsView = createTeamsView();
 
         this.view = createView();
 
@@ -96,6 +102,45 @@ public class RcConfigView implements IDataView<RcConfig>
         timerAOutField.setUpdater( ( d ) -> config.timerAOut.set( d ) );
         timerSOutField.setUpdater( ( d ) -> config.timerSOut.set( d ) );
         timerDOutField.setUpdater( ( d ) -> config.timerDOut.set( d ) );
+    }
+
+    private ItemListView<RcTeam> createTeamsView()
+    {
+        ItemListView<RcTeam> view = new ItemListView<>( new RcTeamView(),
+            new RcTeamsModel() );
+        view.addSeparatorToToolbar();
+        view.addToToolbar( createInitButton() );
+        return view;
+    }
+
+    private JButton createInitButton()
+    {
+        Action action;
+        Icon icon;
+        JButton button;
+
+        icon = IconConstants.getIcon( IconConstants.UNDO_16 );
+        action = new ActionAdapter( ( e ) -> initAll(), "Initialize All",
+            icon );
+        button = new JButton( action );
+
+        button.setToolTipText( button.getText() );
+        button.setText( "" );
+
+        return button;
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void initAll()
+    {
+        for( RcTeam team : teamsView.getData() )
+        {
+            team.reset();
+        }
+
+        deselectTeams();
     }
 
     /***************************************************************************
@@ -190,7 +235,7 @@ public class RcConfigView implements IDataView<RcConfig>
     /***************************************************************************
      * 
      **************************************************************************/
-    private static final class TeamsModel implements IItemListModel<RcTeam>
+    private static final class RcTeamsModel implements IItemListModel<RcTeam>
     {
         /**
          * {@inheritDoc}
@@ -233,5 +278,10 @@ public class RcConfigView implements IDataView<RcConfig>
 
             return team;
         }
+    }
+
+    public void deselectTeams()
+    {
+        teamsView.setSelected( null );
     }
 }

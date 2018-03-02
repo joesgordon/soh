@@ -23,7 +23,7 @@ import org.jutils.ui.fields.IntegerFormField;
 import org.jutils.ui.model.IDataView;
 
 import soinc.hovercraft.data.HoverConfig;
-import soinc.hovercraft.ui.TeamListView;
+import soinc.hovercraft.ui.HcTeamListView;
 import soinc.lib.UiUtils;
 
 /*******************************************************************************
@@ -44,7 +44,7 @@ public class HoverConfigView implements IDataView<HoverConfig>
     /**  */
     private final TrackCfgView track2View;
     /**  */
-    private final TeamListView teamsView;
+    private final HcTeamListView teamsView;
 
     /**  */
     private HoverConfig config;
@@ -62,7 +62,7 @@ public class HoverConfigView implements IDataView<HoverConfig>
         this.track1View = new TrackCfgView();
         this.track2View = new TrackCfgView();
 
-        this.teamsView = new TeamListView();
+        this.teamsView = new HcTeamListView();
 
         this.view = createView();
 

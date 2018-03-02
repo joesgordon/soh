@@ -34,12 +34,12 @@ import org.jutils.ui.model.IView;
 
 import soinc.hovercraft.data.DivisionConfig;
 import soinc.hovercraft.data.HoverConfig;
-import soinc.hovercraft.data.Team;
+import soinc.hovercraft.data.HcTeam;
 import soinc.hovercraft.data.TrackData;
 import soinc.hovercraft.data.TrackState;
 import soinc.hovercraft.tasks.HcTeamCompetition;
 import soinc.hovercraft.ui.RightClickMouseListener;
-import soinc.hovercraft.ui.TeamsView;
+import soinc.hovercraft.ui.HcTeamsView;
 import soinc.lib.SciolyIcons;
 import soinc.lib.UiUtils;
 
@@ -193,7 +193,7 @@ public class HcTeamCompetitionView implements IView<JComponent>
     /***************************************************************************
      * @param team
      **************************************************************************/
-    private void setTeamData( Team team )
+    private void setTeamData( HcTeam team )
     {
         if( team == null )
         {
@@ -658,7 +658,7 @@ public class HcTeamCompetitionView implements IView<JComponent>
     /***************************************************************************
      * @param team
      **************************************************************************/
-    private void initializeTrack( Team team )
+    private void initializeTrack( HcTeam team )
     {
         TrackData data = competition.updateData();
 
@@ -833,9 +833,9 @@ public class HcTeamCompetitionView implements IView<JComponent>
 
         clearTeam();
 
-        List<Team> teams = config.getAvailableTeams(
+        List<HcTeam> teams = config.getAvailableTeams(
             competition.track.division );
-        TeamsView teamsView = new TeamsView( teams );
+        HcTeamsView teamsView = new HcTeamsView( teams );
         OkDialogView okDialog = new OkDialogView( teamButton,
             teamsView.getView(), ModalityType.MODELESS,
             OkDialogButtons.OK_CANCEL );
@@ -843,7 +843,7 @@ public class HcTeamCompetitionView implements IView<JComponent>
         okDialog.addOkListener( ( e ) -> {
             if( e.getItem() )
             {
-                Team t = teamsView.getSelected();
+                HcTeam t = teamsView.getSelected();
 
                 if( t != null )
                 {
@@ -874,10 +874,10 @@ public class HcTeamCompetitionView implements IView<JComponent>
             data.state == TrackState.FINISHED )
         {
             JPopupMenu menu = new JPopupMenu();
-            List<Team> teams = config.getAvailableTeams(
+            List<HcTeam> teams = config.getAvailableTeams(
                 competition.track.division );
 
-            for( Team t : teams )
+            for( HcTeam t : teams )
             {
                 ActionListener listener = ( evt ) -> setTeamData( t );
                 Action a = new ActionAdapter( listener, t.schoolCode, null );

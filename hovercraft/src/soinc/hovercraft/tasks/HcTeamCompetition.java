@@ -9,7 +9,7 @@ import com.pi4j.io.gpio.GpioController;
 
 import soinc.hovercraft.data.DivisionConfig;
 import soinc.hovercraft.data.HoverConfig;
-import soinc.hovercraft.data.Team;
+import soinc.hovercraft.data.HcTeam;
 import soinc.hovercraft.data.TrackCfg;
 import soinc.hovercraft.data.TrackData;
 import soinc.hovercraft.data.TrackPins;
@@ -65,7 +65,7 @@ public class HcTeamCompetition
     /***************************************************************************
      * 
      **************************************************************************/
-    public void signalLoadTrack( Team team )
+    public void signalLoadTrack( HcTeam team )
     {
         DivisionConfig div = config.getDivision( team.div );
 

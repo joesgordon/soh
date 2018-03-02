@@ -21,7 +21,7 @@ public class HoverConfig
     /**  */
     public final TrackCfg track2;
     /**  */
-    public final List<Team> teams;
+    public final List<HcTeam> teams;
 
     /***************************************************************************
      * 
@@ -69,9 +69,9 @@ public class HoverConfig
 
         if( config.teams != null )
         {
-            for( Team t : config.teams )
+            for( HcTeam t : config.teams )
             {
-                teams.add( new Team( t ) );
+                teams.add( new HcTeam( t ) );
             }
         }
     }
@@ -97,11 +97,11 @@ public class HoverConfig
      * @param division
      * @return
      **************************************************************************/
-    public List<Team> getAvailableTeams( Division division )
+    public List<HcTeam> getAvailableTeams( Division division )
     {
-        List<Team> teams = new ArrayList<>();
+        List<HcTeam> teams = new ArrayList<>();
 
-        for( Team t : this.teams )
+        for( HcTeam t : this.teams )
         {
             if( !t.loaded && !t.isFinished() && t.div == division )
             {

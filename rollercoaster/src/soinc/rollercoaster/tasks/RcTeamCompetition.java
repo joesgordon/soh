@@ -158,7 +158,7 @@ public class RcTeamCompetition
      **************************************************************************/
     public boolean isRunning()
     {
-        return data.team != null;
+        return data.state.isRunning;
     }
 
     /***************************************************************************

@@ -18,23 +18,23 @@ import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.model.IDataView;
 
 import soinc.hovercraft.data.Division;
-import soinc.hovercraft.data.Team;
+import soinc.hovercraft.data.HcTeam;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class TeamListView implements IDataView<List<Team>>
+public class HcTeamListView implements IDataView<List<HcTeam>>
 {
     /**  */
-    private final ItemListView<Team> view;
+    private final ItemListView<HcTeam> view;
 
     /**  */
-    private List<Team> teams;
+    private List<HcTeam> teams;
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public TeamListView()
+    public HcTeamListView()
     {
         this.view = new ItemListView<>( new TeamView(), new TeamsModel() );
 
@@ -69,7 +69,7 @@ public class TeamListView implements IDataView<List<Team>>
      **************************************************************************/
     private void initAll()
     {
-        for( Team t : teams )
+        for( HcTeam t : teams )
         {
             t.initTrials();
         }
@@ -90,7 +90,7 @@ public class TeamListView implements IDataView<List<Team>>
      * 
      **************************************************************************/
     @Override
-    public List<Team> getData()
+    public List<HcTeam> getData()
     {
         return view.getData();
     }
@@ -99,7 +99,7 @@ public class TeamListView implements IDataView<List<Team>>
      * 
      **************************************************************************/
     @Override
-    public void setData( List<Team> data )
+    public void setData( List<HcTeam> data )
     {
         this.teams = data;
 
@@ -109,13 +109,13 @@ public class TeamListView implements IDataView<List<Team>>
     /***************************************************************************
      * 
      **************************************************************************/
-    private static final class TeamsModel implements IItemListModel<Team>
+    private static final class TeamsModel implements IItemListModel<HcTeam>
     {
         /**
          * {@inheritDoc}
          */
         @Override
-        public String getTitle( Team item )
+        public String getTitle( HcTeam item )
         {
             return item.schoolCode;
         }
@@ -124,17 +124,17 @@ public class TeamListView implements IDataView<List<Team>>
          * {@inheritDoc}
          */
         @Override
-        public Team promptForNew( ListView<Team> view )
+        public HcTeam promptForNew( ListView<HcTeam> view )
         {
-            List<Team> teams = view.getData();
+            List<HcTeam> teams = view.getData();
             String name = view.promptForName( "Team" );
-            Team newTeam = null;
+            HcTeam newTeam = null;
 
             if( name != null )
             {
                 name = name.toUpperCase();
 
-                for( Team t : teams )
+                for( HcTeam t : teams )
                 {
                     if( t.schoolCode.equalsIgnoreCase( name ) )
                     {
@@ -146,7 +146,7 @@ public class TeamListView implements IDataView<List<Team>>
                     }
                 }
 
-                newTeam = new Team();
+                newTeam = new HcTeam();
                 newTeam.schoolCode = name;
 
                 for( Division d : Division.values() )

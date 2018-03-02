@@ -8,7 +8,7 @@ public class TrackData
     /**  */
     public TrackState state;
     /**  */
-    public Team team;
+    public HcTeam team;
     /**  */
     public int targetTime;
     /**  */
@@ -49,7 +49,7 @@ public class TrackData
      * @param team
      * @param div
      **************************************************************************/
-    public void loadTrack( Team team, DivisionConfig div )
+    public void loadTrack( HcTeam team, DivisionConfig div )
     {
         this.state = TrackState.INITIALIZED;
         this.team = team;
