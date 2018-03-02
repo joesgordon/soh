@@ -51,17 +51,17 @@ public class RcConfig implements IRcCompetitionConfig
         this.runTimeout = 60;
         this.targetTime = 20;
 
+        this.timerAOut = new Pi3OutputPin( Pi3GpioPin.GPIO_02, PinLevel.LOW );
         this.timerAIn = new Pi3InputPin( Pi3GpioPin.GPIO_03,
-            PinResistance.PULL_DOWN );
-        this.timerAOut = new Pi3OutputPin( Pi3GpioPin.GPIO_02, PinLevel.HIGH );
+            PinResistance.PULL_UP );
 
+        this.timerSOut = new Pi3OutputPin( Pi3GpioPin.GPIO_17, PinLevel.HIGH );
         this.timerSIn = new Pi3InputPin( Pi3GpioPin.GPIO_27,
             PinResistance.PULL_DOWN );
-        this.timerSOut = new Pi3OutputPin( Pi3GpioPin.GPIO_17, PinLevel.HIGH );
 
-        this.timerDIn = new Pi3InputPin( Pi3GpioPin.GPIO_21,
-            PinResistance.PULL_DOWN );
         this.timerDOut = new Pi3OutputPin( Pi3GpioPin.GPIO_10, PinLevel.HIGH );
+        this.timerDIn = new Pi3InputPin( Pi3GpioPin.GPIO_09,
+            PinResistance.PULL_DOWN );
 
         this.teams = new ArrayList<>();
     }

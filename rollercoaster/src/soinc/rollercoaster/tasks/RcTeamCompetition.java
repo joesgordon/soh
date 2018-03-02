@@ -55,6 +55,17 @@ public class RcTeamCompetition
         this.periodTimer.stop();
 
         signalClearTeam();
+
+        stateMachine.setUpdater( ( d ) -> handleStateUpdated( d ) );
+    }
+
+    private void handleStateUpdated( CompetitionState state )
+    {
+        boolean red = ( state.lights & 0x4 ) == 0x4;
+        boolean green = ( state.lights & 0x2 ) == 0x2;
+        boolean blue = ( state.lights & 0x1 ) == 0x1;
+
+        signals.setLights( red, green, blue );
     }
 
     /***************************************************************************
@@ -96,8 +107,7 @@ public class RcTeamCompetition
      **************************************************************************/
     public void connect( RcCompetitionView competitionView ) throws IOException
     {
-        timer.scheduleAtFixedRate( new RunnableTask( () -> updateState() ), 100,
-            100 );
+        signals.connect( this, competitionView );
 
         for( int i = 0; i < signals.getTimerCount(); i++ )
         {
@@ -108,7 +118,8 @@ public class RcTeamCompetition
 
         signalClearTeam();
 
-        signals.connect( this, competitionView );
+        timer.scheduleAtFixedRate( new RunnableTask( () -> updateState() ), 100,
+            100 );
     }
 
     /***************************************************************************
@@ -297,6 +308,11 @@ public class RcTeamCompetition
         }
     }
 
+    public void signalTimerClear( int index )
+    {
+        timers.clearTimer( index );
+    }
+
     /***************************************************************************
      * @param goodRun
      **************************************************************************/
@@ -422,6 +438,12 @@ public class RcTeamCompetition
                 timers[i].stop();
                 used[i] = false;
             }
+        }
+
+        public void clearTimer( int index )
+        {
+            used[index] = false;
+            timers[index].stop();
         }
 
         public boolean hasStopped( int index )

@@ -1,5 +1,7 @@
 package soinc.rollercoaster.tasks;
 
+import org.jutils.ui.event.updater.IUpdater;
+
 import soinc.rollercoaster.data.CompetitionState;
 import soinc.rollercoaster.data.RcCompetitionData;
 
@@ -14,6 +16,8 @@ public class RcStateMachine
     /** The state of the competition. It should never be {@code null}. */
     private CompetitionState state;
 
+    private IUpdater<CompetitionState> updater;
+
     /***************************************************************************
      * @param competition
      **************************************************************************/
@@ -21,7 +25,7 @@ public class RcStateMachine
     {
         this.competition = competition;
 
-        this.state = CompetitionState.NO_TEAM;
+        setState( CompetitionState.NO_TEAM );
     }
 
     /***************************************************************************
@@ -41,7 +45,7 @@ public class RcStateMachine
             this.state == CompetitionState.LOADED ||
             this.state == CompetitionState.COMPLETE )
         {
-            this.state = CompetitionState.LOADED;
+            setState( CompetitionState.LOADED );
             return null;
         }
 
@@ -56,7 +60,7 @@ public class RcStateMachine
         if( this.state == CompetitionState.LOADED ||
             this.state == CompetitionState.AWAITING )
         {
-            this.state = CompetitionState.AWAITING;
+            setState( CompetitionState.AWAITING );
             return null;
         }
 
@@ -70,7 +74,7 @@ public class RcStateMachine
     {
         if( this.state == CompetitionState.AWAITING )
         {
-            this.state = CompetitionState.SCORE_TIME;
+            setState( CompetitionState.SCORE_TIME );
             return null;
         }
 
@@ -84,7 +88,7 @@ public class RcStateMachine
     {
         if( this.state == CompetitionState.SCORE_TIME )
         {
-            this.state = CompetitionState.PENALTY_TIME;
+            setState( CompetitionState.PENALTY_TIME );
             return null;
         }
 
@@ -98,7 +102,7 @@ public class RcStateMachine
     {
         if( this.state == CompetitionState.PENALTY_TIME )
         {
-            this.state = CompetitionState.FAILED_TIME;
+            setState( CompetitionState.FAILED_TIME );
             return null;
         }
 
@@ -112,7 +116,7 @@ public class RcStateMachine
     {
         if( this.state == CompetitionState.AWAITING )
         {
-            this.state = CompetitionState.COMPLETE;
+            setState( CompetitionState.COMPLETE );
             return null;
         }
         else if( this.state.isRunning )
@@ -133,11 +137,11 @@ public class RcStateMachine
             RcCompetitionData data = competition.getData();
             if( data.run1State.isComplete )
             {
-                this.state = CompetitionState.COMPLETE;
+                setState( CompetitionState.COMPLETE );
             }
             else
             {
-                this.state = CompetitionState.AWAITING;
+                setState( CompetitionState.AWAITING );
             }
             return null;
         }
@@ -153,7 +157,7 @@ public class RcStateMachine
         if( this.state == CompetitionState.AWAITING ||
             this.state == CompetitionState.COMPLETE )
         {
-            this.state = CompetitionState.AWAITING;
+            setState( CompetitionState.AWAITING );
             return null;
         }
 
@@ -169,10 +173,31 @@ public class RcStateMachine
             this.state == CompetitionState.COMPLETE ||
             this.state == CompetitionState.NO_TEAM )
         {
-            this.state = CompetitionState.NO_TEAM;
+            setState( CompetitionState.NO_TEAM );
             return null;
         }
 
         return "Unable to clear team from state " + this.state;
+    }
+
+    /***************************************************************************
+     * @param state
+     **************************************************************************/
+    private void setState( CompetitionState state )
+    {
+        this.state = state;
+
+        if( updater != null )
+        {
+            updater.update( state );
+        }
+    }
+
+    /***************************************************************************
+     * @param updater
+     **************************************************************************/
+    public void setUpdater( IUpdater<CompetitionState> updater )
+    {
+        this.updater = updater;
     }
 }

@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jutils.Utils;
 import org.jutils.io.IOUtils;
+import org.jutils.io.LogUtils;
 
 /*******************************************************************************
  * 
@@ -22,7 +24,7 @@ public class Relays implements IRelays
     /**  */
     public static final int RELAY_COUNT = BOARD_COUNT * 2;
     /**  */
-    private static final String PREFIX = "usb-Devantec_Ltd._USB-RLY02._000";
+    private static final String PREFIX = "usb-Devantech_Ltd._USB-RLY02._000";
 
     /**  */
     private final List<RelayBoard> boards;
@@ -41,7 +43,11 @@ public class Relays implements IRelays
     private void runProcess( RelayBoard board )
     {
         ProcessBuilder pb = new ProcessBuilder( RELAY_EXE.getAbsolutePath(),
-            board.getArg() );
+            board.file, board.getRelayArg() );
+
+        String cmd = Utils.collectionToString( new ArrayList<>( pb.command() ),
+            " " );
+        LogUtils.printDebug( "Running \"%s\"", cmd );
 
         pb.inheritIO();
 
@@ -76,6 +82,8 @@ public class Relays implements IRelays
     {
         File serialsDir = new File( "/dev/serial/by-id" );
 
+        LogUtils.printDebug( "Initializing Relays" );
+
         if( !RELAY_EXE.isFile() )
         {
             throw new IOException( "Relay executable does not exist: " +
@@ -96,10 +104,13 @@ public class Relays implements IRelays
                 "Unable to list files in " + serialsDir.getAbsolutePath() );
         }
 
+        LogUtils.printDebug( "\tFound %d files", files.length );
+
         Arrays.sort( files );
 
         for( File file : files )
         {
+            LogUtils.printDebug( "\tFile %s", file.getName() );
             if( file.getName().startsWith( PREFIX ) )
             {
                 String relaySerial = file.getName().substring( PREFIX.length(),
@@ -109,7 +120,7 @@ public class Relays implements IRelays
                 {
                     Path target = Files.readSymbolicLink( link );
                     File targetFile = target.toFile();
-                    System.out.format( "Board %s links to %s", relaySerial,
+                    LogUtils.printDebug( "Board %s links to %s", relaySerial,
                         target.getFileName() );
                     boards.add( new RelayBoard( targetFile.getName() ) );
                 }
@@ -118,10 +129,19 @@ public class Relays implements IRelays
                     System.err.println( x );
                 }
             }
+            else
+            {
+                LogUtils.printDebug( "%s doesn't start with %s", file.getName(),
+                    PREFIX );
+            }
         }
 
-        for( int b = 0; b < BOARD_COUNT; b++ )
+        if( boards.size() < BOARD_COUNT )
         {
+            String msg = String.format(
+                "Unable to find all %d relay boards. Found only %d",
+                BOARD_COUNT, boards.size() );
+            throw new IOException( msg );
         }
     }
 
@@ -131,7 +151,7 @@ public class Relays implements IRelays
     @Override
     public int getRelayCount()
     {
-        return boards.size();
+        return boards.size() * 2;
     }
 
     /***************************************************************************
@@ -254,9 +274,9 @@ public class Relays implements IRelays
             }
         }
 
-        public String getArg()
+        public String getRelayArg()
         {
-            return file + " " + ( relay1 ? "1" : "0" ) + ( relay2 ? "1" : "0" );
+            return ( relay2 ? "1" : "0" ) + ( relay1 ? "1" : "0" );
         }
     }
 }

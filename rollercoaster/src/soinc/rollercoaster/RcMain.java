@@ -50,9 +50,11 @@ public class RcMain
     {
         if( mock )
         {
+            LogUtils.printDebug( "Getting mocked relays" );
             return new MockRelay();
         }
 
+        LogUtils.printDebug( "Getting real relays" );
         return new Relays();
     }
 
@@ -73,8 +75,7 @@ public class RcMain
     /***************************************************************************
      * 
      **************************************************************************/
-    private static final class RudCreator
-        implements IOptionsCreator<RcOptions>
+    private static final class RudCreator implements IOptionsCreator<RcOptions>
     {
         /**
          * {@inheritDoc}

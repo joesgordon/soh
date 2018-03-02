@@ -463,6 +463,7 @@ public class RcCompetitionView implements IView<JFrame>
 
         stateField.setText( competition.getState().name );
         stateField.setOpaque( true );
+        stateField.setBackground( Color.black );
 
         constraints = new GridBagConstraints( 0, 1, 2, 1, 0.0, 0.0,
             GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,

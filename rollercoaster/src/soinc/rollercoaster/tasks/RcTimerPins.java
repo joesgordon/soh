@@ -53,7 +53,7 @@ public class RcTimerPins
         Pi3InputPin inputPin, char timer )
     {
         String timerStr = "Timer " + timer;
-        PinEdge edge = isInverted ? PinEdge.RISING : PinEdge.FALLING;
+        PinEdge edge = isInverted ? PinEdge.FALLING : PinEdge.RISING;
 
         this.outPin = SciolyGpio.provisionOuputPin( gpio, outputPin,
             timerStr + " Out" );

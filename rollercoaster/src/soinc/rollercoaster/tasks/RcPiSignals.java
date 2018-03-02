@@ -101,7 +101,7 @@ public class RcPiSignals implements IRcSignals
         SwingUtils.addKeyListener( jview, "A", true, callback,
             "TimerA toggle" );
 
-        callback = ( e ) -> timerA.clear();
+        callback = ( e ) -> clearTimer( competition, timerA, 0 );
         SwingUtils.addKeyListener( jview, "J", true, callback, "TimerA clear" );
 
         callback = ( e ) -> timerS.togglePin();
@@ -128,6 +128,13 @@ public class RcPiSignals implements IRcSignals
         timerA.provision( gpio, config.timerAOut, config.timerAIn, 'A' );
         timerS.provision( gpio, config.timerSOut, config.timerSIn, 'S' );
         timerD.provision( gpio, config.timerDOut, config.timerDIn, 'D' );
+    }
+
+    private void clearTimer( RcTeamCompetition competition, RcTimerPins timer,
+        int index )
+    {
+        timer.clear();
+        competition.signalTimerClear( index );
     }
 
     /***************************************************************************

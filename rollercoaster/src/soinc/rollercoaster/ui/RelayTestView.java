@@ -1,44 +1,99 @@
 package soinc.rollercoaster.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 
+import javax.swing.Action;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
+import org.jutils.SwingUtils;
+import org.jutils.ui.ComponentView;
+import org.jutils.ui.JGoodiesToolBar;
 import org.jutils.ui.LedIcon;
 import org.jutils.ui.LedLabel;
 import org.jutils.ui.StandardFormView;
+import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.model.IView;
 
+import soinc.lib.SciolyIcons;
 import soinc.rollercoaster.RcMain;
 import soinc.rollercoaster.relay.IRelays;
 
 public class RelayTestView implements IView<JComponent>
 {
-    private final IRelays relay;
+    private final IRelays relays;
+    private final ComponentView relaysView;
     private final JPanel view;
 
     public RelayTestView()
     {
-        this.relay = RcMain.getRelay();
+        this.relays = RcMain.getRelay();
+        this.relaysView = new ComponentView();
         this.view = createView();
     }
 
     private JPanel createView()
+    {
+        JPanel panel = new JPanel( new BorderLayout() );
+
+        panel.add( createToolbar(), BorderLayout.NORTH );
+        panel.add( relaysView.getView(), BorderLayout.CENTER );
+
+        return panel;
+    }
+
+    private Component createToolbar()
+    {
+        JToolBar toolbar = new JGoodiesToolBar();
+
+        SwingUtils.addActionToToolbar( toolbar, createConnectAction() );
+
+        return toolbar;
+    }
+
+    private Action createConnectAction()
+    {
+        ActionListener listener = ( e ) -> connect();
+        Icon icon = SciolyIcons.getConnect16();
+        return new ActionAdapter( listener, "Connect", icon );
+    }
+
+    private void connect()
+    {
+        try
+        {
+            relays.initialize();
+            relaysView.setComponent( createRelayPanel() );
+        }
+        catch( IOException ex )
+        {
+            SwingUtils.showErrorMessage( getView(),
+                "Unable to initialize relays: " + ex.getMessage(),
+                "I/O Error" );
+        }
+    }
+
+    private JPanel createRelayPanel()
     {
         JPanel panel = new JPanel( new GridBagLayout() );
         GridBagConstraints constraints;
 
         int pad = StandardFormView.DEFAULT_FORM_MARGIN;
 
-        for( int i = 0; i < relay.getRelayCount(); i++ )
+        for( int i = 0; i < relays.getRelayCount(); i++ )
         {
-            RelayView rv = new RelayView( relay, i );
+            RelayView rv = new RelayView( relays, i );
 
             int p = i > 0 ? pad : 0;
 
@@ -46,9 +101,7 @@ public class RelayTestView implements IView<JComponent>
                 GridBagConstraints.CENTER, GridBagConstraints.NONE,
                 new Insets( p, 0, 0, 0 ), 0, 0 );
             panel.add( rv.getView(), constraints );
-
         }
-        // TODO Auto-generated method stub
 
         return panel;
     }
