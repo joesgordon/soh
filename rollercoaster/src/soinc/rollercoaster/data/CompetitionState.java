@@ -51,7 +51,7 @@ public enum CompetitionState implements INamedItem
         this.background = color;
         this.icon = RcIcons.getIcon( iconName );
         this.isRunning = isRunning;
-        this.lights = lights;
+        this.lights = ( lights ^ 0x4 );
     }
 
     /***************************************************************************

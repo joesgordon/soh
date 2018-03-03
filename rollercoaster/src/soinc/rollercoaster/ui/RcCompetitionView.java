@@ -194,6 +194,9 @@ public class RcCompetitionView implements IView<JFrame>
         return panel;
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
     private Component createUpperPanel()
     {
         JPanel panel = new JPanel( new GridBagLayout() );
@@ -202,30 +205,31 @@ public class RcCompetitionView implements IView<JFrame>
 
         panel.setOpaque( false );
 
-        panel.setBorder( new LineBorder( Color.white, 2 ) );
-
         // ---------------------------------------------------------------------
 
         Component timersPanel = createTimersPanel();
         Component runsPanel = createRunsPanel();
 
-        SwingUtils.setMaxComponentSize( timersPanel, runsPanel );
-
         constraints = new GridBagConstraints( 0, row, 1, 1, 0.5, 0.0,
-            GridBagConstraints.NORTHEAST, GridBagConstraints.NONE,
+            GridBagConstraints.NORTHEAST, GridBagConstraints.HORIZONTAL,
             new Insets( 10, 20, 10, 40 ), 0, 0 );
         panel.add( timersPanel, constraints );
 
         constraints = new GridBagConstraints( 1, row++, 1, 1, 0.5, 0.0,
-            GridBagConstraints.WEST, GridBagConstraints.NONE,
+            GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
             new Insets( 10, 40, 10, 20 ), 0, 0 );
         panel.add( runsPanel, constraints );
+
+        SwingUtils.setMaxComponentSize( timersPanel, runsPanel );
 
         // ---------------------------------------------------------------------
 
         return panel;
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
     private Component createBottomPanel()
     {
         JPanel panel = new JPanel( new GridBagLayout() );
@@ -239,10 +243,8 @@ public class RcCompetitionView implements IView<JFrame>
         Component officialPanel = createOfficialPanel();
         Component scorePanel = createScorePanel();
 
-        SwingUtils.setMaxComponentSize( officialPanel, scorePanel );
-
         constraints = new GridBagConstraints( 0, row, 1, 1, 0.5, 1.0,
-            GridBagConstraints.NORTHEAST, GridBagConstraints.NONE,
+            GridBagConstraints.NORTHEAST, GridBagConstraints.HORIZONTAL,
             new Insets( 0, 0, 0, 0 ), 0, 0 );
         panel.add( officialPanel, constraints );
 
@@ -250,6 +252,8 @@ public class RcCompetitionView implements IView<JFrame>
             GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
             new Insets( 0, 0, 0, 0 ), 0, 0 );
         panel.add( scorePanel, constraints );
+
+        SwingUtils.setMaxComponentSize( officialPanel, scorePanel );
 
         // ---------------------------------------------------------------------
 
@@ -340,7 +344,7 @@ public class RcCompetitionView implements IView<JFrame>
 
         // ---------------------------------------------------------------------
 
-        JLabel timer1Label = UiUtils.createTextLabel( "Timer 1:", REG_FONT );
+        JLabel timer1Label = UiUtils.createTextLabel( "Timer A:", REG_FONT );
 
         constraints = new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0,
             GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
@@ -354,7 +358,7 @@ public class RcCompetitionView implements IView<JFrame>
 
         // ---------------------------------------------------------------------
 
-        JLabel timer2Label = UiUtils.createTextLabel( "Timer 2:", REG_FONT );
+        JLabel timer2Label = UiUtils.createTextLabel( "Timer S:", REG_FONT );
 
         constraints = new GridBagConstraints( 0, 1, 1, 1, 0.0, 0.0,
             GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
@@ -368,7 +372,7 @@ public class RcCompetitionView implements IView<JFrame>
 
         // ---------------------------------------------------------------------
 
-        JLabel timer3Label = UiUtils.createTextLabel( "Timer 3:", REG_FONT );
+        JLabel timer3Label = UiUtils.createTextLabel( "Timer D:", REG_FONT );
 
         constraints = new GridBagConstraints( 0, 2, 1, 1, 0.0, 0.0,
             GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
@@ -393,13 +397,15 @@ public class RcCompetitionView implements IView<JFrame>
 
         panel.setOpaque( false );
 
+        panel.setBorder( new LineBorder( Color.white, 2 ) );
+
         // ---------------------------------------------------------------------
 
         JLabel run1Label = UiUtils.createTextLabel( "Run 1:", REG_FONT );
 
         constraints = new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0,
             GridBagConstraints.EAST, GridBagConstraints.NONE,
-            new Insets( 0, 0, 0, 0 ), 0, 0 );
+            new Insets( 10, 10, 0, 0 ), 0, 0 );
         panel.add( run1Label, constraints );
 
         constraints = new GridBagConstraints( 1, 0, 1, 1, 0.0, 0.0,
@@ -409,7 +415,7 @@ public class RcCompetitionView implements IView<JFrame>
 
         constraints = new GridBagConstraints( 2, 0, 1, 1, 0.0, 0.0,
             GridBagConstraints.WEST, GridBagConstraints.NONE,
-            new Insets( 0, 20, 0, 0 ), 0, 0 );
+            new Insets( 0, 20, 0, 10 ), 0, 0 );
         panel.add( run1Icon, constraints );
 
         // ---------------------------------------------------------------------
@@ -428,7 +434,7 @@ public class RcCompetitionView implements IView<JFrame>
 
         constraints = new GridBagConstraints( 2, 1, 1, 1, 0.0, 0.0,
             GridBagConstraints.WEST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 0, 0 ), 0, 0 );
+            new Insets( 10, 20, 10, 10 ), 0, 0 );
         panel.add( run2Icon, constraints );
 
         return panel;

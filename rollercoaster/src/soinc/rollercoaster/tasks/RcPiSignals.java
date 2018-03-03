@@ -52,11 +52,11 @@ public class RcPiSignals implements IRcSignals
         this.gpio = gpio;
         this.config = config;
         this.timerA = new RcTimerPins(
-            config.timerAIn.resistance == PinResistance.PULL_DOWN );
+            config.timerAIn.resistance == PinResistance.PULL_UP );
         this.timerS = new RcTimerPins(
-            config.timerSIn.resistance == PinResistance.PULL_DOWN );
+            config.timerSIn.resistance == PinResistance.PULL_UP );
         this.timerD = new RcTimerPins(
-            config.timerDIn.resistance == PinResistance.PULL_DOWN );
+            config.timerDIn.resistance == PinResistance.PULL_UP );
         this.timerPins = new ArrayList<>();
         this.relay = RcMain.getRelay();
 
@@ -98,25 +98,25 @@ public class RcPiSignals implements IRcSignals
         // ---------------------------------------------------------------------
 
         callback = ( e ) -> timerA.togglePin();
-        SwingUtils.addKeyListener( jview, "A", true, callback,
+        SwingUtils.addKeyListener( jview, "J", true, callback,
             "TimerA toggle" );
 
         callback = ( e ) -> clearTimer( competition, timerA, 0 );
-        SwingUtils.addKeyListener( jview, "J", true, callback, "TimerA clear" );
+        SwingUtils.addKeyListener( jview, "A", true, callback, "TimerA clear" );
 
         callback = ( e ) -> timerS.togglePin();
-        SwingUtils.addKeyListener( jview, "S", true, callback,
+        SwingUtils.addKeyListener( jview, "K", true, callback,
             "TimerS toggle" );
 
-        callback = ( e ) -> timerS.clear();
-        SwingUtils.addKeyListener( jview, "K", true, callback, "TimerS clear" );
+        callback = ( e ) -> clearTimer( competition, timerS, 1 );
+        SwingUtils.addKeyListener( jview, "S", true, callback, "TimerS clear" );
 
         callback = ( e ) -> timerD.togglePin();
-        SwingUtils.addKeyListener( jview, "D", true, callback,
+        SwingUtils.addKeyListener( jview, "L", true, callback,
             "TimerD toggle" );
 
-        callback = ( e ) -> timerD.clear();
-        SwingUtils.addKeyListener( jview, "L", true, callback, "TimerD clear" );
+        callback = ( e ) -> clearTimer( competition, timerD, 2 );
+        SwingUtils.addKeyListener( jview, "D", true, callback, "TimerD clear" );
 
         // ---------------------------------------------------------------------
 
@@ -130,6 +130,11 @@ public class RcPiSignals implements IRcSignals
         timerD.provision( gpio, config.timerDOut, config.timerDIn, 'D' );
     }
 
+    /**
+     * @param competition
+     * @param timer
+     * @param index
+     */
     private void clearTimer( RcTeamCompetition competition, RcTimerPins timer,
         int index )
     {

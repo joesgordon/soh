@@ -59,8 +59,13 @@ public class RcTeamCompetition
         stateMachine.setUpdater( ( d ) -> handleStateUpdated( d ) );
     }
 
+    /***************************************************************************
+     * @param state
+     **************************************************************************/
     private void handleStateUpdated( CompetitionState state )
     {
+        this.data.state = state;
+
         boolean red = ( state.lights & 0x4 ) == 0x4;
         boolean green = ( state.lights & 0x2 ) == 0x2;
         boolean blue = ( state.lights & 0x1 ) == 0x1;
@@ -218,7 +223,6 @@ public class RcTeamCompetition
 
         if( msg == null )
         {
-            this.data.state = stateMachine.getState();
             data.team = team;
             data.team.loaded = true;
         }
@@ -246,7 +250,6 @@ public class RcTeamCompetition
             {
                 periodTimer.pauseResume( now );
             }
-            this.data.state = stateMachine.getState();
         }
         else
         {
@@ -265,7 +268,6 @@ public class RcTeamCompetition
             String msg = stateMachine.signalTimersStarted();
             if( msg == null )
             {
-                this.data.state = stateMachine.getState();
                 if( data.run1State.isComplete )
                 {
                     data.run2State = RunState.RUNNING;
@@ -308,9 +310,33 @@ public class RcTeamCompetition
         }
     }
 
+    /***************************************************************************
+     * @param index s
+     **************************************************************************/
     public void signalTimerClear( int index )
     {
         timers.clearTimer( index );
+
+        if( !timers.hasStarted() )
+        {
+            String msg = stateMachine.signalRunClear();
+
+            if( msg == null )
+            {
+                if( data.run1State == RunState.RUNNING )
+                {
+                    data.run1State = RunState.NOT_RUN;
+                }
+                else if( data.run2State == RunState.RUNNING )
+                {
+                    data.run2State = RunState.NOT_RUN;
+                }
+            }
+            else
+            {
+                showErrorMessage( msg );
+            }
+        }
     }
 
     /***************************************************************************
@@ -335,8 +361,6 @@ public class RcTeamCompetition
                 data.run2Time = timers.getOfficialDuration();
             }
 
-            this.data.state = stateMachine.getState();
-
             timers.clear();
 
             if( data.state == CompetitionState.COMPLETE )
@@ -355,7 +379,6 @@ public class RcTeamCompetition
         String msg = stateMachine.signalTargetTimeElapsed();
         if( msg == null )
         {
-            data.state = stateMachine.getState();
         }
         else
         {
@@ -368,7 +391,6 @@ public class RcTeamCompetition
         String msg = stateMachine.signalMaxRunTimeElapsed();
         if( msg == null )
         {
-            data.state = stateMachine.getState();
         }
         else
         {
@@ -386,7 +408,6 @@ public class RcTeamCompetition
         if( msg == null )
         {
             setPeriodComplete();
-            this.data.state = stateMachine.getState();
         }
         else
         {
@@ -403,7 +424,6 @@ public class RcTeamCompetition
 
         if( msg == null )
         {
-            this.data.state = stateMachine.getState();
             periodTimer.stop();
             timers.clear();
             data.reset();

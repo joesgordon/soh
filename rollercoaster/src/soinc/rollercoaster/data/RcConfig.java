@@ -55,13 +55,13 @@ public class RcConfig implements IRcCompetitionConfig
         this.timerAIn = new Pi3InputPin( Pi3GpioPin.GPIO_03,
             PinResistance.PULL_UP );
 
-        this.timerSOut = new Pi3OutputPin( Pi3GpioPin.GPIO_17, PinLevel.HIGH );
+        this.timerSOut = new Pi3OutputPin( Pi3GpioPin.GPIO_17, PinLevel.LOW );
         this.timerSIn = new Pi3InputPin( Pi3GpioPin.GPIO_27,
-            PinResistance.PULL_DOWN );
+            PinResistance.PULL_UP );
 
-        this.timerDOut = new Pi3OutputPin( Pi3GpioPin.GPIO_10, PinLevel.HIGH );
+        this.timerDOut = new Pi3OutputPin( Pi3GpioPin.GPIO_10, PinLevel.LOW );
         this.timerDIn = new Pi3InputPin( Pi3GpioPin.GPIO_09,
-            PinResistance.PULL_DOWN );
+            PinResistance.PULL_UP );
 
         this.teams = new ArrayList<>();
     }

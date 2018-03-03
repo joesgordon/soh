@@ -185,6 +185,7 @@ public class RcFrameView implements IView<JFrame>
                     SwingUtils.showErrorMessage( getView(),
                         "Unable to connect to Pi " + ex.getMessage(),
                         "I/O Error" );
+                    return;
                 }
 
                 JFrame frame = competitionView.getView();

@@ -72,7 +72,8 @@ public class RcStateMachine
      **************************************************************************/
     public String signalTimersStarted()
     {
-        if( this.state == CompetitionState.AWAITING )
+        if( this.state == CompetitionState.AWAITING ||
+            this.state == CompetitionState.SCORE_TIME )
         {
             setState( CompetitionState.SCORE_TIME );
             return null;
@@ -152,6 +153,21 @@ public class RcStateMachine
     /***************************************************************************
      * @return
      **************************************************************************/
+    public String signalRunClear()
+    {
+        if( this.state.isRunning )
+        {
+            setState( CompetitionState.AWAITING );
+
+            return null;
+        }
+
+        return "Unable to clear run when in state " + this.state;
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
     public String signalResetRun()
     {
         if( this.state == CompetitionState.AWAITING ||
@@ -186,6 +202,13 @@ public class RcStateMachine
     private void setState( CompetitionState state )
     {
         this.state = state;
+
+        // LogUtils.printDebug( "Setting state to %s", state.name );
+        //
+        // if( state == CompetitionState.COMPLETE )
+        // {
+        // Utils.printStackTrace();
+        // }
 
         if( updater != null )
         {

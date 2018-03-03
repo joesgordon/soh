@@ -74,12 +74,12 @@ public class RcConfigView implements IDataView<RcConfig>
             "seconds", 8, 10, 2 * 60 );
 
         this.timerAInField = new Pi3InputPinField( "Timer A Input" );
-        this.timerSInField = new Pi3InputPinField( "Timer B Input" );
-        this.timerDInField = new Pi3InputPinField( "Timer C Input" );
+        this.timerSInField = new Pi3InputPinField( "Timer S Input" );
+        this.timerDInField = new Pi3InputPinField( "Timer D Input" );
 
         this.timerAOutField = new Pi3OutputPinField( "Timer A Output" );
-        this.timerSOutField = new Pi3OutputPinField( "Timer B Output" );
-        this.timerDOutField = new Pi3OutputPinField( "Timer C Output" );
+        this.timerSOutField = new Pi3OutputPinField( "Timer S Output" );
+        this.timerDOutField = new Pi3OutputPinField( "Timer D Output" );
 
         this.teamsView = createTeamsView();
 

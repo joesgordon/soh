@@ -1,5 +1,7 @@
 package soinc.rollercoaster.tasks;
 
+import org.jutils.io.LogUtils;
+
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
@@ -76,6 +78,9 @@ public class RcTimerPins
     public void togglePin()
     {
         this.started = !started;
+
+        LogUtils.printDebug( "Toggling pin " + inPin.getPin().getName() );
+
         if( callback != null )
         {
             callback.setTimerStarted( started );
