@@ -38,8 +38,8 @@ public class TrackCfg
         this.stopPin = new Pi3InputPin( Pi3GpioPin.GPIO_22, PinResistance.OFF );
 
         this.redPin = new Pi3OutputPin( Pi3GpioPin.GPIO_13, PinLevel.HIGH );
-        this.greenPin = new Pi3OutputPin( Pi3GpioPin.GPIO_06, PinLevel.HIGH );
-        this.bluePin = new Pi3OutputPin( Pi3GpioPin.GPIO_05, PinLevel.HIGH );
+        this.greenPin = new Pi3OutputPin( Pi3GpioPin.GPIO_05, PinLevel.HIGH );
+        this.bluePin = new Pi3OutputPin( Pi3GpioPin.GPIO_06, PinLevel.HIGH );
     }
 
     /***************************************************************************
@@ -55,8 +55,8 @@ public class TrackCfg
             this.stopPin.gpioPin = Pi3GpioPin.GPIO_24;
 
             this.redPin.gpioPin = Pi3GpioPin.GPIO_16;
-            this.greenPin.gpioPin = Pi3GpioPin.GPIO_12;
-            this.bluePin.gpioPin = Pi3GpioPin.GPIO_26;
+            this.greenPin.gpioPin = Pi3GpioPin.GPIO_26;
+            this.bluePin.gpioPin = Pi3GpioPin.GPIO_12;
         }
     }
 

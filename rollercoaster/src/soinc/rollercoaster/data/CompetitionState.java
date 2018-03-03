@@ -14,7 +14,7 @@ import soinc.rollercoaster.RcIcons;
 public enum CompetitionState implements INamedItem
 {
     /** No team has been loaded. */
-    NO_TEAM( "New Run", Color.black, "AWAITING.png", false, 0x5 ),
+    NO_TEAM( "New Run", Color.black, "NO_TEAM.png", false, 0x5 ),
     /** Team has been loaded, but the competition has not yet started. */
     LOADED( "Loaded", Color.black, "NO_TEAM.png", false, 0x7 ),
     /** Competitors are not running for record. */
@@ -26,7 +26,7 @@ public enum CompetitionState implements INamedItem
     /** Running after trial time. */
     FAILED_TIME( "Failed", new Color( 0xFF0000 ), "FAILED_TIME.png", true, 0x4 ),
     /** 2 runs completed. */
-    COMPLETE( "Complete", new Color( 0x1F3FFF ), "COMPLETE.png", false, 0x1 );
+    COMPLETE( "Complete", Color.black, new Color( 0x1F3FFF ), "COMPLETE.png", false, 0x1 );
 
     /**  */
     public final String name;

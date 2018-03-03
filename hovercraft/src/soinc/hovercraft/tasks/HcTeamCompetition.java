@@ -8,8 +8,8 @@ import org.jutils.utils.Stopwatch;
 import com.pi4j.io.gpio.GpioController;
 
 import soinc.hovercraft.data.DivisionConfig;
-import soinc.hovercraft.data.HoverConfig;
 import soinc.hovercraft.data.HcTeam;
+import soinc.hovercraft.data.HoverConfig;
 import soinc.hovercraft.data.TrackCfg;
 import soinc.hovercraft.data.TrackData;
 import soinc.hovercraft.data.TrackPins;
@@ -88,6 +88,7 @@ public class HcTeamCompetition
         data.team.loaded = false;
         data.clearTrack();
         dataListeners.fireListeners( this, data );
+        setOutputUninitialized();
     }
 
     /***************************************************************************

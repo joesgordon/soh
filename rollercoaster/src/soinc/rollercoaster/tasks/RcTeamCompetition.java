@@ -261,9 +261,11 @@ public class RcTeamCompetition
      * @param index
      * @param start
      **************************************************************************/
-    public void signalTimerStart( int index, boolean start )
+    public boolean signalTimerStart( int index, boolean start )
     {
-        if( !timers.hasStarted() )
+        boolean started = timers.hasStarted( index );
+
+        if( start && !timers.hasStarted() )
         {
             String msg = stateMachine.signalTimersStarted();
             if( msg == null )
@@ -277,6 +279,7 @@ public class RcTeamCompetition
                     data.run1State = RunState.RUNNING;
                 }
                 timers.setTimerStarted( index, start );
+                started = true;
             }
             else
             {
@@ -292,10 +295,12 @@ public class RcTeamCompetition
             if( start && !timerHasStarted )
             {
                 timers.setTimerStarted( index, start );
+                started = true;
             }
             else if( !start && timerHasStarted && !timerHasStopped )
             {
                 timers.setTimerStarted( index, start );
+                started = false;
             }
             else
             {
@@ -306,8 +311,11 @@ public class RcTeamCompetition
                     state;
 
                 showErrorMessage( msg );
+                started = false;
             }
         }
+
+        return started;
     }
 
     /***************************************************************************
@@ -344,10 +352,19 @@ public class RcTeamCompetition
      **************************************************************************/
     public void signalRunFinished( boolean goodRun )
     {
+        if( !timers.areComplete() )
+        {
+            showErrorMessage(
+                "Unable to finish run when timers are not compelete." );
+            return;
+        }
+
         String msg = stateMachine.signalRunFinished();
 
         if( msg == null )
         {
+            goodRun = goodRun &&
+                data.officialTime <= config.getRunTimeout() * 1000;
             RunState rs = goodRun ? RunState.SUCCESS : RunState.FAILED;
 
             if( data.run1State == RunState.RUNNING )
@@ -584,15 +601,7 @@ public class RcTeamCompetition
                     return -1L;
 
                 case 1:
-                {
-                    for( int i = 0; i < durations.length; i++ )
-                    {
-                        if( durations[i] > -1L )
-                        {
-                            return durations[i];
-                        }
-                    }
-                }
+                    return sum;
 
                 case 2:
                     return sum / count;

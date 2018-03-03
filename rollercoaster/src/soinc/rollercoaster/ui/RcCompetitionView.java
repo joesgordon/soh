@@ -118,7 +118,7 @@ public class RcCompetitionView implements IView<JFrame>
         this.frame = new JFrame( "Roller Coaster Competition" );
 
         this.teamButton = new JButton( "No Teams Entered" );
-        this.periodField = UiUtils.createNumLabel( "-:--", LRG_FONT );
+        this.periodField = UiUtils.createNumLabel( "-:-- s", LRG_FONT );
         this.timerAField = UiUtils.createNumLabel( "--.- s", REG_FONT );
         this.timerSField = UiUtils.createNumLabel( "--.- s", REG_FONT );
         this.timerDField = UiUtils.createNumLabel( "--.- s", REG_FONT );
@@ -178,7 +178,7 @@ public class RcCompetitionView implements IView<JFrame>
         // ---------------------------------------------------------------------
 
         constraints = new GridBagConstraints( 0, row++, 1, 1, 1.0, 0.0,
-            GridBagConstraints.CENTER, GridBagConstraints.NONE,
+            GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
             new Insets( 10, 0, 0, 0 ), 0, 0 );
         panel.add( createUpperPanel(), constraints );
 
@@ -229,9 +229,6 @@ public class RcCompetitionView implements IView<JFrame>
         panel.add( scorePanel, constraints );
 
         // ---------------------------------------------------------------------
-
-        SwingUtils.setMaxComponentSize( officialPanel, scorePanel, timersPanel,
-            runsPanel );
 
         return panel;
     }

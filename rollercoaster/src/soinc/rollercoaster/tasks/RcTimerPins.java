@@ -83,7 +83,7 @@ public class RcTimerPins
 
         if( callback != null )
         {
-            callback.setTimerStarted( started );
+            this.started = callback.setTimerStarted( started );
         }
     }
 

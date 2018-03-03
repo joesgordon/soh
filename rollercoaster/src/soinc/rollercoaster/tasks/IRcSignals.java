@@ -54,6 +54,6 @@ public interface IRcSignals
      **************************************************************************/
     public static interface ITimerCallback
     {
-        public void setTimerStarted( boolean started );
+        public boolean setTimerStarted( boolean started );
     }
 }
