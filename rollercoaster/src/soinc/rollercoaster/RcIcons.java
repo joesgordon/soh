@@ -15,8 +15,8 @@ import soinc.lib.SciolyIcons;
 public class RcIcons
 {
     /**  */
-    private static final IconLoader loader = new IconLoader(
-        RcIcons.class, "icons" );
+    private static final IconLoader loader = new IconLoader( RcIcons.class,
+        "icons" );
 
     /***************************************************************************
      * Private constructor to prevent instantiation.
@@ -60,5 +60,14 @@ public class RcIcons
     public static Icon getIcon( String name )
     {
         return loader.getIcon( name );
+    }
+
+    public static Icon getResizedIcon( String iconName, float percent )
+    {
+        Image img = loader.getImage( iconName );
+        int w = Math.round( img.getWidth( null ) * percent );
+        float scale = w / ( float )img.getWidth( null );
+        int h = Math.round( img.getHeight( null ) * scale );
+        return SciolyIcons.getScaledIcon( img, w, h );
     }
 }

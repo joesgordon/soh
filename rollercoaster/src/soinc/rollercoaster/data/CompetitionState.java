@@ -14,24 +14,26 @@ import soinc.rollercoaster.RcIcons;
 public enum CompetitionState implements INamedItem
 {
     /** No team has been loaded. */
-    NO_TEAM( "New Run", Color.black, "NO_TEAM.png", false, 0x0 ),
+    NO_TEAM( "New Run", Color.black, "AWAITING.png", false, 0x5 ),
     /** Team has been loaded, but the competition has not yet started. */
     LOADED( "Loaded", Color.black, "NO_TEAM.png", false, 0x7 ),
     /** Competitors are not running for record. */
     AWAITING( "Event", Color.black, "AWAITING.png", false, 0x3 ),
     /** Running before target time. */
-    SCORE_TIME( "Score Time", new Color( 0x22B14C ), "SCORE_TIME.png", true, 0x2 ),
+    SCORE_TIME( "Score Time", new Color( 0x008000 ), "SCORE_TIME.png", true, 0x2 ),
     /** Running after target time before trial time. */
-    PENALTY_TIME( "Penalty Time", new Color( 0xFFF200 ), "PENALTY_TIME.png", true, 0x6 ),
+    PENALTY_TIME( "Penalty Time", new Color( 0xFFF200 ), Color.black, "PENALTY_TIME.png", true, 0x6 ),
     /** Running after trial time. */
-    FAILED_TIME( "Failed", new Color( 0xED1C24 ), "FAILED_TIME.png", true, 0x4 ),
+    FAILED_TIME( "Failed", new Color( 0xFF0000 ), "FAILED_TIME.png", true, 0x4 ),
     /** 2 runs completed. */
-    COMPLETE( "Complete", new Color( 0x3F48CC ), "COMPLETE.png", false, 0x5 );
+    COMPLETE( "Complete", new Color( 0x1F3FFF ), "COMPLETE.png", false, 0x1 );
 
     /**  */
     public final String name;
     /**  */
     public final Color background;
+    /**  */
+    public final Color foreground;
     /**  */
     public final Icon icon;
     /**  */
@@ -44,12 +46,24 @@ public enum CompetitionState implements INamedItem
      * @param color
      * @param iconName
      **************************************************************************/
-    private CompetitionState( String name, Color color, String iconName,
+    private CompetitionState( String name, Color bg, String iconName,
+        boolean isRunning, int lights )
+    {
+        this( name, bg, Color.white, iconName, isRunning, lights );
+    }
+
+    /***************************************************************************
+     * @param name
+     * @param color
+     * @param iconName
+     **************************************************************************/
+    private CompetitionState( String name, Color bg, Color fg, String iconName,
         boolean isRunning, int lights )
     {
         this.name = name;
-        this.background = color;
-        this.icon = RcIcons.getIcon( iconName );
+        this.background = bg;
+        this.foreground = fg;
+        this.icon = RcIcons.getResizedIcon( iconName, 0.65f );
         this.isRunning = isRunning;
         this.lights = ( lights ^ 0x4 );
     }

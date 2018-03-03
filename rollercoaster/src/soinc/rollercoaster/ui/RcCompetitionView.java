@@ -184,13 +184,6 @@ public class RcCompetitionView implements IView<JFrame>
 
         // ---------------------------------------------------------------------
 
-        constraints = new GridBagConstraints( 0, row++, 1, 1, 1.0, 0.0,
-            GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-            new Insets( 0, 0, 30, 0 ), 0, 0 );
-        panel.add( createBottomPanel(), constraints );
-
-        // ---------------------------------------------------------------------
-
         return panel;
     }
 
@@ -211,32 +204,14 @@ public class RcCompetitionView implements IView<JFrame>
         Component runsPanel = createRunsPanel();
 
         constraints = new GridBagConstraints( 0, row, 1, 1, 0.5, 0.0,
-            GridBagConstraints.NORTHEAST, GridBagConstraints.HORIZONTAL,
-            new Insets( 10, 20, 10, 40 ), 0, 0 );
+            GridBagConstraints.NORTHEAST, GridBagConstraints.NONE,
+            new Insets( 10, 20, 10, 0 ), 0, 0 );
         panel.add( timersPanel, constraints );
 
         constraints = new GridBagConstraints( 1, row++, 1, 1, 0.5, 0.0,
-            GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-            new Insets( 10, 40, 10, 20 ), 0, 0 );
+            GridBagConstraints.WEST, GridBagConstraints.NONE,
+            new Insets( 10, 20, 10, 20 ), 0, 0 );
         panel.add( runsPanel, constraints );
-
-        SwingUtils.setMaxComponentSize( timersPanel, runsPanel );
-
-        // ---------------------------------------------------------------------
-
-        return panel;
-    }
-
-    /***************************************************************************
-     * @return
-     **************************************************************************/
-    private Component createBottomPanel()
-    {
-        JPanel panel = new JPanel( new GridBagLayout() );
-        GridBagConstraints constraints;
-        int row = 0;
-
-        panel.setOpaque( false );
 
         // ---------------------------------------------------------------------
 
@@ -244,18 +219,19 @@ public class RcCompetitionView implements IView<JFrame>
         Component scorePanel = createScorePanel();
 
         constraints = new GridBagConstraints( 0, row, 1, 1, 0.5, 1.0,
-            GridBagConstraints.NORTHEAST, GridBagConstraints.HORIZONTAL,
-            new Insets( 0, 0, 0, 0 ), 0, 0 );
+            GridBagConstraints.NORTHEAST, GridBagConstraints.NONE,
+            new Insets( 10, 20, 10, 0 ), 0, 0 );
         panel.add( officialPanel, constraints );
 
         constraints = new GridBagConstraints( 1, row++, 1, 1, 0.5, 1.0,
-            GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
-            new Insets( 0, 0, 0, 0 ), 0, 0 );
+            GridBagConstraints.WEST, GridBagConstraints.NONE,
+            new Insets( 10, 20, 10, 20 ), 0, 0 );
         panel.add( scorePanel, constraints );
 
-        SwingUtils.setMaxComponentSize( officialPanel, scorePanel );
-
         // ---------------------------------------------------------------------
+
+        SwingUtils.setMaxComponentSize( officialPanel, scorePanel, timersPanel,
+            runsPanel );
 
         return panel;
     }
@@ -670,6 +646,7 @@ public class RcCompetitionView implements IView<JFrame>
                 if( periodField.getBackground() != Color.orange )
                 {
                     periodField.setBackground( Color.orange );
+                    periodField.setForeground( Color.black );
                 }
             }
             else if( data.periodTime > competition.config.getPeriodTime() *
@@ -678,11 +655,13 @@ public class RcCompetitionView implements IView<JFrame>
                 if( periodField.getBackground() != Color.red )
                 {
                     periodField.setBackground( Color.red );
+                    periodField.setForeground( Color.white );
                 }
             }
             else if( periodField.getBackground() != Color.black )
             {
                 periodField.setBackground( Color.black );
+                periodField.setForeground( Color.white );
             }
         }
 
@@ -697,8 +676,9 @@ public class RcCompetitionView implements IView<JFrame>
 
         if( data.state != compData.state )
         {
-            stateField.setText( data.state.name );
+            stateField.setText( " " + data.state.name + " " );
             stateField.setBackground( data.state.background );
+            stateField.setForeground( data.state.foreground );
             scoreIconField.setIcon( data.state.icon );
         }
 
