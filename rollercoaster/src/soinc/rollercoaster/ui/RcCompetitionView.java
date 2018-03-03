@@ -308,6 +308,9 @@ public class RcCompetitionView implements IView<JFrame>
             new Insets( 0, 0, 0, 0 ), 0, 0 );
         panel.add( periodLabel, constraints );
 
+        periodField.setOpaque( true );
+        periodField.setBackground( Color.black );
+
         constraints = new GridBagConstraints( 1, 1, 1, 1, 0.0, 0.0,
             GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
             new Insets( 0, 20, 0, 0 ), 0, 0 );
@@ -410,12 +413,12 @@ public class RcCompetitionView implements IView<JFrame>
 
         constraints = new GridBagConstraints( 1, 0, 1, 1, 0.0, 0.0,
             GridBagConstraints.WEST, GridBagConstraints.NONE,
-            new Insets( 0, 20, 0, 0 ), 0, 0 );
+            new Insets( 10, 20, 0, 0 ), 0, 0 );
         panel.add( run1Field, constraints );
 
         constraints = new GridBagConstraints( 2, 0, 1, 1, 0.0, 0.0,
             GridBagConstraints.WEST, GridBagConstraints.NONE,
-            new Insets( 0, 20, 0, 10 ), 0, 0 );
+            new Insets( 10, 20, 0, 10 ), 0, 0 );
         panel.add( run1Icon, constraints );
 
         // ---------------------------------------------------------------------
@@ -652,13 +655,34 @@ public class RcCompetitionView implements IView<JFrame>
             if( data.periodTime > -1 )
             {
                 TimeDuration d = new TimeDuration( data.periodTime );
-                String time = String.format( "%1d:%02d", d.totalMinutes,
+                String time = String.format( " %1d:%02d ", d.totalMinutes,
                     d.seconds );
                 periodField.setText( time );
             }
             else
             {
-                periodField.setText( "-:--" );
+                periodField.setText( " -:-- " );
+            }
+
+            if( data.periodTime > competition.config.getPeriodTime() * 7000 /
+                8 && data.periodTime > competition.config.getPeriodTime() )
+            {
+                if( periodField.getBackground() != Color.orange )
+                {
+                    periodField.setBackground( Color.orange );
+                }
+            }
+            else if( data.periodTime > competition.config.getPeriodTime() *
+                1000 )
+            {
+                if( periodField.getBackground() != Color.red )
+                {
+                    periodField.setBackground( Color.red );
+                }
+            }
+            else if( periodField.getBackground() != Color.black )
+            {
+                periodField.setBackground( Color.black );
             }
         }
 
