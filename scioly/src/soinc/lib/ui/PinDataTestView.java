@@ -15,7 +15,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.jutils.ui.event.updater.ReflectiveUpdater;
 import org.jutils.ui.event.updater.WrappedUpdater;
 import org.jutils.ui.fields.ComboFormField;
 import org.jutils.ui.fields.NamedItemDescriptor;
@@ -101,12 +100,10 @@ public class PinDataTestView implements IDataView<PinData>
 
         // setData( new PinData( Pi3Pin.PIN_01 ) );
 
-        dirField.setUpdater( new WrappedUpdater<>(
-            new ReflectiveUpdater<>( this, "data.direction" ),
+        dirField.setUpdater( new WrappedUpdater<>( ( d ) -> data.direction = d,
             ( d ) -> handleDirectionChanged( d ) ) );
-        pullField.setUpdater( new ReflectiveUpdater<>( this, "data.pullRes" ) );
-        levelField.setUpdater(
-            new ReflectiveUpdater<>( this, "data.defaultLevel" ) );
+        pullField.setUpdater( ( d ) -> data.pullRes = d );
+        levelField.setUpdater( ( d ) -> data.defaultLevel = d );
         provisionButton.addActionListener( ( e ) -> toggleProvisioning() );
         levelButton.addActionListener( ( e ) -> toggleOutputLevel() );
     }

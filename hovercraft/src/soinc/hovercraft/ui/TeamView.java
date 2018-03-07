@@ -12,7 +12,6 @@ import org.jutils.IconConstants;
 import org.jutils.SwingUtils;
 import org.jutils.ui.StandardFormView;
 import org.jutils.ui.event.ActionAdapter;
-import org.jutils.ui.event.updater.ReflectiveUpdater;
 import org.jutils.ui.fields.BooleanFormField;
 import org.jutils.ui.fields.ComboFormField;
 import org.jutils.ui.fields.IntegerFormField;
@@ -64,15 +63,12 @@ public class TeamView implements IDataView<HcTeam>
 
         setData( new HcTeam() );
 
-        nameField.setUpdater(
-            new ReflectiveUpdater<>( this, "team.schoolCode" ) );
-        divField.setUpdater( new ReflectiveUpdater<>( this, "team.div" ) );
-        failedCountField.setUpdater(
-            new ReflectiveUpdater<>( this, "team.failedCount" ) );
-        time1Field.setUpdater( new ReflectiveUpdater<>( this, "team.time1" ) );
-        time2Field.setUpdater( new ReflectiveUpdater<>( this, "team.time2" ) );
-        loadedField.setUpdater(
-            new ReflectiveUpdater<>( this, "team.loaded" ) );
+        nameField.setUpdater( ( d ) -> team.schoolCode = d );
+        divField.setUpdater( ( d ) -> team.div = d );
+        failedCountField.setUpdater( ( d ) -> team.failedCount = d );
+        time1Field.setUpdater( ( d ) -> team.run1Time = d );
+        time2Field.setUpdater( ( d ) -> team.run2Time = d );
+        loadedField.setUpdater( ( d ) -> team.loaded = d );
     }
 
     /***************************************************************************

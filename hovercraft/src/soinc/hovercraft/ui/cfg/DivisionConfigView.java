@@ -4,7 +4,6 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.jutils.ui.StandardFormView;
-import org.jutils.ui.event.updater.ReflectiveUpdater;
 import org.jutils.ui.event.updater.WrappedUpdater;
 import org.jutils.ui.fields.IntegerFormField;
 import org.jutils.ui.fields.StringFormField;
@@ -52,11 +51,7 @@ public class DivisionConfigView implements IDataView<DivisionConfig>
 
         divField.setEditable( false );
         lengthField.setUpdater( new WrappedUpdater<>(
-            new ReflectiveUpdater<>( this, "config.targetLength" ),
-            ( e ) -> updateSpeed() ) );
-        // timeField.setUpdater( new WrappedUpdater<>(
-        // new ReflectiveUpdater<>( this, "config.targetTime" ),
-        // ( e ) -> updateSpeed() ) );
+            ( d ) -> config.targetLength = d, ( e ) -> updateSpeed() ) );
 
         timeField.setEditable( false );
         mphField.setEditable( false );

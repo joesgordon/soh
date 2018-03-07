@@ -134,6 +134,7 @@ public class RcTeamCompetition
     {
         timer.cancel();
         signals.disconnect();
+
     }
 
     /***************************************************************************
@@ -174,7 +175,7 @@ public class RcTeamCompetition
      **************************************************************************/
     public boolean isRunning()
     {
-        return data.state.isRunning;
+        return !periodTimer.isStopped();
     }
 
     /***************************************************************************
@@ -191,6 +192,10 @@ public class RcTeamCompetition
     private void setPeriodComplete()
     {
         periodTimer.stop();
+
+        data.team.run1Time = ( int )( data.run1Time / 100 );
+        data.team.run2Time = ( int )( data.run2Time / 100 );
+
         if( data.run1State == RunState.NOT_RUN )
         {
             data.run1State = RunState.FAILED;
@@ -223,8 +228,9 @@ public class RcTeamCompetition
 
         if( msg == null )
         {
+            data.reset();
             data.team = team;
-            data.team.loaded = true;
+            data.state = CompetitionState.LOADED;
         }
         else
         {
@@ -250,6 +256,7 @@ public class RcTeamCompetition
             {
                 periodTimer.pauseResume( now );
             }
+            data.team.loaded = true;
         }
         else
         {
@@ -364,7 +371,7 @@ public class RcTeamCompetition
         if( msg == null )
         {
             goodRun = goodRun &&
-                data.officialTime <= config.getRunTimeout() * 1000;
+                data.officialTime < config.getRunTimeout() * 1000;
             RunState rs = goodRun ? RunState.SUCCESS : RunState.FAILED;
 
             if( data.run1State == RunState.RUNNING )

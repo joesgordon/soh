@@ -124,9 +124,9 @@ public class RcCompetitionView implements IView<JFrame>
         this.timerDField = UiUtils.createNumLabel( "--.- s", REG_FONT );
         this.officialField = UiUtils.createNumLabel( "--.- s", REG_FONT );
         this.stateField = UiUtils.createTextLabel( "-----", REG_FONT );
-        this.run1Field = UiUtils.createNumLabel( "--.- s", REG_FONT );
+        this.run1Field = UiUtils.createNumLabel( "-- s", REG_FONT );
         this.run1Icon = new JLabel( blankIcon );
-        this.run2Field = UiUtils.createNumLabel( "--.- s", REG_FONT );
+        this.run2Field = UiUtils.createNumLabel( "-- s", REG_FONT );
         this.run2Icon = new JLabel( blankIcon );
         this.scoreIconField = new JLabel();
 
@@ -668,7 +668,7 @@ public class RcCompetitionView implements IView<JFrame>
 
         if( data.officialTime != compData.officialTime )
         {
-            setTimeField( data.officialTime, officialField );
+            setDecisecondsTimeField( data.officialTime, officialField );
         }
 
         if( data.state != compData.state )
@@ -681,12 +681,12 @@ public class RcCompetitionView implements IView<JFrame>
 
         if( data.run1Time != compData.run1Time )
         {
-            setTimeField( data.run1Time, run1Field );
+            setSecondsTimeField( data.run1Time, run1Field );
         }
 
         if( data.run2Time != compData.run2Time )
         {
-            setTimeField( data.run2Time, run2Field );
+            setSecondsTimeField( data.run2Time, run2Field );
         }
 
         if( data.run1State != compData.run1State )
@@ -746,11 +746,11 @@ public class RcCompetitionView implements IView<JFrame>
     {
         if( data.timers[index] != compData.timers[index] )
         {
-            setTimeField( data.timers[index], timerField );
+            setDecisecondsTimeField( data.timers[index], timerField );
         }
     }
 
-    private void setTimeField( long duration, JLabel timeField )
+    private void setDecisecondsTimeField( long duration, JLabel timeField )
     {
         String time = null;
 
@@ -763,6 +763,23 @@ public class RcCompetitionView implements IView<JFrame>
             TimeDuration d = new TimeDuration( duration );
             time = String.format( "%02d.%1d s", d.totalSeconds,
                 d.millis / 100 );
+        }
+
+        timeField.setText( time );
+    }
+
+    private void setSecondsTimeField( long duration, JLabel timeField )
+    {
+        String time = null;
+
+        if( duration < 0 )
+        {
+            time = "-- s";
+        }
+        else
+        {
+            TimeDuration d = new TimeDuration( duration );
+            time = String.format( "%02d s", d.totalSeconds );
         }
 
         timeField.setText( time );
