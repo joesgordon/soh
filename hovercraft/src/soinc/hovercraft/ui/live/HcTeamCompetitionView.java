@@ -24,7 +24,7 @@ import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import org.jutils.SwingUtils;
+import org.jutils.OptionUtils;
 import org.jutils.io.LogUtils;
 import org.jutils.ui.ColorIcon;
 import org.jutils.ui.OkDialogView;
@@ -33,13 +33,13 @@ import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.model.IView;
 
 import soinc.hovercraft.data.DivisionConfig;
-import soinc.hovercraft.data.HoverConfig;
 import soinc.hovercraft.data.HcTeam;
+import soinc.hovercraft.data.HoverConfig;
 import soinc.hovercraft.data.TrackData;
 import soinc.hovercraft.data.TrackState;
 import soinc.hovercraft.tasks.HcTeamCompetition;
-import soinc.hovercraft.ui.RightClickMouseListener;
 import soinc.hovercraft.ui.HcTeamsView;
+import soinc.hovercraft.ui.RightClickMouseListener;
 import soinc.lib.SciolyIcons;
 import soinc.lib.UiUtils;
 
@@ -667,12 +667,12 @@ public class HcTeamCompetitionView implements IView<JComponent>
         {
             String msg = String.format(
                 "The current team (%s) must finish first", data.getTeamCode() );
-            SwingUtils.showErrorMessage( getView(), msg, "Input Error" );
+            OptionUtils.showErrorMessage( getView(), msg, "Input Error" );
             return;
         }
         else if( team == null )
         {
-            SwingUtils.showErrorMessage( getView(), "No Team Chosen",
+            OptionUtils.showErrorMessage( getView(), "No Team Chosen",
                 "Input Error" );
             return;
         }
@@ -824,7 +824,7 @@ public class HcTeamCompetitionView implements IView<JComponent>
 
         if( state != TrackState.FINISHED && state != TrackState.UNINITIALIZED )
         {
-            SwingUtils.showErrorMessage( getView(),
+            OptionUtils.showErrorMessage( getView(),
                 "Cannot change teams until " + data.getTeamCode() +
                     " has finished",
                 "Input Error" );

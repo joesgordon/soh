@@ -1,4 +1,4 @@
-package soinc.rollercoaster.relay;
+package soinc.lib.relay;
 
 import java.io.IOException;
 

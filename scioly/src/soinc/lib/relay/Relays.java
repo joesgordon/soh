@@ -1,4 +1,4 @@
-package soinc.rollercoaster.relay;
+package soinc.lib.relay;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +17,30 @@ import org.jutils.io.LogUtils;
  ******************************************************************************/
 public class Relays implements IRelays
 {
+    /**  */
+    public static final int RED_MASK = 0x4;
+    /**  */
+    public static final int GREEN_MASK = 0x2;
+    /**  */
+    public static final int BLUE_MASK = 0x1;
+
+    /**  */
+    public static final int RED_LIGHT = RED_MASK;
+    /**  */
+    public static final int GREEN_LIGHT = GREEN_MASK;
+    /**  */
+    public static final int BLUE_LIGHT = BLUE_MASK;
+    /**  */
+    public static final int WHITE_LIGHT = RED_MASK & GREEN_MASK & BLUE_MASK;
+    /**  */
+    public static final int PURPLE_LIGHT = RED_MASK & BLUE_MASK;
+    /**  */
+    public static final int YELLOW_LIGHT = RED_MASK & GREEN_MASK;
+    /** Looks washed out. */
+    public static final int CYAN_LIGHT = BLUE_MASK & GREEN_MASK;
+    /** Not really black. Just off. */
+    public static final int BLACK_LIGHT = 0;
+
     /**  */
     public static final int BOARD_COUNT = 2;
     /**  */

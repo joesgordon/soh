@@ -1,4 +1,4 @@
-package soinc.rollercoaster;
+package soinc.boomilever;
 
 import java.io.File;
 
@@ -8,36 +8,36 @@ import org.jutils.io.options.IOptionsCreator;
 import org.jutils.io.options.OptionsSerializer;
 import org.jutils.ui.app.FrameRunner;
 
+import soinc.boomilever.data.BlOptions;
 import soinc.lib.gpio.SciolyGpio;
 import soinc.lib.relay.IRelays;
 import soinc.lib.relay.MockRelay;
 import soinc.lib.relay.Relays;
-import soinc.rollercoaster.data.RcOptions;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class RcMain
+public class BlMain
 {
     /**  */
     private static final File USERS_FILE = IOUtils.getUsersFile(
-        ".ScienceOlympiad", "rollercoaster.xml" );
+        ".ScienceOlympiad", "boomilever.xml" );
 
     /**  */
-    private static OptionsSerializer<RcOptions> userio;
+    private static OptionsSerializer<BlOptions> userio;
 
     /***************************************************************************
      * @param args ignored
      **************************************************************************/
     public static void main( String [] args )
     {
-        FrameRunner.invokeLater( new RcApp() );
+        FrameRunner.invokeLater( new BlApp() );
     }
 
     /***************************************************************************
      * @return
      **************************************************************************/
-    public static IRelays getRelay()
+    public static IRelays getRelays()
     {
         return getRelay( SciolyGpio.FAUX_CONNECT );
     }
@@ -61,11 +61,11 @@ public class RcMain
     /***************************************************************************
      * @return
      **************************************************************************/
-    public static OptionsSerializer<RcOptions> getOptions()
+    public static OptionsSerializer<BlOptions> getOptions()
     {
         if( userio == null )
         {
-            userio = OptionsSerializer.getOptions( RcOptions.class, USERS_FILE,
+            userio = OptionsSerializer.getOptions( BlOptions.class, USERS_FILE,
                 new RudCreator() );
         }
 
@@ -75,24 +75,24 @@ public class RcMain
     /***************************************************************************
      * 
      **************************************************************************/
-    private static final class RudCreator implements IOptionsCreator<RcOptions>
+    private static final class RudCreator implements IOptionsCreator<BlOptions>
     {
         /**
          * {@inheritDoc}
          */
         @Override
-        public RcOptions createDefaultOptions()
+        public BlOptions createDefaultOptions()
         {
-            return new RcOptions();
+            return new BlOptions();
         }
 
         /**
          * {@inheritDoc}
          */
         @Override
-        public RcOptions initialize( RcOptions data )
+        public BlOptions initialize( BlOptions data )
         {
-            return new RcOptions( data );
+            return new BlOptions( data );
         }
 
         /**

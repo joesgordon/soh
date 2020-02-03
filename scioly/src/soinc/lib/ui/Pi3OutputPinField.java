@@ -70,7 +70,7 @@ public class Pi3OutputPinField implements IDataFormField<Pi3OutputPin>
     private void updatePin( Pi3GpioPin pin )
     {
         this.pin.gpioPin = pin;
-        updaters.fireListeners( this.pin );
+        updaters.fire( this.pin );
     }
 
     /***************************************************************************
@@ -79,7 +79,7 @@ public class Pi3OutputPinField implements IDataFormField<Pi3OutputPin>
     private void updateLevel( PinLevel resistance )
     {
         this.pin.level = resistance;
-        updaters.fireListeners( this.pin );
+        updaters.fire( this.pin );
     }
 
     /***************************************************************************
@@ -133,7 +133,7 @@ public class Pi3OutputPinField implements IDataFormField<Pi3OutputPin>
     public void setUpdater( IUpdater<Pi3OutputPin> updater )
     {
         updaters.removeAll();
-        updaters.addUpdater( updater );
+        updaters.add( updater );
     }
 
     /***************************************************************************

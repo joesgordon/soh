@@ -10,6 +10,7 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 
 import org.jutils.IconConstants;
+import org.jutils.OptionUtils;
 import org.jutils.SwingUtils;
 import org.jutils.ui.ItemListView;
 import org.jutils.ui.ListView;
@@ -140,7 +141,7 @@ public class HcTeamListView implements IDataView<List<HcTeam>>
                     {
                         Window w = SwingUtils.getComponentsWindow(
                             view.getView() );
-                        SwingUtils.showErrorMessage( w,
+                        OptionUtils.showErrorMessage( w,
                             "Duplicate Team name: " + name, "Input Error" );
                         return null;
                     }

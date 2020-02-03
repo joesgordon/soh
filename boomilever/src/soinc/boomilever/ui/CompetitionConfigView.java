@@ -1,4 +1,4 @@
-package soinc.rollercoaster.ui;
+package soinc.boomilever.ui;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -21,99 +21,101 @@ import org.jutils.ui.ListView.IItemListModel;
 import org.jutils.ui.StandardFormView;
 import org.jutils.ui.TitleView;
 import org.jutils.ui.event.ActionAdapter;
+import org.jutils.ui.fields.ComboFormField;
 import org.jutils.ui.fields.IntegerFormField;
 import org.jutils.ui.model.IDataView;
 
-import soinc.lib.ui.Pi3InputPinField;
-import soinc.lib.ui.Pi3OutputPinField;
-import soinc.rollercoaster.RcMain;
-import soinc.rollercoaster.data.RcConfig;
-import soinc.rollercoaster.data.RcOptions;
-import soinc.rollercoaster.data.RcTeam;
+import soinc.boomilever.BlMain;
+import soinc.boomilever.data.BlOptions;
+import soinc.boomilever.data.BlTeam;
+import soinc.boomilever.data.CompetitionConfig;
+import soinc.lib.ui.PhysicalKey;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class RcConfigView implements IDataView<RcConfig>
+public class CompetitionConfigView implements IDataView<CompetitionConfig>
 {
     /**  */
     private final JPanel view;
+
     /**  */
     private final IntegerFormField periodTimeField;
     /**  */
-    private final IntegerFormField targetTimeField;
+    private final IntegerFormField periodWarningField;
     /**  */
-    private final IntegerFormField trailTimeoutField;
+    private final IntegerFormField redRelayField;
     /**  */
-    private final Pi3OutputPinField timerAOutField;
+    private final IntegerFormField greenRelayField;
     /**  */
-    private final Pi3OutputPinField timerSOutField;
+    private final IntegerFormField blueRelayField;
     /**  */
-    private final Pi3OutputPinField timerDOutField;
+    private final ComboFormField<PhysicalKey> startPauseKeyField;
     /**  */
-    private final Pi3InputPinField timerAInField;
+    private final ComboFormField<PhysicalKey> clearKeyField;
     /**  */
-    private final Pi3InputPinField timerSInField;
-    /**  */
-    private final Pi3InputPinField timerDInField;
-    /**  */
-    private final ItemListView<RcTeam> teamsView;
+    private final ItemListView<BlTeam> teamsView;
 
     /**  */
-    private RcConfig config;
+    private CompetitionConfig config;
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public RcConfigView()
+    public CompetitionConfigView()
     {
         this.periodTimeField = new IntegerFormField( "Period Time", "seconds",
             8, 10, 60 * 60 );
-        this.targetTimeField = new IntegerFormField( "TargetTime", "seconds", 8,
-            20, 45 );
-        this.trailTimeoutField = new IntegerFormField( "Trial Timeout",
-            "seconds", 8, 10, 2 * 60 );
+        this.periodWarningField = new IntegerFormField( "Period Warning",
+            "seconds", 8, 5, 60 * 60 );
 
-        this.timerAInField = new Pi3InputPinField( "Timer A Input" );
-        this.timerSInField = new Pi3InputPinField( "Timer S Input" );
-        this.timerDInField = new Pi3InputPinField( "Timer D Input" );
+        this.redRelayField = new IntegerFormField( "Red Relay", null, 8, 0, 8 );
+        this.greenRelayField = new IntegerFormField( "Red Relay", null, 8, 0,
+            8 );
+        this.blueRelayField = new IntegerFormField( "Red Relay", null, 8, 0,
+            8 );
 
-        this.timerAOutField = new Pi3OutputPinField( "Timer A Output" );
-        this.timerSOutField = new Pi3OutputPinField( "Timer S Output" );
-        this.timerDOutField = new Pi3OutputPinField( "Timer D Output" );
+        this.startPauseKeyField = new ComboFormField<PhysicalKey>( "Start Key",
+            PhysicalKey.values() );
+        this.clearKeyField = new ComboFormField<PhysicalKey>( "Clear Key",
+            PhysicalKey.values() );
 
         this.teamsView = createTeamsView();
 
         this.view = createView();
 
-        OptionsSerializer<RcOptions> options = RcMain.getOptions();
+        OptionsSerializer<BlOptions> options = BlMain.getOptions();
 
         this.config = options.getOptions().config;
 
         setData( config );
 
         periodTimeField.setUpdater( ( d ) -> config.periodTime = d );
-        targetTimeField.setUpdater( ( d ) -> config.targetTime = d );
-        trailTimeoutField.setUpdater( ( d ) -> config.runTimeout = d );
+        periodWarningField.setUpdater( ( d ) -> config.periodWarning = d );
 
-        timerAInField.setUpdater( ( d ) -> config.timerAIn.set( d ) );
-        timerSInField.setUpdater( ( d ) -> config.timerSIn.set( d ) );
-        timerDInField.setUpdater( ( d ) -> config.timerDIn.set( d ) );
+        redRelayField.setUpdater( ( d ) -> config.redRelay = d );
+        greenRelayField.setUpdater( ( d ) -> config.greenRelay = d );
+        blueRelayField.setUpdater( ( d ) -> config.blueRelay = d );
 
-        timerAOutField.setUpdater( ( d ) -> config.timerAOut.set( d ) );
-        timerSOutField.setUpdater( ( d ) -> config.timerSOut.set( d ) );
-        timerDOutField.setUpdater( ( d ) -> config.timerDOut.set( d ) );
+        startPauseKeyField.setUpdater( ( d ) -> config.startPauseKey = d );
+        clearKeyField.setUpdater( ( d ) -> config.clearKey = d );
     }
 
-    private ItemListView<RcTeam> createTeamsView()
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    private ItemListView<BlTeam> createTeamsView()
     {
-        ItemListView<RcTeam> view = new ItemListView<>( new RcTeamView(),
+        ItemListView<BlTeam> view = new ItemListView<>( new BlTeamView(),
             new RcTeamsModel() );
         view.addSeparatorToToolbar();
         view.addToToolbar( createInitButton() );
         return view;
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
     private JButton createInitButton()
     {
         Action action;
@@ -136,7 +138,7 @@ public class RcConfigView implements IDataView<RcConfig>
      **************************************************************************/
     private void initAll()
     {
-        for( RcTeam team : teamsView.getData() )
+        for( BlTeam team : teamsView.getData() )
         {
             team.reset();
         }
@@ -177,17 +179,14 @@ public class RcConfigView implements IDataView<RcConfig>
         StandardFormView form = new StandardFormView();
 
         form.addField( periodTimeField );
-        form.addField( trailTimeoutField );
-        form.addField( targetTimeField );
+        form.addField( periodWarningField );
 
-        form.addField( timerAOutField );
-        form.addField( timerAInField );
+        form.addField( redRelayField );
+        form.addField( greenRelayField );
+        form.addField( blueRelayField );
 
-        form.addField( timerSOutField );
-        form.addField( timerSInField );
-
-        form.addField( timerDOutField );
-        form.addField( timerDInField );
+        form.addField( startPauseKeyField );
+        form.addField( clearKeyField );
 
         return form.getView();
     }
@@ -205,7 +204,7 @@ public class RcConfigView implements IDataView<RcConfig>
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public RcConfig getData()
+    public CompetitionConfig getData()
     {
         return config;
     }
@@ -214,21 +213,19 @@ public class RcConfigView implements IDataView<RcConfig>
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public void setData( RcConfig config )
+    public void setData( CompetitionConfig config )
     {
         this.config = config;
 
         periodTimeField.setValue( config.periodTime );
-        trailTimeoutField.setValue( config.runTimeout );
-        targetTimeField.setValue( config.targetTime );
+        periodWarningField.setValue( config.periodWarning );
 
-        timerAInField.setValue( config.timerAIn );
-        timerSInField.setValue( config.timerSIn );
-        timerDInField.setValue( config.timerDIn );
+        redRelayField.setValue( config.redRelay );
+        greenRelayField.setValue( config.greenRelay );
+        blueRelayField.setValue( config.blueRelay );
 
-        timerAOutField.setValue( config.timerAOut );
-        timerSOutField.setValue( config.timerSOut );
-        timerDOutField.setValue( config.timerDOut );
+        startPauseKeyField.setValue( config.startPauseKey );
+        clearKeyField.setValue( config.clearKey );
 
         teamsView.setData( config.teams );
     }
@@ -236,13 +233,13 @@ public class RcConfigView implements IDataView<RcConfig>
     /***************************************************************************
      * 
      **************************************************************************/
-    private static final class RcTeamsModel implements IItemListModel<RcTeam>
+    private static final class RcTeamsModel implements IItemListModel<BlTeam>
     {
         /**
          * {@inheritDoc}
          */
         @Override
-        public String getTitle( RcTeam team )
+        public String getTitle( BlTeam team )
         {
             return team.name;
         }
@@ -251,17 +248,17 @@ public class RcConfigView implements IDataView<RcConfig>
          * {@inheritDoc}
          */
         @Override
-        public RcTeam promptForNew( ListView<RcTeam> view )
+        public BlTeam promptForNew( ListView<BlTeam> view )
         {
-            List<RcTeam> teams = view.getData();
+            List<BlTeam> teams = view.getData();
             String name = view.promptForName( "Team" );
-            RcTeam team = null;
+            BlTeam team = null;
 
             if( name != null )
             {
                 name = name.toUpperCase();
 
-                for( RcTeam t : teams )
+                for( BlTeam t : teams )
                 {
                     if( t.name.equalsIgnoreCase( name ) )
                     {
@@ -274,7 +271,7 @@ public class RcConfigView implements IDataView<RcConfig>
                     }
                 }
 
-                team = new RcTeam( name );
+                team = new BlTeam( name );
             }
 
             return team;

@@ -1,4 +1,4 @@
-package soinc.rollercoaster.ui;
+package soinc.boomilever.ui;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -26,10 +26,8 @@ import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.border.LineBorder;
 
 import org.jutils.OptionUtils;
-import org.jutils.ui.ColorIcon;
 import org.jutils.ui.OkDialogView;
 import org.jutils.ui.OkDialogView.OkDialogButtons;
 import org.jutils.ui.event.ActionAdapter;
@@ -38,35 +36,27 @@ import org.jutils.ui.fields.ItemsListField;
 import org.jutils.ui.model.IView;
 import org.jutils.ui.model.LabelListCellRenderer.IListCellLabelDecorator;
 
-import soinc.lib.SciolyIcons;
+import soinc.boomilever.BlIcons;
+import soinc.boomilever.BlMain;
+import soinc.boomilever.data.BlCompetitionData;
+import soinc.boomilever.data.BlTeam;
+import soinc.boomilever.data.CompetitionState;
+import soinc.boomilever.data.TimeDuration;
+import soinc.boomilever.tasks.BlTeamCompetition;
 import soinc.lib.UiUtils;
-import soinc.rollercoaster.RcIcons;
-import soinc.rollercoaster.RcMain;
-import soinc.rollercoaster.data.RcCompetitionData;
-import soinc.rollercoaster.data.RcCompetitionData.RunState;
-import soinc.rollercoaster.data.RcTeam;
-import soinc.rollercoaster.data.TimeDuration;
-import soinc.rollercoaster.tasks.RcTeamCompetition;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class RcCompetitionView implements IView<JFrame>
+public class BlCompetitionView implements IView<JFrame>
 {
     /**  */
-    private static final float LRG_FONT = 64.0f;
+    private static final float LRG_FONT = 128.0f;
     /**  */
-    private static final float REG_FONT = UiUtils.DEFAULT_FONT_SIZE;
+    private static final float REG_FONT = 36.0f;
 
     /**  */
-    private final RcTeamCompetition competition;
-
-    /**  */
-    private final Icon blankIcon;
-    /**  */
-    private final Icon checkIcon;
-    /**  */
-    private final Icon xIcon;
+    private final BlTeamCompetition competition;
 
     /**  */
     private final JFrame frame;
@@ -75,68 +65,29 @@ public class RcCompetitionView implements IView<JFrame>
     /**  */
     private final JLabel periodField;
     /**  */
-    private final JLabel timerAField;
-    /**  */
-    private final JLabel timerSField;
-    /**  */
-    private final JLabel timerDField;
-    /**  */
-    private final JLabel officialField;
-    /**  */
     private final JLabel stateField;
-    /**  */
-    private final JLabel run1Field;
-    /**  */
-    private final JLabel run1Icon;
-    /**  */
-    private final JLabel run2Field;
-    /**  */
-    private final JLabel run2Icon;
-    /**  */
-    private final JLabel scoreIconField;
 
     /**  */
     private final JComponent content;
 
     /**  */
-    private RcCompetitionData compData;
+    private BlCompetitionData compData;
 
     /***************************************************************************
      * @param competition
      * @param icons
-     * @param dimension
+     * @param size
      **************************************************************************/
-    public RcCompetitionView( RcTeamCompetition competition, List<Image> icons,
+    public BlCompetitionView( BlTeamCompetition competition, List<Image> icons,
         Dimension size )
     {
         this.competition = competition;
-
-        this.blankIcon = new ColorIcon( new Color( 20, 20, 20 ), 36 );
-        this.checkIcon = SciolyIcons.getCheckIcon( 36 );
-        this.xIcon = SciolyIcons.getXIcon( 36 );
 
         this.frame = new JFrame( "Roller Coaster Competition" );
 
         this.teamButton = new JButton( "No Teams Entered" );
         this.periodField = UiUtils.createNumLabel( "-:-- s", LRG_FONT );
-        this.timerAField = UiUtils.createNumLabel( "--.- s", REG_FONT );
-        this.timerSField = UiUtils.createNumLabel( "--.- s", REG_FONT );
-        this.timerDField = UiUtils.createNumLabel( "--.- s", REG_FONT );
-        this.officialField = UiUtils.createNumLabel( "--.- s", REG_FONT );
         this.stateField = UiUtils.createTextLabel( "-----", REG_FONT );
-        this.run1Field = UiUtils.createNumLabel( "-- s", REG_FONT );
-        this.run1Icon = new JLabel( blankIcon );
-        this.run2Field = UiUtils.createNumLabel( "-- s", REG_FONT );
-        this.run2Icon = new JLabel( blankIcon );
-        this.scoreIconField = new JLabel();
-
-        run1Icon.setPreferredSize( new Dimension( 38, 38 ) );
-        run1Icon.setMinimumSize( new Dimension( 38, 38 ) );
-        run1Icon.setMaximumSize( new Dimension( 38, 38 ) );
-
-        run2Icon.setPreferredSize( new Dimension( 38, 38 ) );
-        run2Icon.setMinimumSize( new Dimension( 38, 38 ) );
-        run2Icon.setMaximumSize( new Dimension( 38, 38 ) );
 
         this.content = createCompetitionPanel();
 
@@ -170,15 +121,15 @@ public class RcCompetitionView implements IView<JFrame>
 
         // ---------------------------------------------------------------------
 
-        constraints = new GridBagConstraints( 0, row++, 1, 1, 0.0, 0.0,
-            GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        constraints = new GridBagConstraints( 0, row++, 1, 1, 0.0, 1.0,
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
             new Insets( 10, 0, 0, 0 ), 0, 0 );
         panel.add( createPeriodPanel(), constraints );
 
         // ---------------------------------------------------------------------
 
         constraints = new GridBagConstraints( 0, row++, 1, 1, 1.0, 0.0,
-            GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
             new Insets( 10, 0, 0, 0 ), 0, 0 );
         panel.add( createUpperPanel(), constraints );
 
@@ -200,35 +151,12 @@ public class RcCompetitionView implements IView<JFrame>
 
         // ---------------------------------------------------------------------
 
-        Component timersPanel = createTimersPanel();
-        Component runsPanel = createRunsPanel();
-
-        constraints = new GridBagConstraints( 0, row, 1, 1, 0.5, 0.0,
-            GridBagConstraints.NORTHEAST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 10, 0 ), 0, 0 );
-        panel.add( timersPanel, constraints );
-
-        constraints = new GridBagConstraints( 1, row++, 1, 1, 0.5, 0.0,
-            GridBagConstraints.WEST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 10, 20 ), 0, 0 );
-        panel.add( runsPanel, constraints );
-
-        // ---------------------------------------------------------------------
-
         Component officialPanel = createOfficialPanel();
-        Component scorePanel = createScorePanel();
 
         constraints = new GridBagConstraints( 0, row, 1, 1, 0.5, 1.0,
-            GridBagConstraints.NORTHEAST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 10, 0 ), 0, 0 );
+            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
+            new Insets( 10, 20, 20, 0 ), 0, 0 );
         panel.add( officialPanel, constraints );
-
-        constraints = new GridBagConstraints( 1, row++, 1, 1, 0.5, 1.0,
-            GridBagConstraints.WEST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 10, 20 ), 0, 0 );
-        panel.add( scorePanel, constraints );
-
-        // ---------------------------------------------------------------------
 
         return panel;
     }
@@ -238,7 +166,7 @@ public class RcCompetitionView implements IView<JFrame>
      **************************************************************************/
     private static Component createBannerPanel()
     {
-        Icon bannerIcon = RcIcons.getBannerImage();
+        Icon bannerIcon = BlIcons.getBannerImage();
         JLabel soLabel = new JLabel( bannerIcon );
 
         return soLabel;
@@ -276,142 +204,18 @@ public class RcCompetitionView implements IView<JFrame>
         JLabel periodLabel = UiUtils.createTextLabel( "Testing Period:",
             REG_FONT );
 
-        constraints = new GridBagConstraints( 0, 1, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
+        constraints = new GridBagConstraints( 0, 1, 1, 1, 0.0, 1.0,
+            GridBagConstraints.EAST, GridBagConstraints.BOTH,
             new Insets( 0, 0, 0, 0 ), 0, 0 );
         panel.add( periodLabel, constraints );
 
         periodField.setOpaque( true );
         periodField.setBackground( Color.black );
 
-        constraints = new GridBagConstraints( 1, 1, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
+        constraints = new GridBagConstraints( 1, 1, 1, 1, 0.0, 1.0,
+            GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
             new Insets( 0, 20, 0, 0 ), 0, 0 );
         panel.add( periodField, constraints );
-
-        // ---------------------------------------------------------------------
-
-        JLabel targetLabel = UiUtils.createTextLabel( "Target:", REG_FONT );
-        JLabel targetField = UiUtils.createNumLabel(
-            competition.config.getTargetTime() + ".0 s", REG_FONT );
-
-        constraints = new GridBagConstraints( 0, 2, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
-            new Insets( 10, 0, 0, 0 ), 0, 0 );
-        panel.add( targetLabel, constraints );
-
-        constraints = new GridBagConstraints( 1, 2, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 0, 0 ), 0, 0 );
-        panel.add( targetField, constraints );
-
-        return panel;
-    }
-
-    /***************************************************************************
-     * @return
-     **************************************************************************/
-    private Component createTimersPanel()
-    {
-        JPanel panel = new JPanel( new GridBagLayout() );
-        GridBagConstraints constraints;
-
-        panel.setOpaque( false );
-
-        // ---------------------------------------------------------------------
-
-        JLabel timer1Label = UiUtils.createTextLabel( "Timer A:", REG_FONT );
-
-        constraints = new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
-            new Insets( 0, 0, 0, 0 ), 0, 0 );
-        panel.add( timer1Label, constraints );
-
-        constraints = new GridBagConstraints( 1, 0, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
-            new Insets( 0, 20, 0, 0 ), 0, 0 );
-        panel.add( timerAField, constraints );
-
-        // ---------------------------------------------------------------------
-
-        JLabel timer2Label = UiUtils.createTextLabel( "Timer S:", REG_FONT );
-
-        constraints = new GridBagConstraints( 0, 1, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
-            new Insets( 10, 0, 0, 0 ), 0, 0 );
-        panel.add( timer2Label, constraints );
-
-        constraints = new GridBagConstraints( 1, 1, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 0, 0 ), 0, 0 );
-        panel.add( timerSField, constraints );
-
-        // ---------------------------------------------------------------------
-
-        JLabel timer3Label = UiUtils.createTextLabel( "Timer D:", REG_FONT );
-
-        constraints = new GridBagConstraints( 0, 2, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
-            new Insets( 10, 0, 0, 0 ), 0, 0 );
-        panel.add( timer3Label, constraints );
-
-        constraints = new GridBagConstraints( 1, 2, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 0, 0 ), 0, 0 );
-        panel.add( timerDField, constraints );
-
-        return panel;
-    }
-
-    /***************************************************************************
-     * @return
-     **************************************************************************/
-    private Component createRunsPanel()
-    {
-        JPanel panel = new JPanel( new GridBagLayout() );
-        GridBagConstraints constraints;
-
-        panel.setOpaque( false );
-
-        panel.setBorder( new LineBorder( Color.white, 2 ) );
-
-        // ---------------------------------------------------------------------
-
-        JLabel run1Label = UiUtils.createTextLabel( "Run 1:", REG_FONT );
-
-        constraints = new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0,
-            GridBagConstraints.EAST, GridBagConstraints.NONE,
-            new Insets( 10, 10, 0, 0 ), 0, 0 );
-        panel.add( run1Label, constraints );
-
-        constraints = new GridBagConstraints( 1, 0, 1, 1, 0.0, 0.0,
-            GridBagConstraints.WEST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 0, 0 ), 0, 0 );
-        panel.add( run1Field, constraints );
-
-        constraints = new GridBagConstraints( 2, 0, 1, 1, 0.0, 0.0,
-            GridBagConstraints.WEST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 0, 10 ), 0, 0 );
-        panel.add( run1Icon, constraints );
-
-        // ---------------------------------------------------------------------
-
-        JLabel run2Label = UiUtils.createTextLabel( "Run 2:", REG_FONT );
-
-        constraints = new GridBagConstraints( 0, 1, 1, 1, 0.0, 0.0,
-            GridBagConstraints.EAST, GridBagConstraints.NONE,
-            new Insets( 10, 0, 0, 0 ), 0, 0 );
-        panel.add( run2Label, constraints );
-
-        constraints = new GridBagConstraints( 1, 1, 1, 1, 0.0, 0.0,
-            GridBagConstraints.WEST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 0, 0 ), 0, 0 );
-        panel.add( run2Field, constraints );
-
-        constraints = new GridBagConstraints( 2, 1, 1, 1, 0.0, 0.0,
-            GridBagConstraints.WEST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 10, 10 ), 0, 0 );
-        panel.add( run2Icon, constraints );
 
         return panel;
     }
@@ -428,28 +232,13 @@ public class RcCompetitionView implements IView<JFrame>
 
         // ---------------------------------------------------------------------
 
-        JLabel officialLabel = UiUtils.createTextLabel( "Official Time:",
-            REG_FONT );
-
-        constraints = new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
-            new Insets( 40, 0, 0, 0 ), 0, 0 );
-        panel.add( officialLabel, constraints );
-
-        constraints = new GridBagConstraints( 1, 0, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
-            new Insets( 30, 20, 0, 0 ), 0, 0 );
-        panel.add( officialField, constraints );
-
-        // ---------------------------------------------------------------------
-
         stateField.setText( competition.getState().name );
         stateField.setOpaque( true );
         stateField.setBackground( Color.black );
 
         constraints = new GridBagConstraints( 0, 1, 2, 1, 0.0, 0.0,
             GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 0, 0 ), 0, 0 );
+            new Insets( 10, 20, 0, 10 ), 0, 0 );
         panel.add( stateField, constraints );
 
         // ---------------------------------------------------------------------
@@ -458,27 +247,8 @@ public class RcCompetitionView implements IView<JFrame>
     }
 
     /***************************************************************************
-     * @return
+     * @param e
      **************************************************************************/
-    private Component createScorePanel()
-    {
-        JPanel panel = new JPanel( new GridBagLayout() );
-        GridBagConstraints constraints;
-
-        panel.setOpaque( false );
-
-        // ---------------------------------------------------------------------
-
-        scoreIconField.setIcon( competition.getState().icon );
-
-        constraints = new GridBagConstraints( 0, 0, 1, 1, 1.0, 1.0,
-            GridBagConstraints.WEST, GridBagConstraints.NONE,
-            new Insets( 10, 0, 0, 0 ), 0, 0 );
-        panel.add( scoreIconField, constraints );
-
-        return panel;
-    }
-
     private void showTeamPopup( MouseEvent e )
     {
         if( competition.isRunning() )
@@ -492,7 +262,7 @@ public class RcCompetitionView implements IView<JFrame>
         else
         {
             JPopupMenu menu = new JPopupMenu();
-            List<RcTeam> teams = competition.getAvailableTeams();
+            List<BlTeam> teams = competition.getAvailableTeams();
 
             if( teams.isEmpty() )
             {
@@ -502,7 +272,7 @@ public class RcCompetitionView implements IView<JFrame>
             }
             else
             {
-                for( RcTeam t : teams )
+                for( BlTeam t : teams )
                 {
                     ActionListener listener = ( evt ) -> setTeamData( t );
                     Action a = new ActionAdapter( listener, t.name, null );
@@ -528,8 +298,8 @@ public class RcCompetitionView implements IView<JFrame>
             return;
         }
 
-        List<RcTeam> teams = competition.getAvailableTeams();
-        ItemsListField<RcTeam> teamsField = new ItemsListField<>( "Teams",
+        List<BlTeam> teams = competition.getAvailableTeams();
+        ItemsListField<BlTeam> teamsField = new ItemsListField<>( "Teams",
             teams, ( t ) -> t.name );
         teamsField.setDecorator( new TeamsDecorator() );
 
@@ -540,7 +310,7 @@ public class RcCompetitionView implements IView<JFrame>
         okDialog.addOkListener( ( e ) -> {
             if( e.getItem() )
             {
-                RcTeam t = teamsField.getValue();
+                BlTeam t = teamsField.getValue();
 
                 if( t != null )
                 {
@@ -598,7 +368,7 @@ public class RcCompetitionView implements IView<JFrame>
     /***************************************************************************
      * @param data
      **************************************************************************/
-    public void setData( RcCompetitionData data )
+    public void setData( BlCompetitionData data )
     {
         if( this.compData == null )
         {
@@ -627,7 +397,11 @@ public class RcCompetitionView implements IView<JFrame>
         {
             if( data.periodTime > -1 )
             {
-                TimeDuration d = new TimeDuration( data.periodTime );
+                // LogUtils.printDebug( "Time %d of %d", data.periodTime,
+                // competition.config.periodTime );
+                long millis = competition.config.periodTime * 1000 -
+                    data.periodTime;
+                TimeDuration d = new TimeDuration( millis );
                 String time = String.format( " %1d:%02d ", d.totalMinutes,
                     d.seconds );
                 periodField.setText( time );
@@ -637,8 +411,7 @@ public class RcCompetitionView implements IView<JFrame>
                 periodField.setText( " -:-- " );
             }
 
-            if( data.periodTime > competition.config.getPeriodTime() * 7000 /
-                8 && data.periodTime > competition.config.getPeriodTime() )
+            if( data.state == CompetitionState.WARNING )
             {
                 if( periodField.getBackground() != Color.orange )
                 {
@@ -646,8 +419,7 @@ public class RcCompetitionView implements IView<JFrame>
                     periodField.setForeground( Color.black );
                 }
             }
-            else if( data.periodTime > competition.config.getPeriodTime() *
-                1000 )
+            else if( data.state == CompetitionState.COMPLETE )
             {
                 if( periodField.getBackground() != Color.red )
                 {
@@ -662,41 +434,11 @@ public class RcCompetitionView implements IView<JFrame>
             }
         }
 
-        setTimer( data, timerAField, 0 );
-        setTimer( data, timerSField, 1 );
-        setTimer( data, timerDField, 2 );
-
-        if( data.officialTime != compData.officialTime )
-        {
-            setDecisecondsTimeField( data.officialTime, officialField );
-        }
-
         if( data.state != compData.state )
         {
             stateField.setText( " " + data.state.name + " " );
             stateField.setBackground( data.state.background );
             stateField.setForeground( data.state.foreground );
-            scoreIconField.setIcon( data.state.icon );
-        }
-
-        if( data.run1Time != compData.run1Time )
-        {
-            setSecondsTimeField( data.run1Time, run1Field );
-        }
-
-        if( data.run2Time != compData.run2Time )
-        {
-            setSecondsTimeField( data.run2Time, run2Field );
-        }
-
-        if( data.run1State != compData.run1State )
-        {
-            setFieldIcon( data.run1State, run1Icon );
-        }
-
-        if( data.run2State != compData.run2State )
-        {
-            setFieldIcon( data.run2State, run2Icon );
         }
 
         this.compData = data;
@@ -710,81 +452,6 @@ public class RcCompetitionView implements IView<JFrame>
         return competition.isRunning();
     }
 
-    /***************************************************************************
-     * @param state
-     * @param iconField
-     **************************************************************************/
-    private void setFieldIcon( RunState state, JLabel iconField )
-    {
-        Icon icon = null;
-
-        switch( state )
-        {
-            case FAILED:
-                icon = xIcon;
-                break;
-
-            case SUCCESS:
-                icon = checkIcon;
-                break;
-
-            default:
-                icon = blankIcon;
-                break;
-        }
-
-        iconField.setIcon( icon );
-    }
-
-    /***************************************************************************
-     * @param data
-     * @param timerField
-     * @param index
-     **************************************************************************/
-    private void setTimer( RcCompetitionData data, JLabel timerField,
-        int index )
-    {
-        if( data.timers[index] != compData.timers[index] )
-        {
-            setDecisecondsTimeField( data.timers[index], timerField );
-        }
-    }
-
-    private void setDecisecondsTimeField( long duration, JLabel timeField )
-    {
-        String time = null;
-
-        if( duration < 0 )
-        {
-            time = "--.- s";
-        }
-        else
-        {
-            TimeDuration d = new TimeDuration( duration );
-            time = String.format( "%02d.%1d s", d.totalSeconds,
-                d.millis / 100 );
-        }
-
-        timeField.setText( time );
-    }
-
-    private void setSecondsTimeField( long duration, JLabel timeField )
-    {
-        String time = null;
-
-        if( duration < 0 )
-        {
-            time = "-- s";
-        }
-        else
-        {
-            TimeDuration d = new TimeDuration( duration );
-            time = String.format( "%02d s", d.totalSeconds );
-        }
-
-        timeField.setText( time );
-    }
-
     /**
      * 
      */
@@ -792,7 +459,7 @@ public class RcCompetitionView implements IView<JFrame>
     {
         competition.signalClearTeam();
 
-        if( competition.config.getTeams().isEmpty() )
+        if( competition.config.teams.isEmpty() )
         {
             teamButton.setText( "No Teams Entered" );
             teamButton.setEnabled( false );
@@ -815,7 +482,7 @@ public class RcCompetitionView implements IView<JFrame>
         reset();
     }
 
-    private void setTeamData( RcTeam team )
+    private void setTeamData( BlTeam team )
     {
         teamButton.setText( team.name );
         teamButton.setEnabled( false );
@@ -831,12 +498,12 @@ public class RcCompetitionView implements IView<JFrame>
     private static final class CompetitionFrameListener extends WindowAdapter
     {
         /**  */
-        private final RcCompetitionView view;
+        private final BlCompetitionView view;
 
         /**
          * @param view
          */
-        public CompetitionFrameListener( RcCompetitionView view )
+        public CompetitionFrameListener( BlCompetitionView view )
         {
             this.view = view;
         }
@@ -849,7 +516,7 @@ public class RcCompetitionView implements IView<JFrame>
         {
             if( !view.competition.isRunning() )
             {
-                RcMain.getOptions().write();
+                BlMain.getOptions().write();
                 UiUtils.setFullScreen( false, view.frame );
                 view.frame.setVisible( false );
             }
@@ -860,14 +527,14 @@ public class RcCompetitionView implements IView<JFrame>
      * 
      **************************************************************************/
     private static final class TeamsDecorator
-        implements IListCellLabelDecorator<RcTeam>
+        implements IListCellLabelDecorator<BlTeam>
     {
         /**  */
         private final Font f = UiUtils.getTextFont( 36 );
 
         @Override
-        public void decorate( JLabel label, JList<? extends RcTeam> list,
-            RcTeam value, int index, boolean isSelected, boolean cellHasFocus )
+        public void decorate( JLabel label, JList<? extends BlTeam> list,
+            BlTeam value, int index, boolean isSelected, boolean cellHasFocus )
         {
             label.setFont( f );
         }

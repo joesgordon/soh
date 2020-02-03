@@ -21,7 +21,8 @@ import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 
 import org.jutils.IconConstants;
-import org.jutils.SwingUtils;
+import org.jutils.OptionUtils;
+import org.jutils.ValidationException;
 import org.jutils.io.XStreamUtils;
 import org.jutils.io.options.OptionsSerializer;
 import org.jutils.task.TaskView;
@@ -31,8 +32,6 @@ import org.jutils.ui.event.FileChooserListener;
 import org.jutils.ui.event.FileChooserListener.IFileSelected;
 import org.jutils.ui.event.FileChooserListener.ILastFile;
 import org.jutils.ui.model.IView;
-
-import com.thoughtworks.xstream.XStreamException;
 
 import soinc.hovercraft.HovercraftIcons;
 import soinc.hovercraft.HovercraftMain;
@@ -158,22 +157,22 @@ public class HovercraftFrameView implements IView<JFrame>
 
             configView.setData( config );
         }
-        catch( XStreamException ex )
+        catch( org.jutils.ValidationException ex )
         {
-            SwingUtils.showErrorMessage( getView(),
+            OptionUtils.showErrorMessage( getView(),
                 "Configuration file is not formatted correctly: " +
                     file.getAbsolutePath(),
                 "File Format Error" );
         }
         catch( FileNotFoundException ex )
         {
-            SwingUtils.showErrorMessage( getView(),
+            OptionUtils.showErrorMessage( getView(),
                 "Configuration file not found: " + file.getAbsolutePath(),
                 "File Format Error" );
         }
         catch( IOException ex )
         {
-            SwingUtils.showErrorMessage( getView(),
+            OptionUtils.showErrorMessage( getView(),
                 "Configuration file is cannot be read: " +
                     file.getAbsolutePath(),
                 "File Format Error" );
@@ -197,16 +196,16 @@ public class HovercraftFrameView implements IView<JFrame>
         {
             XStreamUtils.writeObjectXStream( config, file );
         }
-        catch( XStreamException ex )
+        catch( ValidationException ex )
         {
-            SwingUtils.showErrorMessage( getView(),
+            OptionUtils.showErrorMessage( getView(),
                 "Configuration file cannot formatted correctly: " +
                     ex.getMessage(),
                 "File Format Error" );
         }
         catch( IOException ex )
         {
-            SwingUtils.showErrorMessage( getView(),
+            OptionUtils.showErrorMessage( getView(),
                 "Configuration file is cannot be written: " +
                     file.getAbsolutePath(),
                 "File Format Error" );
@@ -386,7 +385,7 @@ public class HovercraftFrameView implements IView<JFrame>
             }
             catch( IllegalStateException ex )
             {
-                SwingUtils.showErrorMessage( getView(), "Setup Error",
+                OptionUtils.showErrorMessage( getView(), "Setup Error",
                     "Pi4j library was not found" );
                 return;
             }

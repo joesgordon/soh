@@ -1,4 +1,4 @@
-package soinc.rollercoaster.ui;
+package soinc.boomilever.ui;
 
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
@@ -25,51 +25,48 @@ import org.jutils.ui.StandardFrameView;
 import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.model.IView;
 
-import com.pi4j.io.gpio.GpioController;
-
+import soinc.boomilever.BlIcons;
+import soinc.boomilever.BlMain;
+import soinc.boomilever.data.BlOptions;
+import soinc.boomilever.tasks.BlPiSignals;
+import soinc.boomilever.tasks.BlTeamCompetition;
 import soinc.lib.UiUtils;
 import soinc.lib.gpio.SciolyGpio;
 import soinc.lib.ui.RelayTestView;
-import soinc.rollercoaster.RcIcons;
-import soinc.rollercoaster.RcMain;
-import soinc.rollercoaster.data.RcOptions;
-import soinc.rollercoaster.tasks.IRcSignals;
-import soinc.rollercoaster.tasks.RcPiSignals;
-import soinc.rollercoaster.tasks.RcTeamCompetition;
 
 /*******************************************************************************
  *
  ******************************************************************************/
-public class RcFrameView implements IView<JFrame>
+public class BlFrameView implements IView<JFrame>
 {
     /**  */
     private final StandardFrameView view;
     /**  */
-    private final RcConfigView configView;
+    private final CompetitionConfigView configView;
 
     /**  */
     private final JCheckBoxMenuItem mockIoMenuItem;
 
     /**  */
-    private RcCompetitionView competitionView;
+    private BlCompetitionView competitionView;
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public RcFrameView()
+    public BlFrameView()
     {
         this.view = new StandardFrameView();
-        this.configView = new RcConfigView();
+        this.configView = new CompetitionConfigView();
         this.mockIoMenuItem = createMockGpioMenuItem();
         this.competitionView = null;
 
         createMenubar( view.getMenuBar(), view.getFileMenu() );
 
         view.setContent( configView.getView() );
-        view.getView().setIconImages( RcIcons.getRollercoasterIcons() );
+        view.getView().setIconImages( BlIcons.getRollercoasterIcons() );
         view.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         view.setSize( 1280, 800 );
-        view.setTitle( "Roller Coaster" );
+        view.setTitle( "Boomilever" );
         view.getView().setLocation( 0, 0 );
     }
 
@@ -78,14 +75,14 @@ public class RcFrameView implements IView<JFrame>
      **************************************************************************/
     private JCheckBoxMenuItem createMockGpioMenuItem()
     {
-        boolean mockIo = RcMain.getOptions().getOptions().useFauxGpio;
+        boolean mockIo = BlMain.getOptions().getOptions().useFauxGpio;
         SciolyGpio.FAUX_CONNECT = mockIo;
         JCheckBoxMenuItem item = new JCheckBoxMenuItem( "Mock I/O" );
         item.setSelected( SciolyGpio.FAUX_CONNECT );
         ActionListener listener = ( e ) -> {
             SciolyGpio.FAUX_CONNECT = !SciolyGpio.FAUX_CONNECT;
             mockIoMenuItem.setSelected( SciolyGpio.FAUX_CONNECT );
-            OptionsSerializer<RcOptions> options = RcMain.getOptions();
+            OptionsSerializer<BlOptions> options = BlMain.getOptions();
 
             options.getOptions().useFauxGpio = SciolyGpio.FAUX_CONNECT;
             options.write();
@@ -137,7 +134,7 @@ public class RcFrameView implements IView<JFrame>
         menu.setMnemonic( 'G' );
 
         action = new ActionAdapter( ( e ) -> showCompetition( true ),
-            "Start Competition", RcIcons.getRollercoaster16() );
+            "Start Competition", BlIcons.getRollercoaster16() );
         KeyStroke key = KeyStroke.getKeyStroke( "F8" );
         action.putValue( Action.ACCELERATOR_KEY, key );
         item = menu.add( action );
@@ -159,22 +156,21 @@ public class RcFrameView implements IView<JFrame>
 
         // LogUtils.printDebug( "showCompetition(%s)", show );
 
-        OptionsSerializer<RcOptions> userio = RcMain.getOptions();
-        RcOptions options = userio.getOptions();
+        OptionsSerializer<BlOptions> userio = BlMain.getOptions();
+        BlOptions options = userio.getOptions();
         userio.write();
 
         if( show && competitionView == null )
         {
             try
             {
-                GpioController gpio = SciolyGpio.startup();
+                BlPiSignals signals = new BlPiSignals( BlMain.getRelays(),
+                    options.config );
 
-                IRcSignals signals = new RcPiSignals( gpio, options.config );
-
-                RcTeamCompetition competition = new RcTeamCompetition(
+                BlTeamCompetition competition = new BlTeamCompetition(
                     options.config, signals );
 
-                this.competitionView = new RcCompetitionView( competition,
+                this.competitionView = new BlCompetitionView( competition,
                     getView().getIconImages(), getView().getSize() );
 
                 try
@@ -238,11 +234,11 @@ public class RcFrameView implements IView<JFrame>
     }
 
     /***************************************************************************
-     * @param frame
+     * @param parent
      **************************************************************************/
     private static void showTestRelayScreen( JFrame parent )
     {
-        RelayTestView view = new RelayTestView( RcMain.getRelay() );
+        RelayTestView view = new RelayTestView( BlMain.getRelays() );
         OkDialogView okView = new OkDialogView( parent, view.getView(),
             ModalityType.DOCUMENT_MODAL, OkDialogButtons.OK_ONLY );
 

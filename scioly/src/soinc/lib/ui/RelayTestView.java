@@ -1,4 +1,4 @@
-package soinc.rollercoaster.ui;
+package soinc.lib.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
+import org.jutils.OptionUtils;
 import org.jutils.SwingUtils;
 import org.jutils.ui.ComponentView;
 import org.jutils.ui.JGoodiesToolBar;
@@ -27,8 +28,7 @@ import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.model.IView;
 
 import soinc.lib.SciolyIcons;
-import soinc.rollercoaster.RcMain;
-import soinc.rollercoaster.relay.IRelays;
+import soinc.lib.relay.IRelays;
 
 public class RelayTestView implements IView<JComponent>
 {
@@ -36,9 +36,9 @@ public class RelayTestView implements IView<JComponent>
     private final ComponentView relaysView;
     private final JPanel view;
 
-    public RelayTestView()
+    public RelayTestView( IRelays relays )
     {
-        this.relays = RcMain.getRelay();
+        this.relays = relays;
         this.relaysView = new ComponentView();
         this.view = createView();
     }
@@ -78,7 +78,7 @@ public class RelayTestView implements IView<JComponent>
         }
         catch( IOException ex )
         {
-            SwingUtils.showErrorMessage( getView(),
+            OptionUtils.showErrorMessage( getView(),
                 "Unable to initialize relays: " + ex.getMessage(),
                 "I/O Error" );
         }

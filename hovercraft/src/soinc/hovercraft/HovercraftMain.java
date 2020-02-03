@@ -43,7 +43,7 @@ public class HovercraftMain
         if( options == null )
         {
             IOptionsCreator<HovercraftOptions> ioc = new OptionsCreator();
-            options = OptionsSerializer.getOptions( ioc, USERS_FILE );
+            options = OptionsSerializer.getOptions(HovercraftOptions.class, USERS_FILE, ioc );
         }
 
         return options;

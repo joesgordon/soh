@@ -13,10 +13,10 @@ import org.jutils.SwingUtils;
 import com.pi4j.io.gpio.GpioController;
 
 import soinc.lib.data.PinResistance;
+import soinc.lib.relay.IRelays;
 import soinc.rollercoaster.RcMain;
 import soinc.rollercoaster.data.RcCompetitionData;
 import soinc.rollercoaster.data.RcConfig;
-import soinc.rollercoaster.relay.IRelays;
 import soinc.rollercoaster.ui.RcCompetitionView;
 
 /*******************************************************************************
@@ -84,44 +84,44 @@ public class RcPiSignals implements IRcSignals
         // ---------------------------------------------------------------------
 
         callback = ( e ) -> competition.signalPeriodStart();
-        SwingUtils.addKeyListener( jview, "F1", true, callback,
-            "Period Start" );
+        SwingUtils.addKeyListener( jview, "F1", callback, "Period Start",
+            true );
 
         // ---------------------------------------------------------------------
 
         callback = ( e ) -> competition.signalRunFinished( false );
-        SwingUtils.addKeyListener( jview, "F", true, callback, "Fail Run" );
+        SwingUtils.addKeyListener( jview, "F", callback, "Fail Run", true );
 
         callback = ( e ) -> competition.signalRunFinished( true );
-        SwingUtils.addKeyListener( jview, "G", true, callback, "Accept Run" );
+        SwingUtils.addKeyListener( jview, "G", callback, "Accept Run", true );
 
         // ---------------------------------------------------------------------
 
         callback = ( e ) -> timerA.togglePin();
-        SwingUtils.addKeyListener( jview, "J", true, callback,
-            "TimerA toggle" );
+        SwingUtils.addKeyListener( jview, "J", callback, "TimerA toggle",
+            true );
 
         callback = ( e ) -> clearTimer( competition, timerA, 0 );
-        SwingUtils.addKeyListener( jview, "A", true, callback, "TimerA clear" );
+        SwingUtils.addKeyListener( jview, "A", callback, "TimerA clear", true );
 
         callback = ( e ) -> timerS.togglePin();
-        SwingUtils.addKeyListener( jview, "K", true, callback,
-            "TimerS toggle" );
+        SwingUtils.addKeyListener( jview, "K", callback, "TimerS toggle",
+            true );
 
         callback = ( e ) -> clearTimer( competition, timerS, 1 );
-        SwingUtils.addKeyListener( jview, "S", true, callback, "TimerS clear" );
+        SwingUtils.addKeyListener( jview, "S", callback, "TimerS clear", true );
 
         callback = ( e ) -> timerD.togglePin();
-        SwingUtils.addKeyListener( jview, "L", true, callback,
-            "TimerD toggle" );
+        SwingUtils.addKeyListener( jview, "L", callback, "TimerD toggle",
+            true );
 
         callback = ( e ) -> clearTimer( competition, timerD, 2 );
-        SwingUtils.addKeyListener( jview, "D", true, callback, "TimerD clear" );
+        SwingUtils.addKeyListener( jview, "D", callback, "TimerD clear", true );
 
         // ---------------------------------------------------------------------
 
         callback = ( e ) -> competition.signalClearTeam();
-        SwingUtils.addKeyListener( jview, "F4", true, callback, "Clear team" );
+        SwingUtils.addKeyListener( jview, "F4", callback, "Clear team", true );
 
         // ---------------------------------------------------------------------
 

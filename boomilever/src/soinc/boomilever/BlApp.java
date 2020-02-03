@@ -1,29 +1,35 @@
-package soinc.rollercoaster.tasks;
+package soinc.boomilever;
 
-import java.util.TimerTask;
+import javax.swing.JFrame;
+
+import org.jutils.ui.app.IFrameApp;
+
+import soinc.boomilever.ui.BlFrameView;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class RunnableTask extends TimerTask
+public class BlApp implements IFrameApp
 {
-    /** */
-    private final Runnable callback;
+    private BlFrameView frameView = null;
 
     /***************************************************************************
-     * @param callback
+     * {@inheritDoc}
      **************************************************************************/
-    public RunnableTask( Runnable callback )
+    @Override
+    public JFrame createFrame()
     {
-        this.callback = callback;
+        frameView = new BlFrameView();
+
+        return frameView.getView();
     }
 
     /***************************************************************************
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public void run()
+    public void finalizeGui()
     {
-        callback.run();
+        frameView.getView().setLocation( 0, 0 );
     }
 }

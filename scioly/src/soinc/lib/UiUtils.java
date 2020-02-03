@@ -18,7 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.KeyStroke;
 
-import org.jutils.SwingUtils;
+import org.jutils.OptionUtils;
 import org.jutils.io.IOUtils;
 import org.jutils.io.options.IOptionsCreator;
 import org.jutils.io.options.OptionsSerializer;
@@ -77,7 +77,7 @@ public class UiUtils
         }
         catch( IllegalStateException ex )
         {
-            SwingUtils.showErrorMessage( parent, "Setup Error",
+            OptionUtils.showErrorMessage( parent, "Setup Error",
                 "Pi4j library was not found" );
             return;
         }
@@ -105,7 +105,8 @@ public class UiUtils
         if( options == null )
         {
             IOptionsCreator<SciolyOptions> ioc = new SciolyOptionsCreator();
-            options = OptionsSerializer.getOptions( ioc, userFile );
+            options = OptionsSerializer.getOptions( SciolyOptions.class,
+                userFile, ioc );
         }
 
         return options;
