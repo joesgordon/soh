@@ -1,20 +1,20 @@
-package soinc.rollercoaster.tasks;
+package soinc.ppp.tasks;
 
 import java.io.IOException;
 
 import soinc.lib.gpio.ITimerCallback;
-import soinc.rollercoaster.data.RcCompetitionData;
-import soinc.rollercoaster.ui.RcCompetitionView;
+import soinc.ppp.data.CompetitionData;
+import soinc.ppp.ui.CompetitionView;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public interface IRcSignals
+public interface ISignals
 {
     /***************************************************************************
      * @throws IOException
      **************************************************************************/
-    public void connect( RcTeamCompetition competition, RcCompetitionView view )
+    public void connect( TeamCompetition competition, CompetitionView view )
         throws IOException;
 
     /***************************************************************************
@@ -48,5 +48,5 @@ public interface IRcSignals
     /***************************************************************************
      * @param data
      **************************************************************************/
-    public void updateUI( RcCompetitionData data );
+    public void updateUI( CompetitionData data );
 }

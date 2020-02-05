@@ -1,31 +1,38 @@
-package soinc.boomilever.data;
+package soinc.ppp.data;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class BlOptions
+public class Team
 {
+    public String name;
+    /** First successful time in tenths of seconds. */
+    public int run1Time;
+    /** Second successful time in tenths of seconds. */
+    public int run2Time;
     /**  */
-    public final EventConfig config;
+    public boolean loaded;
     /**  */
-    public boolean useFauxGpio;
+    public boolean complete;
+
+    /***************************************************************************
+     * @param name
+     **************************************************************************/
+    public Team( String name )
+    {
+        this.name = name;
+
+        reset();
+    }
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public BlOptions()
+    public void reset()
     {
-        this.config = new EventConfig();
-        this.useFauxGpio = false;
-    }
-
-    /***************************************************************************
-     * @param data
-     **************************************************************************/
-    public BlOptions( BlOptions data )
-    {
-        this.config = data.config == null ? new EventConfig()
-            : new EventConfig( data.config );
-        this.useFauxGpio = data.useFauxGpio;
+        this.run1Time = -1;
+        this.run2Time = -1;
+        this.loaded = false;
+        this.complete = false;
     }
 }

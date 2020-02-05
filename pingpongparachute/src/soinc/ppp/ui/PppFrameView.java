@@ -1,4 +1,4 @@
-package soinc.boomilever.ui;
+package soinc.ppp.ui;
 
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
@@ -25,57 +25,52 @@ import org.jutils.ui.StandardFrameView;
 import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.model.IView;
 
-import soinc.boomilever.BlIcons;
-import soinc.boomilever.BlMain;
-import soinc.boomilever.data.BlOptions;
-import soinc.boomilever.data.CompetitionConfig;
-import soinc.boomilever.data.CompetitionData;
-import soinc.boomilever.data.Event;
-import soinc.boomilever.data.EventConfig;
-import soinc.boomilever.tasks.CompetitionSignals;
-import soinc.boomilever.tasks.TeamCompetition;
+import com.pi4j.io.gpio.GpioController;
+
 import soinc.lib.UiUtils;
 import soinc.lib.gpio.SciolyGpio;
 import soinc.lib.ui.RelayTestView;
+import soinc.ppp.PppIcons;
+import soinc.ppp.PppMain;
+import soinc.ppp.data.PppOptions;
+import soinc.ppp.tasks.ISignals;
+import soinc.ppp.tasks.PiSignals;
+import soinc.ppp.tasks.TeamCompetition;
 
 /*******************************************************************************
  *
  ******************************************************************************/
-public class BlFrameView implements IView<JFrame>
+public class PppFrameView implements IView<JFrame>
 {
     /**  */
     private final StandardFrameView view;
     /**  */
-    private final EventConfigView configView;
+    private final ConfigView configView;
 
     /**  */
     private final JCheckBoxMenuItem mockIoMenuItem;
 
     /**  */
-    private EventView eventView;
+    private CompetitionView competitionView;
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public BlFrameView()
+    public PppFrameView()
     {
         this.view = new StandardFrameView();
-        this.configView = new EventConfigView();
+        this.configView = new ConfigView();
         this.mockIoMenuItem = createMockGpioMenuItem();
-        this.eventView = null;
+        this.competitionView = null;
 
         createMenubar( view.getMenuBar(), view.getFileMenu() );
 
         view.setContent( configView.getView() );
-        view.getView().setIconImages( BlIcons.getRollercoasterIcons() );
+        view.getView().setIconImages( PppIcons.getAppIcons() );
         view.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         view.setSize( 1280, 800 );
-        view.setTitle( "Boomilever" );
+        view.setTitle( "Ping Pong Parachute" );
         view.getView().setLocation( 0, 0 );
-
-        OptionsSerializer<BlOptions> options = BlMain.getOptions();
-
-        configView.setData( options.getOptions().config );
     }
 
     /***************************************************************************
@@ -83,14 +78,14 @@ public class BlFrameView implements IView<JFrame>
      **************************************************************************/
     private JCheckBoxMenuItem createMockGpioMenuItem()
     {
-        boolean mockIo = BlMain.getOptions().getOptions().useFauxGpio;
+        boolean mockIo = PppMain.getOptions().getOptions().useFauxGpio;
         SciolyGpio.FAUX_CONNECT = mockIo;
         JCheckBoxMenuItem item = new JCheckBoxMenuItem( "Mock I/O" );
         item.setSelected( SciolyGpio.FAUX_CONNECT );
         ActionListener listener = ( e ) -> {
             SciolyGpio.FAUX_CONNECT = !SciolyGpio.FAUX_CONNECT;
             mockIoMenuItem.setSelected( SciolyGpio.FAUX_CONNECT );
-            OptionsSerializer<BlOptions> options = BlMain.getOptions();
+            OptionsSerializer<PppOptions> options = PppMain.getOptions();
 
             options.getOptions().useFauxGpio = SciolyGpio.FAUX_CONNECT;
             options.write();
@@ -141,8 +136,8 @@ public class BlFrameView implements IView<JFrame>
 
         menu.setMnemonic( 'G' );
 
-        action = new ActionAdapter( ( e ) -> showEvent( true ),
-            "Start Competition", BlIcons.getRollercoaster16() );
+        action = new ActionAdapter( ( e ) -> showCompetition( true ),
+            "Start Competition", PppIcons.getRollercoaster16() );
         KeyStroke key = KeyStroke.getKeyStroke( "F8" );
         action.putValue( Action.ACCELERATOR_KEY, key );
         item = menu.add( action );
@@ -150,7 +145,7 @@ public class BlFrameView implements IView<JFrame>
         item.setMnemonic( 'S' );
 
         UiUtils.addHotKey( ( JComponent )getView().getContentPane(), "F8",
-            ( e ) -> showEvent( eventView == null ) );
+            ( e ) -> showCompetition( competitionView == null ) );
 
         return menu;
     }
@@ -158,84 +153,68 @@ public class BlFrameView implements IView<JFrame>
     /***************************************************************************
      * @param show
      **************************************************************************/
-    private void showEvent( boolean show )
+    private void showCompetition( boolean show )
     {
         mockIoMenuItem.setEnabled( false );
 
         // LogUtils.printDebug( "showCompetition(%s)", show );
 
-        OptionsSerializer<BlOptions> userio = BlMain.getOptions();
-        BlOptions options = userio.getOptions();
-        options.config.set( configView.getData() );
+        OptionsSerializer<PppOptions> userio = PppMain.getOptions();
+        PppOptions options = userio.getOptions();
         userio.write();
 
-        if( show && eventView == null )
+        if( show && competitionView == null )
         {
-            Event event = eventView.getData();
-            EventConfig cfg = configView.getData();
-
-            showCompetition( cfg, event.trackA, cfg.trackA,
-                eventView.trackAView );
-            showCompetition( cfg, event.trackB, cfg.trackB,
-                eventView.trackBView );
-        }
-        else if( !show && eventView != null )
-        {
-            eventView.setVisible( false );
-            eventView = null;
-        }
-    }
-
-    /**
-     * @param eventCfg
-     * @param track
-     * @param config
-     * @param trackView
-     */
-    private void showCompetition( EventConfig eventCfg, CompetitionData track,
-        CompetitionConfig config, CompetitionView trackView )
-    {
-        try
-        {
-            CompetitionSignals signals = new CompetitionSignals(
-                BlMain.getRelays(), config );
-
-            TeamCompetition competition = new TeamCompetition( eventCfg,
-                signals );
-
-            this.eventView = new EventView( competition,
-                getView().getIconImages(), getView().getSize() );
-
             try
             {
-                competition.connect( trackView );
+                GpioController gpio = SciolyGpio.startup();
+
+                ISignals signals = new PiSignals( gpio, options.config );
+
+                TeamCompetition competition = new TeamCompetition(
+                    options.config, signals );
+
+                this.competitionView = new CompetitionView( competition,
+                    getView().getIconImages(), getView().getSize() );
+
+                try
+                {
+                    competition.connect( competitionView );
+                }
+                catch( IOException ex )
+                {
+                    OptionUtils.showErrorMessage( getView(),
+                        "Unable to connect to Pi " + ex.getMessage(),
+                        "I/O Error" );
+                    return;
+                }
+
+                JFrame frame = competitionView.getView();
+
+                JComponent comp = ( JComponent )frame.getContentPane();
+                ActionListener hideListener = ( e ) -> showCompetition(
+                    this.competitionView == null );
+
+                UiUtils.addHotKey( comp, "F8", hideListener );
+                UiUtils.addHotKey( comp, "ESCAPE", hideListener );
+
+                // setFullScreen( true );
+                configView.deselectTeams();
+
+                competitionView.setVisible( true );
             }
-            catch( IOException ex )
+            catch( IllegalStateException ex )
             {
-                OptionUtils.showErrorMessage( getView(),
-                    "Unable to connect to Pi " + ex.getMessage(), "I/O Error" );
+                OptionUtils.showErrorMessage( getView(), "Setup Error",
+                    "Pi4j library was not found" );
                 return;
             }
-
-            JFrame frame = eventView.getView();
-
-            JComponent comp = ( JComponent )frame.getContentPane();
-            ActionListener hideListener = ( e ) -> showEvent(
-                this.eventView == null );
-
-            UiUtils.addHotKey( comp, "F8", hideListener );
-            UiUtils.addHotKey( comp, "ESCAPE", hideListener );
-
-            // setFullScreen( true );
-            configView.deselectTeams();
-
-            eventView.setVisible( true );
         }
-        catch( IllegalStateException ex )
+        else if( !show && competitionView != null &&
+            !competitionView.isRunning() )
         {
-            OptionUtils.showErrorMessage( getView(), "Setup Error",
-                "Pi4j library was not found" );
-            return;
+            competitionView.setVisible( false );
+            competitionView = null;
         }
     }
 
@@ -259,11 +238,11 @@ public class BlFrameView implements IView<JFrame>
     }
 
     /***************************************************************************
-     * @param parent
+     * @param frame
      **************************************************************************/
     private static void showTestRelayScreen( JFrame parent )
     {
-        RelayTestView view = new RelayTestView( BlMain.getRelays() );
+        RelayTestView view = new RelayTestView( PppMain.getRelay() );
         OkDialogView okView = new OkDialogView( parent, view.getView(),
             ModalityType.DOCUMENT_MODAL, OkDialogButtons.OK_ONLY );
 

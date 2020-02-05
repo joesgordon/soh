@@ -1,9 +1,9 @@
 package soinc.boomilever.data;
 
-public class BlCompetitionData
+public class CompetitionData
 {
     /**  */
-    public BlTeam team;
+    public Team team;
     /**  */
     public CompetitionState state;
     /** Milliseconds */
@@ -12,12 +12,12 @@ public class BlCompetitionData
     /**
      * @param timerCount
      */
-    public BlCompetitionData()
+    public CompetitionData()
     {
         reset();
     }
 
-    public BlCompetitionData( BlCompetitionData data )
+    public CompetitionData( CompetitionData data )
     {
         this.team = data.team;
         this.state = data.state;

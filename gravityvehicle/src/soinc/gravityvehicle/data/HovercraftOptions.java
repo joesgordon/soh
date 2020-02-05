@@ -1,31 +1,37 @@
-package soinc.boomilever.data;
+package soinc.gravityvehicle.data;
+
+import java.io.File;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class BlOptions
+public class HovercraftOptions
 {
     /**  */
-    public final EventConfig config;
-    /**  */
     public boolean useFauxGpio;
+    /**  */
+    public HoverConfig config;
+    /**  */
+    public File lastConfigFile;
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public BlOptions()
+    public HovercraftOptions()
     {
-        this.config = new EventConfig();
         this.useFauxGpio = false;
+        this.config = new HoverConfig();
+        this.lastConfigFile = null;
     }
 
     /***************************************************************************
-     * @param data
+     * @param options
      **************************************************************************/
-    public BlOptions( BlOptions data )
+    public HovercraftOptions( HovercraftOptions options )
     {
-        this.config = data.config == null ? new EventConfig()
-            : new EventConfig( data.config );
-        this.useFauxGpio = data.useFauxGpio;
+        this.useFauxGpio = options.useFauxGpio;
+        this.config = options.config != null ? new HoverConfig( options.config )
+            : new HoverConfig();
+        this.lastConfigFile = options.lastConfigFile;
     }
 }

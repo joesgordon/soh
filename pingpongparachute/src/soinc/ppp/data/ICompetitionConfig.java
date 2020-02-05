@@ -1,31 +1,19 @@
-package soinc.boomilever.data;
+package soinc.ppp.data;
+
+import java.util.List;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class BlOptions
+public interface ICompetitionConfig
 {
-    /**  */
-    public final EventConfig config;
-    /**  */
-    public boolean useFauxGpio;
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    public int getPeriodTime();
 
     /***************************************************************************
-     * 
+     * @return
      **************************************************************************/
-    public BlOptions()
-    {
-        this.config = new EventConfig();
-        this.useFauxGpio = false;
-    }
-
-    /***************************************************************************
-     * @param data
-     **************************************************************************/
-    public BlOptions( BlOptions data )
-    {
-        this.config = data.config == null ? new EventConfig()
-            : new EventConfig( data.config );
-        this.useFauxGpio = data.useFauxGpio;
-    }
+    public List<Team> getTeams();
 }

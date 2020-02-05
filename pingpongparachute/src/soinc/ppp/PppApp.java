@@ -1,31 +1,35 @@
-package soinc.boomilever.data;
+package soinc.ppp;
+
+import javax.swing.JFrame;
+
+import org.jutils.ui.app.IFrameApp;
+
+import soinc.ppp.ui.PppFrameView;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class BlOptions
+public class PppApp implements IFrameApp
 {
-    /**  */
-    public final EventConfig config;
-    /**  */
-    public boolean useFauxGpio;
+    private PppFrameView frameView = null;
 
     /***************************************************************************
-     * 
+     * {@inheritDoc}
      **************************************************************************/
-    public BlOptions()
+    @Override
+    public JFrame createFrame()
     {
-        this.config = new EventConfig();
-        this.useFauxGpio = false;
+        frameView = new PppFrameView();
+
+        return frameView.getView();
     }
 
     /***************************************************************************
-     * @param data
+     * {@inheritDoc}
      **************************************************************************/
-    public BlOptions( BlOptions data )
+    @Override
+    public void finalizeGui()
     {
-        this.config = data.config == null ? new EventConfig()
-            : new EventConfig( data.config );
-        this.useFauxGpio = data.useFauxGpio;
+        frameView.getView().setLocation( 0, 0 );
     }
 }

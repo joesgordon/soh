@@ -1,33 +1,31 @@
-package soinc.boomilever.data;
+package soinc.ppp.data;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class BlTeam
+public class PppOptions
 {
     /**  */
-    public String name;
+    public final CompetitionConfig config;
     /**  */
-    public boolean loaded;
-    /**  */
-    public boolean complete;
-
-    /***************************************************************************
-     * @param name
-     **************************************************************************/
-    public BlTeam( String name )
-    {
-        this.name = name;
-
-        reset();
-    }
+    public boolean useFauxGpio;
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public void reset()
+    public PppOptions()
     {
-        this.loaded = false;
-        this.complete = false;
+        this.config = new CompetitionConfig();
+        this.useFauxGpio = false;
+    }
+
+    /***************************************************************************
+     * @param data
+     **************************************************************************/
+    public PppOptions( PppOptions data )
+    {
+        this.config = data.config == null ? new CompetitionConfig()
+            : new CompetitionConfig( data.config );
+        this.useFauxGpio = data.useFauxGpio;
     }
 }

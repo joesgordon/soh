@@ -7,7 +7,7 @@ import soinc.boomilever.data.CompetitionState;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class BlStateMachine
+public class StateMachine
 {
     /** The state of the competition. It should never be {@code null}. */
     private CompetitionState state;
@@ -18,7 +18,7 @@ public class BlStateMachine
     /***************************************************************************
      * @param competition
      **************************************************************************/
-    public BlStateMachine()
+    public StateMachine()
     {
         setState( CompetitionState.NO_TEAM );
     }

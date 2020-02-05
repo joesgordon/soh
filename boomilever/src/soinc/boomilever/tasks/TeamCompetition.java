@@ -8,27 +8,27 @@ import java.util.Timer;
 import org.jutils.io.LogUtils;
 import org.jutils.utils.Stopwatch;
 
-import soinc.boomilever.data.BlCompetitionData;
-import soinc.boomilever.data.BlTeam;
-import soinc.boomilever.data.CompetitionConfig;
+import soinc.boomilever.data.EventConfig;
+import soinc.boomilever.data.CompetitionData;
 import soinc.boomilever.data.CompetitionState;
-import soinc.boomilever.ui.BlCompetitionView;
+import soinc.boomilever.data.Team;
+import soinc.boomilever.ui.CompetitionView;
 import soinc.lib.RunnableTask;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class BlTeamCompetition
+public class TeamCompetition
 {
     /**  */
-    public final CompetitionConfig config;
+    public final EventConfig config;
     /**  */
-    private final BlPiSignals signals;
+    private final CompetitionSignals signals;
 
     /** The state of the competition. It should never be {@code null}. */
-    private final BlStateMachine stateMachine;
+    private final StateMachine stateMachine;
     /**  */
-    private final BlCompetitionData data;
+    private final CompetitionData data;
     /**  */
     private final Timer timer;
 
@@ -39,12 +39,12 @@ public class BlTeamCompetition
      * @param config
      * @param signals
      **************************************************************************/
-    public BlTeamCompetition( CompetitionConfig config, BlPiSignals signals )
+    public TeamCompetition( EventConfig config, CompetitionSignals signals )
     {
         this.config = config;
         this.signals = signals;
-        this.stateMachine = new BlStateMachine();
-        this.data = new BlCompetitionData();
+        this.stateMachine = new StateMachine();
+        this.data = new CompetitionData();
         this.timer = new Timer( "RC Competition" );
         this.periodTimer = new Stopwatch();
 
@@ -92,14 +92,14 @@ public class BlTeamCompetition
             }
         }
 
-        signals.updateUI( new BlCompetitionData( data ) );
+        signals.updateUI( new CompetitionData( data ) );
     }
 
     /***************************************************************************
      * @param competitionView
      * @throws IOException
      **************************************************************************/
-    public void connect( BlCompetitionView competitionView ) throws IOException
+    public void connect( CompetitionView competitionView ) throws IOException
     {
         signals.connect( this, competitionView );
 
@@ -122,11 +122,11 @@ public class BlTeamCompetition
     /***************************************************************************
      * @return
      **************************************************************************/
-    public List<BlTeam> getAvailableTeams()
+    public List<Team> getAvailableTeams()
     {
-        List<BlTeam> remaining = new ArrayList<>();
+        List<Team> remaining = new ArrayList<>();
 
-        for( BlTeam team : config.teams )
+        for( Team team : config.teams )
         {
             if( !team.loaded )
             {
@@ -139,7 +139,7 @@ public class BlTeamCompetition
     /***************************************************************************
      * @return
      **************************************************************************/
-    public BlTeam getTeam()
+    public Team getTeam()
     {
         return data.team;
     }
@@ -183,7 +183,7 @@ public class BlTeamCompetition
     /***************************************************************************
      * @param team
      **************************************************************************/
-    public void signalLoadTeam( BlTeam team )
+    public void signalLoadTeam( Team team )
     {
         String msg = stateMachine.signalTeamLoaded();
 
@@ -291,8 +291,8 @@ public class BlTeamCompetition
     /***************************************************************************
      * @return
      **************************************************************************/
-    public BlCompetitionData getData()
+    public CompetitionData getData()
     {
-        return new BlCompetitionData( data );
+        return new CompetitionData( data );
     }
 }

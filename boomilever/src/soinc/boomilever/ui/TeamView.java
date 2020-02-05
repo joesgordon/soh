@@ -12,9 +12,9 @@ import org.jutils.ui.fields.BooleanFormField;
 import org.jutils.ui.fields.StringFormField;
 import org.jutils.ui.model.IDataView;
 
-import soinc.boomilever.data.BlTeam;
+import soinc.boomilever.data.Team;
 
-public class BlTeamView implements IDataView<BlTeam>
+public class TeamView implements IDataView<Team>
 {
     private final JPanel panel;
 
@@ -22,12 +22,12 @@ public class BlTeamView implements IDataView<BlTeam>
     private final BooleanFormField loadedField;
     private final BooleanFormField completeField;
 
-    private BlTeam team;
+    private Team team;
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public BlTeamView()
+    public TeamView()
     {
         this.nameField = new StringFormField( "Name", 2, null );
         this.loadedField = new BooleanFormField( "Loaded" );
@@ -35,7 +35,7 @@ public class BlTeamView implements IDataView<BlTeam>
 
         this.panel = createView();
 
-        setData( new BlTeam( "Test" ) );
+        setData( new Team( "Test" ) );
 
         nameField.setUpdater( ( d ) -> team.name = d );
         loadedField.setUpdater( ( d ) -> team.loaded = d );
@@ -82,7 +82,7 @@ public class BlTeamView implements IDataView<BlTeam>
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public BlTeam getData()
+    public Team getData()
     {
         return team;
     }
@@ -91,7 +91,7 @@ public class BlTeamView implements IDataView<BlTeam>
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public void setData( BlTeam team )
+    public void setData( Team team )
     {
         this.team = team;
 

@@ -1,4 +1,4 @@
-package soinc.rollercoaster.tasks;
+package soinc.lib.gpio;
 
 import org.jutils.io.LogUtils;
 
@@ -9,13 +9,11 @@ import com.pi4j.io.gpio.PinEdge;
 
 import soinc.lib.data.Pi3InputPin;
 import soinc.lib.data.Pi3OutputPin;
-import soinc.lib.gpio.ITimerCallback;
-import soinc.lib.gpio.SciolyGpio;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class RcTimerPins
+public class TimerPins
 {
     /**  */
     private final boolean isInverted;
@@ -33,7 +31,7 @@ public class RcTimerPins
     /***************************************************************************
      * @param isInverted
      **************************************************************************/
-    public RcTimerPins( boolean isInverted )
+    public TimerPins( boolean isInverted )
     {
         this.isInverted = isInverted;
         this.outPin = null;

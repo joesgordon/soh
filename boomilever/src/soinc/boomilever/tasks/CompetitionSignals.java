@@ -8,15 +8,15 @@ import javax.swing.SwingUtilities;
 
 import org.jutils.SwingUtils;
 
-import soinc.boomilever.data.BlCompetitionData;
 import soinc.boomilever.data.CompetitionConfig;
-import soinc.boomilever.ui.BlCompetitionView;
+import soinc.boomilever.data.CompetitionData;
+import soinc.boomilever.ui.CompetitionView;
 import soinc.lib.relay.IRelays;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class BlPiSignals
+public class CompetitionSignals
 {
     /**  */
     private final IRelays relays;
@@ -24,14 +24,14 @@ public class BlPiSignals
     private final CompetitionConfig config;
 
     /**  */
-    private BlCompetitionView view;
+    private CompetitionView view;
 
     /***************************************************************************
-     * @param gpio
+     * @param relays
      * @param config
      * @throws IOException
      **************************************************************************/
-    public BlPiSignals( IRelays relays, CompetitionConfig config )
+    public CompetitionSignals( IRelays relays, CompetitionConfig config )
     {
         this.relays = relays;
         this.config = config;
@@ -42,18 +42,22 @@ public class BlPiSignals
      * @param view
      * @throws IOException
      **************************************************************************/
-    public void connect( BlTeamCompetition competition, BlCompetitionView view )
+    public void connect( TeamCompetition competition, CompetitionView view )
         throws IOException
     {
         this.view = view;
 
         relays.initialize();
 
-        JComponent jview = view.getContent();
+        JComponent jview = view.getView();
 
         ActionListener callback;
 
         // ---------------------------------------------------------------------
+
+        callback = ( e ) -> view.showPlayersChoices();
+        SwingUtils.addKeyListener( jview, config.loadKey.keystroke, callback,
+            "Load Team", true );
 
         callback = ( e ) -> competition.signalPeriodStartPause();
         SwingUtils.addKeyListener( jview, config.startPauseKey.keystroke,
@@ -65,23 +69,28 @@ public class BlPiSignals
     }
 
     /***************************************************************************
-     * {@inheritDoc}
+     * 
      **************************************************************************/
     public void disconnect()
     {
     }
 
     /***************************************************************************
-     * {@inheritDoc}
+     * @param red
+     * @param green
+     * @param blue
      **************************************************************************/
     public void setLights( boolean red, boolean green, boolean blue )
     {
+        relays.setRelay( config.redRelay, red );
+        relays.setRelay( config.greenRelay, green );
+        relays.setRelay( config.blueRelay, blue );
     }
 
     /***************************************************************************
-     * {@inheritDoc}
+     * @param data
      **************************************************************************/
-    public void updateUI( BlCompetitionData data )
+    public void updateUI( CompetitionData data )
     {
         SwingUtilities.invokeLater( () -> view.setData( data ) );
     }

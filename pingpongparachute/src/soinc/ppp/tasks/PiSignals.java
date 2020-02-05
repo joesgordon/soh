@@ -1,4 +1,4 @@
-package soinc.rollercoaster.tasks;
+package soinc.ppp.tasks;
 
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -14,52 +14,53 @@ import com.pi4j.io.gpio.GpioController;
 
 import soinc.lib.data.PinResistance;
 import soinc.lib.gpio.ITimerCallback;
+import soinc.lib.gpio.TimerPins;
 import soinc.lib.relay.IRelays;
-import soinc.rollercoaster.RcMain;
-import soinc.rollercoaster.data.RcCompetitionData;
-import soinc.rollercoaster.data.RcConfig;
-import soinc.rollercoaster.ui.RcCompetitionView;
+import soinc.ppp.PppMain;
+import soinc.ppp.data.CompetitionData;
+import soinc.ppp.data.CompetitionConfig;
+import soinc.ppp.ui.CompetitionView;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class RcPiSignals implements IRcSignals
+public class PiSignals implements ISignals
 {
     /**  */
     private final GpioController gpio;
     /**  */
-    private final RcTimerPins timerA;
+    private final TimerPins timerA;
     /**  */
-    private final RcTimerPins timerS;
+    private final TimerPins timerS;
     /**  */
-    private final RcTimerPins timerD;
+    private final TimerPins timerD;
     /**  */
-    private final List<RcTimerPins> timerPins;
+    private final List<TimerPins> timerPins;
     /**  */
     private final IRelays relay;
     /**  */
-    private final RcConfig config;
+    private final CompetitionConfig config;
 
     /**  */
-    private RcCompetitionView view;
+    private CompetitionView view;
 
     /***************************************************************************
      * @param gpio
      * @param config
      * @throws IOException
      **************************************************************************/
-    public RcPiSignals( GpioController gpio, RcConfig config )
+    public PiSignals( GpioController gpio, CompetitionConfig config )
     {
         this.gpio = gpio;
         this.config = config;
-        this.timerA = new RcTimerPins(
+        this.timerA = new TimerPins(
             config.timerAIn.resistance == PinResistance.PULL_UP );
-        this.timerS = new RcTimerPins(
+        this.timerS = new TimerPins(
             config.timerSIn.resistance == PinResistance.PULL_UP );
-        this.timerD = new RcTimerPins(
+        this.timerD = new TimerPins(
             config.timerDIn.resistance == PinResistance.PULL_UP );
         this.timerPins = new ArrayList<>();
-        this.relay = RcMain.getRelay();
+        this.relay = PppMain.getRelay();
 
         timerPins.add( timerA );
         timerPins.add( timerS );
@@ -71,7 +72,7 @@ public class RcPiSignals implements IRcSignals
      * @param view
      **************************************************************************/
     @Override
-    public void connect( RcTeamCompetition competition, RcCompetitionView view )
+    public void connect( TeamCompetition competition, CompetitionView view )
         throws IOException
     {
         this.view = view;
@@ -136,7 +137,7 @@ public class RcPiSignals implements IRcSignals
      * @param timer
      * @param index
      */
-    private void clearTimer( RcTeamCompetition competition, RcTimerPins timer,
+    private void clearTimer( TeamCompetition competition, TimerPins timer,
         int index )
     {
         timer.clear();
@@ -189,7 +190,7 @@ public class RcPiSignals implements IRcSignals
     @Override
     public void clearTimers()
     {
-        for( RcTimerPins pin : timerPins )
+        for( TimerPins pin : timerPins )
         {
             pin.clear();
         }
@@ -199,7 +200,7 @@ public class RcPiSignals implements IRcSignals
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public void updateUI( RcCompetitionData data )
+    public void updateUI( CompetitionData data )
     {
         SwingUtilities.invokeLater( () -> view.setData( data ) );
     }

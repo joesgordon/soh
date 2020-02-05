@@ -3,29 +3,31 @@ package soinc.boomilever.data;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class BlOptions
+public class Team
 {
     /**  */
-    public final EventConfig config;
+    public String name;
     /**  */
-    public boolean useFauxGpio;
+    public boolean loaded;
+    /**  */
+    public boolean complete;
+
+    /***************************************************************************
+     * @param name
+     **************************************************************************/
+    public Team( String name )
+    {
+        this.name = name;
+
+        reset();
+    }
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public BlOptions()
+    public void reset()
     {
-        this.config = new EventConfig();
-        this.useFauxGpio = false;
-    }
-
-    /***************************************************************************
-     * @param data
-     **************************************************************************/
-    public BlOptions( BlOptions data )
-    {
-        this.config = data.config == null ? new EventConfig()
-            : new EventConfig( data.config );
-        this.useFauxGpio = data.useFauxGpio;
+        this.loaded = false;
+        this.complete = false;
     }
 }
