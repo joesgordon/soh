@@ -63,7 +63,7 @@ public class UiUtils
     }
 
     /***************************************************************************
-     * 
+     * @param parent
      **************************************************************************/
     public static void showTestGpioScreen( Component parent )
     {
@@ -100,7 +100,7 @@ public class UiUtils
     /***************************************************************************
      * @return
      **************************************************************************/
-    private static OptionsSerializer<SciolyOptions> getOptions()
+    public static OptionsSerializer<SciolyOptions> getOptions()
     {
         if( options == null )
         {
