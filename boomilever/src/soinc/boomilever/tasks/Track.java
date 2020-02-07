@@ -8,27 +8,27 @@ import java.util.Timer;
 import org.jutils.io.LogUtils;
 import org.jutils.utils.Stopwatch;
 
-import soinc.boomilever.data.EventConfig;
-import soinc.boomilever.data.CompetitionData;
-import soinc.boomilever.data.CompetitionState;
+import soinc.boomilever.data.BlEventConfig;
 import soinc.boomilever.data.Team;
-import soinc.boomilever.ui.CompetitionView;
+import soinc.boomilever.data.TrackData;
+import soinc.boomilever.data.TrackState;
+import soinc.boomilever.ui.TrackView;
 import soinc.lib.RunnableTask;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class TeamCompetition
+public class Track
 {
     /**  */
-    public final EventConfig config;
+    public final BlEventConfig config;
     /**  */
     private final CompetitionSignals signals;
 
     /** The state of the competition. It should never be {@code null}. */
     private final StateMachine stateMachine;
     /**  */
-    private final CompetitionData data;
+    public final TrackData data;
     /**  */
     private final Timer timer;
 
@@ -39,12 +39,12 @@ public class TeamCompetition
      * @param config
      * @param signals
      **************************************************************************/
-    public TeamCompetition( EventConfig config, CompetitionSignals signals )
+    public Track( BlEventConfig config, CompetitionSignals signals )
     {
         this.config = config;
         this.signals = signals;
         this.stateMachine = new StateMachine();
-        this.data = new CompetitionData();
+        this.data = new TrackData();
         this.timer = new Timer( "RC Competition" );
         this.periodTimer = new Stopwatch();
 
@@ -58,7 +58,7 @@ public class TeamCompetition
     /***************************************************************************
      * @param state
      **************************************************************************/
-    private void handleStateUpdated( CompetitionState state )
+    private void handleStateUpdated( TrackState state )
     {
         this.data.state = state;
 
@@ -92,14 +92,14 @@ public class TeamCompetition
             }
         }
 
-        signals.updateUI( new CompetitionData( data ) );
+        signals.updateUI( this );
     }
 
     /***************************************************************************
      * @param competitionView
      * @throws IOException
      **************************************************************************/
-    public void connect( CompetitionView competitionView ) throws IOException
+    public void connect( TrackView competitionView ) throws IOException
     {
         signals.connect( this, competitionView );
 
@@ -147,7 +147,7 @@ public class TeamCompetition
     /***************************************************************************
      * @return
      **************************************************************************/
-    public CompetitionState getState()
+    public TrackState getState()
     {
         return stateMachine.getState();
     }
@@ -191,7 +191,8 @@ public class TeamCompetition
         {
             data.reset();
             data.team = team;
-            data.state = CompetitionState.LOADED;
+            data.state = TrackState.LOADED;
+            data.team.loaded = true;
         }
         else
         {
@@ -270,12 +271,12 @@ public class TeamCompetition
      **************************************************************************/
     public void signalClearTeam()
     {
-        CompetitionState state = this.data.state;
+        TrackState state = this.data.state;
         String msg = stateMachine.signalClearTeam();
 
         if( msg == null )
         {
-            if( state == CompetitionState.LOADED )
+            if( state == TrackState.LOADED )
             {
                 data.team.loaded = false;
             }
@@ -291,8 +292,8 @@ public class TeamCompetition
     /***************************************************************************
      * @return
      **************************************************************************/
-    public CompetitionData getData()
+    public TrackData getData()
     {
-        return new CompetitionData( data );
+        return new TrackData( data );
     }
 }

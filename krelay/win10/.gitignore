@@ -1,0 +1,8 @@
+/Debug
+/Release
+/x64
+/.vs
+krelay/Debug
+krelay/Release
+krelay/x64
+krelay/*.user

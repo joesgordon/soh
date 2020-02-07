@@ -1,23 +1,23 @@
 package soinc.boomilever.data;
 
-public class CompetitionData
+public class TrackData
 {
     /**  */
     public Team team;
     /**  */
-    public CompetitionState state;
+    public TrackState state;
     /** Milliseconds */
     public long periodTime;
 
     /**
      * @param timerCount
      */
-    public CompetitionData()
+    public TrackData()
     {
         reset();
     }
 
-    public CompetitionData( CompetitionData data )
+    public TrackData( TrackData data )
     {
         this.team = data.team;
         this.state = data.state;
@@ -27,7 +27,7 @@ public class CompetitionData
     public void reset()
     {
         this.team = null;
-        this.state = CompetitionState.NO_TEAM;
+        this.state = TrackState.NO_TEAM;
         this.periodTime = -1L;
     }
 }

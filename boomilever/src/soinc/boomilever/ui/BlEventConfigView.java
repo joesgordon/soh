@@ -1,5 +1,8 @@
 package soinc.boomilever.ui;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Window;
 import java.util.List;
 
@@ -16,17 +19,18 @@ import org.jutils.ui.ItemListView;
 import org.jutils.ui.ListView;
 import org.jutils.ui.ListView.IItemListModel;
 import org.jutils.ui.StandardFormView;
+import org.jutils.ui.TitleView;
 import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.fields.IntegerFormField;
 import org.jutils.ui.model.IDataView;
 
-import soinc.boomilever.data.EventConfig;
+import soinc.boomilever.data.BlEventConfig;
 import soinc.boomilever.data.Team;
 
 /*******************************************************************************
  *
  ******************************************************************************/
-public class EventConfigView implements IDataView<EventConfig>
+public class BlEventConfigView implements IDataView<BlEventConfig>
 {
     /**  */
     private final JPanel view;
@@ -37,14 +41,18 @@ public class EventConfigView implements IDataView<EventConfig>
     private final IntegerFormField periodWarningField;
     /**  */
     private final ItemListView<Team> teamsView;
+    /**  */
+    private final TrackConfigView trackAView;
+    /**  */
+    private final TrackConfigView trackBView;
 
     /**  */
-    private EventConfig config;
+    private BlEventConfig config;
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public EventConfigView()
+    public BlEventConfigView()
     {
         this.periodTimeField = new IntegerFormField( "Period Time", "seconds",
             8, 10, 60 * 60 );
@@ -53,9 +61,12 @@ public class EventConfigView implements IDataView<EventConfig>
 
         this.teamsView = createTeamsView();
 
+        this.trackAView = new TrackConfigView();
+        this.trackBView = new TrackConfigView();
+
         this.view = createView();
 
-        setData( new EventConfig() );
+        setData( new BlEventConfig() );
 
         periodTimeField.setUpdater( ( d ) -> config.periodTime = d );
         periodWarningField.setUpdater( ( d ) -> config.periodWarning = d );
@@ -66,10 +77,39 @@ public class EventConfigView implements IDataView<EventConfig>
      **************************************************************************/
     private JPanel createView()
     {
+        JPanel panel = new JPanel( new GridBagLayout() );
+        GridBagConstraints constraints;
+
+        int pad = StandardFormView.DEFAULT_FORM_MARGIN;
+
+        constraints = new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0,
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+            new Insets( 0, 0, 0, 0 ), 0, 0 );
+        panel.add( createForm(), constraints );
+
+        TitleView titleView = new TitleView( "Teams", teamsView.getView() );
+
+        constraints = new GridBagConstraints( 1, 0, 1, 1, 1.0, 1.0,
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+            new Insets( pad, 0, pad, pad ), 0, 0 );
+        panel.add( titleView.getView(), constraints );
+
+        return panel;
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    private JPanel createForm()
+    {
         StandardFormView form = new StandardFormView();
 
         form.addField( periodTimeField );
         form.addField( periodWarningField );
+        form.addComponent(
+            new TitleView( "Track A", trackAView.getView() ).getView() );
+        form.addComponent(
+            new TitleView( "Track B", trackBView.getView() ).getView() );
 
         return form.getView();
     }
@@ -119,29 +159,43 @@ public class EventConfigView implements IDataView<EventConfig>
         return view;
     }
 
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
     @Override
     public JComponent getView()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return view;
     }
 
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
     @Override
-    public EventConfig getData()
+    public BlEventConfig getData()
     {
         return config;
     }
 
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
     @Override
-    public void setData( EventConfig data )
+    public void setData( BlEventConfig data )
     {
         this.config = data;
 
         periodTimeField.setValue( config.periodTime );
         periodWarningField.setValue( config.periodWarning );
         teamsView.setData( config.teams );
+
+        trackAView.setData( config.trackA );
+        trackBView.setData( config.trackB );
     }
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     public void deselectTeams()
     {
         teamsView.setSelected( null );

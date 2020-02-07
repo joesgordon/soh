@@ -2,7 +2,7 @@ package soinc.boomilever.tasks;
 
 import org.jutils.ui.event.updater.IUpdater;
 
-import soinc.boomilever.data.CompetitionState;
+import soinc.boomilever.data.TrackState;
 
 /*******************************************************************************
  * 
@@ -10,23 +10,23 @@ import soinc.boomilever.data.CompetitionState;
 public class StateMachine
 {
     /** The state of the competition. It should never be {@code null}. */
-    private CompetitionState state;
+    private TrackState state;
 
     /**  */
-    private IUpdater<CompetitionState> updater;
+    private IUpdater<TrackState> updater;
 
     /***************************************************************************
      * @param competition
      **************************************************************************/
     public StateMachine()
     {
-        setState( CompetitionState.NO_TEAM );
+        setState( TrackState.NO_TEAM );
     }
 
     /***************************************************************************
      * @return
      **************************************************************************/
-    public CompetitionState getState()
+    public TrackState getState()
     {
         return state;
     }
@@ -41,7 +41,7 @@ public class StateMachine
             case NO_TEAM:
             case LOADED:
             case COMPLETE:
-                setState( CompetitionState.LOADED );
+                setState( TrackState.LOADED );
                 break;
 
             default:
@@ -59,7 +59,7 @@ public class StateMachine
         switch( this.state )
         {
             case LOADED:
-                setState( CompetitionState.RUNNING );
+                setState( TrackState.RUNNING );
 
             case RUNNING:
                 break;
@@ -84,17 +84,17 @@ public class StateMachine
         {
             case RUNNING:
             case WARNING:
-                setState( CompetitionState.PAUSED );
+                setState( TrackState.PAUSED );
                 break;
 
             case PAUSED:
                 if( isWarning )
                 {
-                    setState( CompetitionState.WARNING );
+                    setState( TrackState.WARNING );
                 }
                 else
                 {
-                    setState( CompetitionState.RUNNING );
+                    setState( TrackState.RUNNING );
                 }
                 break;
 
@@ -114,7 +114,7 @@ public class StateMachine
         {
             case RUNNING:
             case WARNING:
-                setState( CompetitionState.WARNING );
+                setState( TrackState.WARNING );
                 break;
 
             default:
@@ -131,7 +131,7 @@ public class StateMachine
     {
         if( this.state.isRunning )
         {
-            setState( CompetitionState.COMPLETE );
+            setState( TrackState.COMPLETE );
 
             return null;
         }
@@ -152,7 +152,7 @@ public class StateMachine
             case PAUSED:
             case WARNING:
             case COMPLETE:
-                setState( CompetitionState.NO_TEAM );
+                setState( TrackState.NO_TEAM );
                 break;
 
             default:
@@ -165,7 +165,7 @@ public class StateMachine
     /***************************************************************************
      * @param state
      **************************************************************************/
-    private void setState( CompetitionState state )
+    private void setState( TrackState state )
     {
         this.state = state;
 
@@ -185,7 +185,7 @@ public class StateMachine
     /***************************************************************************
      * @param updater
      **************************************************************************/
-    public void setUpdater( IUpdater<CompetitionState> updater )
+    public void setUpdater( IUpdater<TrackState> updater )
     {
         this.updater = updater;
     }

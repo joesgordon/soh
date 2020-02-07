@@ -6,7 +6,7 @@ import java.util.List;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class EventConfig
+public class BlEventConfig
 {
     /** The number of seconds in the trial period. */
     public int periodTime;
@@ -18,27 +18,32 @@ public class EventConfig
     /**  */
     public final List<Team> teams;
     /**  */
-    public final CompetitionConfig trackA;
+    public final TrackConfig trackA;
     /**  */
-    public final CompetitionConfig trackB;
+    public final TrackConfig trackB;
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public EventConfig()
+    public BlEventConfig()
     {
         this.periodTime = 6 * 60;
         this.periodWarning = 5 * 60;
         this.teams = new ArrayList<>();
 
-        this.trackA = new CompetitionConfig();
-        this.trackB = new CompetitionConfig();
+        this.trackA = new TrackConfig();
+        this.trackB = new TrackConfig();
+
+        trackB.powerRelay = 5;
+        trackB.redRelay = 6;
+        trackB.greenRelay = 7;
+        trackB.blueRelay = 8;
     }
 
     /***************************************************************************
      * @param cfg
      **************************************************************************/
-    public EventConfig( EventConfig cfg )
+    public BlEventConfig( BlEventConfig cfg )
     {
         this();
 
@@ -48,8 +53,13 @@ public class EventConfig
     /***************************************************************************
      * @param cfg
      **************************************************************************/
-    public void set( EventConfig cfg )
+    public void set( BlEventConfig cfg )
     {
+        if( this == cfg )
+        {
+            return;
+        }
+
         this.periodTime = cfg.periodTime;
         this.periodWarning = cfg.periodWarning;
 

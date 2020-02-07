@@ -27,13 +27,11 @@ import org.jutils.ui.model.IView;
 
 import soinc.boomilever.BlIcons;
 import soinc.boomilever.BlMain;
+import soinc.boomilever.data.BlEventConfig;
 import soinc.boomilever.data.BlOptions;
-import soinc.boomilever.data.CompetitionConfig;
-import soinc.boomilever.data.CompetitionData;
-import soinc.boomilever.data.Event;
-import soinc.boomilever.data.EventConfig;
+import soinc.boomilever.tasks.BlEvent;
 import soinc.boomilever.tasks.CompetitionSignals;
-import soinc.boomilever.tasks.TeamCompetition;
+import soinc.boomilever.tasks.Track;
 import soinc.lib.UiUtils;
 import soinc.lib.gpio.SciolyGpio;
 import soinc.lib.ui.RelayTestView;
@@ -46,13 +44,13 @@ public class BlFrameView implements IView<JFrame>
     /**  */
     private final StandardFrameView view;
     /**  */
-    private final EventConfigView configView;
+    private final BlEventConfigView configView;
 
     /**  */
     private final JCheckBoxMenuItem mockIoMenuItem;
 
     /**  */
-    private EventView eventView;
+    private BlEventView eventView;
 
     /***************************************************************************
      * 
@@ -60,7 +58,7 @@ public class BlFrameView implements IView<JFrame>
     public BlFrameView()
     {
         this.view = new StandardFrameView();
-        this.configView = new EventConfigView();
+        this.configView = new BlEventConfigView();
         this.mockIoMenuItem = createMockGpioMenuItem();
         this.eventView = null;
 
@@ -165,19 +163,24 @@ public class BlFrameView implements IView<JFrame>
         // LogUtils.printDebug( "showCompetition(%s)", show );
 
         OptionsSerializer<BlOptions> userio = BlMain.getOptions();
-        BlOptions options = userio.getOptions();
+        BlOptions options = new BlOptions( userio.getOptions() );
         options.config.set( configView.getData() );
-        userio.write();
+        userio.write( options );
 
         if( show && eventView == null )
         {
-            Event event = eventView.getData();
-            EventConfig cfg = configView.getData();
+            BlEventConfig cfg = configView.getData();
+            CompetitionSignals signalsA = new CompetitionSignals(
+                BlMain.getRelays(), cfg.trackA );
+            CompetitionSignals signalsB = new CompetitionSignals(
+                BlMain.getRelays(), cfg.trackB );
+            BlEvent evt = new BlEvent( cfg, signalsA, signalsB );
 
-            showCompetition( cfg, event.trackA, cfg.trackA,
-                eventView.trackAView );
-            showCompetition( cfg, event.trackB, cfg.trackB,
-                eventView.trackBView );
+            this.eventView = new BlEventView( evt, getView().getIconImages(),
+                getView().getSize() );
+
+            showCompetition( evt.trackA, eventView.trackAView );
+            showCompetition( evt.trackB, eventView.trackBView );
         }
         else if( !show && eventView != null )
         {
@@ -187,25 +190,13 @@ public class BlFrameView implements IView<JFrame>
     }
 
     /**
-     * @param eventCfg
-     * @param track
-     * @param config
-     * @param trackView
+     * @param competition
+     * @param trackAView
      */
-    private void showCompetition( EventConfig eventCfg, CompetitionData track,
-        CompetitionConfig config, CompetitionView trackView )
+    private void showCompetition( Track competition, TrackView trackView )
     {
         try
         {
-            CompetitionSignals signals = new CompetitionSignals(
-                BlMain.getRelays(), config );
-
-            TeamCompetition competition = new TeamCompetition( eventCfg,
-                signals );
-
-            this.eventView = new EventView( competition,
-                getView().getIconImages(), getView().getSize() );
-
             try
             {
                 competition.connect( trackView );

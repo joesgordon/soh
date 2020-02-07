@@ -8,9 +8,8 @@ import javax.swing.SwingUtilities;
 
 import org.jutils.SwingUtils;
 
-import soinc.boomilever.data.CompetitionConfig;
-import soinc.boomilever.data.CompetitionData;
-import soinc.boomilever.ui.CompetitionView;
+import soinc.boomilever.data.TrackConfig;
+import soinc.boomilever.ui.TrackView;
 import soinc.lib.relay.IRelays;
 
 /*******************************************************************************
@@ -21,17 +20,17 @@ public class CompetitionSignals
     /**  */
     private final IRelays relays;
     /**  */
-    private final CompetitionConfig config;
+    private final TrackConfig config;
 
     /**  */
-    private CompetitionView view;
+    private TrackView view;
 
     /***************************************************************************
      * @param relays
      * @param config
      * @throws IOException
      **************************************************************************/
-    public CompetitionSignals( IRelays relays, CompetitionConfig config )
+    public CompetitionSignals( IRelays relays, TrackConfig config )
     {
         this.relays = relays;
         this.config = config;
@@ -42,7 +41,7 @@ public class CompetitionSignals
      * @param view
      * @throws IOException
      **************************************************************************/
-    public void connect( TeamCompetition competition, CompetitionView view )
+    public void connect( Track competition, TrackView view )
         throws IOException
     {
         this.view = view;
@@ -66,6 +65,11 @@ public class CompetitionSignals
         callback = ( e ) -> competition.signalClearTeam();
         SwingUtils.addKeyListener( jview, config.clearKey.keystroke, callback,
             "Clear Team", true );
+
+        if( config.enablePower )
+        {
+            relays.setRelay( config.powerRelay - 1, true );
+        }
     }
 
     /***************************************************************************
@@ -73,6 +77,7 @@ public class CompetitionSignals
      **************************************************************************/
     public void disconnect()
     {
+        relays.turnAllOff();
     }
 
     /***************************************************************************
@@ -82,15 +87,15 @@ public class CompetitionSignals
      **************************************************************************/
     public void setLights( boolean red, boolean green, boolean blue )
     {
-        relays.setRelay( config.redRelay, red );
-        relays.setRelay( config.greenRelay, green );
-        relays.setRelay( config.blueRelay, blue );
+        relays.setRelay( config.redRelay - 1, red );
+        relays.setRelay( config.greenRelay - 1, green );
+        relays.setRelay( config.blueRelay - 1, blue );
     }
 
     /***************************************************************************
      * @param data
      **************************************************************************/
-    public void updateUI( CompetitionData data )
+    public void updateUI( Track data )
     {
         SwingUtilities.invokeLater( () -> view.setData( data ) );
     }

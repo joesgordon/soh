@@ -18,56 +18,55 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 
+import org.jutils.io.options.OptionsSerializer;
 import org.jutils.ui.model.IDataView;
 
 import soinc.boomilever.BlIcons;
 import soinc.boomilever.BlMain;
-import soinc.boomilever.data.Event;
-import soinc.boomilever.tasks.TeamCompetition;
+import soinc.boomilever.data.BlOptions;
+import soinc.boomilever.tasks.BlEvent;
 import soinc.lib.UiUtils;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class EventView implements IDataView<Event>
+public class BlEventView implements IDataView<BlEvent>
 {
-    /**  */
-    private final TeamCompetition competition;
-
     /**  */
     private final JFrame frame;
     /**  */
-    public final CompetitionView trackAView;
+    public final TrackView trackAView;
     /**  */
-    public final CompetitionView trackBView;
+    public final TrackView trackBView;
 
     /**  */
     private final JComponent content;
 
-    private Event event;
+    /**  */
+    private BlEvent event;
 
     /***************************************************************************
-     * @param competition
+     * @param event
      * @param icons
      * @param size
      **************************************************************************/
-    public EventView( TeamCompetition competition, List<Image> icons,
-        Dimension size )
+    public BlEventView( BlEvent event, List<Image> icons, Dimension size )
     {
-        this.competition = competition;
-
         this.frame = new JFrame( "Roller Coaster Competition" );
 
-        this.trackAView = new CompetitionView();
-        this.trackBView = new CompetitionView();
+        this.event = event;
+
+        this.trackAView = new TrackView( event.trackA );
+        this.trackBView = new TrackView( event.trackB );
 
         this.content = createCompetitionPanel();
 
         frame.setIconImages( icons );
         frame.setContentPane( content );
-        frame.setDefaultCloseOperation( JDialog.DO_NOTHING_ON_CLOSE );
-        frame.addWindowListener( new CompetitionFrameListener( this ) );
+        frame.setDefaultCloseOperation( JDialog.DISPOSE_ON_CLOSE );
+        frame.addWindowListener( new EventFrameListener( this ) );
         frame.setUndecorated( true );
         frame.setSize( size );
     }
@@ -90,10 +89,15 @@ public class EventView implements IDataView<Event>
         return panel;
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
     private Component createTracksPanel()
     {
         JPanel panel = new JPanel( new GridBagLayout() );
         GridBagConstraints constraints;
+
+        panel.setOpaque( false );
 
         // ---------------------------------------------------------------------
 
@@ -104,7 +108,14 @@ public class EventView implements IDataView<Event>
 
         // ---------------------------------------------------------------------
 
-        constraints = new GridBagConstraints( 1, 0, 1, 1, 1.0, 1.0,
+        constraints = new GridBagConstraints( 1, 0, 1, 1, 0.0, 1.0,
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+            new Insets( 10, 10, 10, 10 ), 0, 0 );
+        panel.add( new JSeparator( JSeparator.VERTICAL ), constraints );
+
+        // ---------------------------------------------------------------------
+
+        constraints = new GridBagConstraints( 2, 0, 1, 1, 1.0, 1.0,
             GridBagConstraints.CENTER, GridBagConstraints.BOTH,
             new Insets( 10, 0, 0, 0 ), 0, 0 );
         panel.add( trackBView.getView(), constraints );
@@ -129,7 +140,7 @@ public class EventView implements IDataView<Event>
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public Event getData()
+    public BlEvent getData()
     {
         return event;
     }
@@ -138,7 +149,7 @@ public class EventView implements IDataView<Event>
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public void setData( Event data )
+    public void setData( BlEvent data )
     {
         this.event = data;
 
@@ -178,7 +189,8 @@ public class EventView implements IDataView<Event>
         }
         else
         {
-            competition.disconnect();
+            trackAView.disconnect();
+            trackBView.disconnect();
 
             // setFullScreen( false );
 
@@ -190,15 +202,15 @@ public class EventView implements IDataView<Event>
     /***************************************************************************
      * 
      **************************************************************************/
-    private static final class CompetitionFrameListener extends WindowAdapter
+    private static final class EventFrameListener extends WindowAdapter
     {
         /**  */
-        private final EventView view;
+        private final BlEventView view;
 
         /**
          * @param view
          */
-        public CompetitionFrameListener( EventView view )
+        public EventFrameListener( BlEventView view )
         {
             this.view = view;
         }
@@ -209,9 +221,12 @@ public class EventView implements IDataView<Event>
         @Override
         public void windowClosing( WindowEvent e )
         {
-            if( !view.competition.isRunning() )
+            if( !view.event.isRunning() )
             {
-                BlMain.getOptions().write();
+                OptionsSerializer<BlOptions> userio = BlMain.getOptions();
+                BlOptions options = new BlOptions( userio.getOptions() );
+                options.config.set( view.event.trackA.config );
+                userio.write( options );
                 UiUtils.setFullScreen( false, view.frame );
                 view.frame.setVisible( false );
             }

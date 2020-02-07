@@ -30,17 +30,17 @@ import org.jutils.ui.fields.ItemsListField;
 import org.jutils.ui.model.IView;
 import org.jutils.ui.model.LabelListCellRenderer.IListCellLabelDecorator;
 
-import soinc.boomilever.data.CompetitionData;
-import soinc.boomilever.data.CompetitionState;
 import soinc.boomilever.data.Team;
 import soinc.boomilever.data.TimeDuration;
-import soinc.boomilever.tasks.TeamCompetition;
+import soinc.boomilever.data.TrackData;
+import soinc.boomilever.data.TrackState;
+import soinc.boomilever.tasks.Track;
 import soinc.lib.UiUtils;
 
 /***************************************************************************
  * 
  **************************************************************************/
-public class CompetitionView implements IView<JComponent>
+public class TrackView implements IView<JComponent>
 {
     /**  */
     private static final float LRG_FONT = 128.0f;
@@ -57,20 +57,21 @@ public class CompetitionView implements IView<JComponent>
     private final JLabel stateField;
 
     /**  */
-    private TeamCompetition competition;
-    /**  */
-    private CompetitionData compData;
+    private Track competition;
 
     /***************************************************************************
-     * 
+     * @param track
      **************************************************************************/
-    public CompetitionView()
+    public TrackView( Track track )
     {
+        this.competition = track;
         this.teamButton = new JButton( "No Teams Entered" );
         this.periodField = UiUtils.createNumLabel( "-:-- s", LRG_FONT );
         this.stateField = UiUtils.createTextLabel( "-----", REG_FONT );
 
         this.view = createView();
+
+        setData( track );
     }
 
     /**
@@ -81,6 +82,8 @@ public class CompetitionView implements IView<JComponent>
         JPanel panel = new JPanel( new GridBagLayout() );
         GridBagConstraints constraints;
         int row = 0;
+
+        panel.setOpaque( false );
 
         // ---------------------------------------------------------------------
 
@@ -145,7 +148,7 @@ public class CompetitionView implements IView<JComponent>
         periodField.setOpaque( true );
         periodField.setBackground( Color.black );
 
-        constraints = new GridBagConstraints( 1, 1, 1, 1, 0.0, 1.0,
+        constraints = new GridBagConstraints( 0, 2, 1, 1, 0.0, 1.0,
             GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
             new Insets( 0, 20, 0, 0 ), 0, 0 );
         panel.add( periodField, constraints );
@@ -285,82 +288,70 @@ public class CompetitionView implements IView<JComponent>
     }
 
     /***************************************************************************
-     * @param data
+     * @param track
      **************************************************************************/
-    public void setData( CompetitionData data )
+    public void setData( Track track )
     {
-        if( this.compData == null )
+        this.competition = track;
+
+        TrackData data = competition.data;
+
+        boolean enabled = data.team == null ? true : false;
+        String name = data.team == null ? "Select Team" : data.team.name;
+
+        if( data.team == null )
         {
-            this.compData = data;
+            if( competition.getAvailableTeams().isEmpty() )
+            {
+                name = "Teams Complete";
+                enabled = false;
+            }
         }
 
-        if( data.team != compData.team )
+        teamButton.setText( name );
+        teamButton.setEnabled( enabled );
+
+        if( data.periodTime > -1 )
         {
-            boolean enabled = data.team == null ? true : false;
-            String name = data.team == null ? "Select Team" : data.team.name;
-
-            if( data.team == null )
-            {
-                if( competition.getAvailableTeams().isEmpty() )
-                {
-                    name = "Teams Complete";
-                    enabled = false;
-                }
-            }
-
-            teamButton.setText( name );
-            teamButton.setEnabled( enabled );
+            // LogUtils.printDebug( "Time %d of %d", data.periodTime,
+            // competition.config.periodTime );
+            long millis = competition.config.periodTime * 1000 -
+                data.periodTime;
+            TimeDuration d = new TimeDuration( millis );
+            String time = String.format( " %1d:%02d ", d.totalMinutes,
+                d.seconds );
+            periodField.setText( time );
+        }
+        else
+        {
+            periodField.setText( " -:-- " );
         }
 
-        if( data.periodTime != compData.periodTime )
+        if( data.state == TrackState.WARNING )
         {
-            if( data.periodTime > -1 )
+            if( periodField.getBackground() != Color.orange )
             {
-                // LogUtils.printDebug( "Time %d of %d", data.periodTime,
-                // competition.config.periodTime );
-                long millis = competition.config.periodTime * 1000 -
-                    data.periodTime;
-                TimeDuration d = new TimeDuration( millis );
-                String time = String.format( " %1d:%02d ", d.totalMinutes,
-                    d.seconds );
-                periodField.setText( time );
+                periodField.setBackground( Color.orange );
+                periodField.setForeground( Color.black );
             }
-            else
+        }
+        else if( data.state == TrackState.COMPLETE )
+        {
+            if( periodField.getBackground() != Color.red )
             {
-                periodField.setText( " -:-- " );
-            }
-
-            if( data.state == CompetitionState.WARNING )
-            {
-                if( periodField.getBackground() != Color.orange )
-                {
-                    periodField.setBackground( Color.orange );
-                    periodField.setForeground( Color.black );
-                }
-            }
-            else if( data.state == CompetitionState.COMPLETE )
-            {
-                if( periodField.getBackground() != Color.red )
-                {
-                    periodField.setBackground( Color.red );
-                    periodField.setForeground( Color.white );
-                }
-            }
-            else if( periodField.getBackground() != Color.black )
-            {
-                periodField.setBackground( Color.black );
+                periodField.setBackground( Color.red );
                 periodField.setForeground( Color.white );
             }
         }
-
-        if( data.state != compData.state )
+        else if( periodField.getBackground() != Color.black )
         {
-            stateField.setText( " " + data.state.name + " " );
-            stateField.setBackground( data.state.background );
-            stateField.setForeground( data.state.foreground );
+            periodField.setBackground( Color.black );
+            periodField.setForeground( Color.white );
         }
 
-        this.compData = data;
+        stateField.setText( " " + data.state.name + " " );
+        stateField.setBackground( data.state.background );
+        stateField.setForeground( data.state.foreground );
     }
 
     /***************************************************************************
@@ -401,6 +392,14 @@ public class CompetitionView implements IView<JComponent>
             teamButton.setText( "Select Team" );
             teamButton.setEnabled( true );
         }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    public void disconnect()
+    {
+        competition.disconnect();
     }
 
     /***************************************************************************

@@ -6,7 +6,7 @@ package soinc.boomilever.data;
 public class BlOptions
 {
     /**  */
-    public final EventConfig config;
+    public final BlEventConfig config;
     /**  */
     public boolean useFauxGpio;
 
@@ -15,7 +15,7 @@ public class BlOptions
      **************************************************************************/
     public BlOptions()
     {
-        this.config = new EventConfig();
+        this.config = new BlEventConfig();
         this.useFauxGpio = false;
     }
 
@@ -24,8 +24,8 @@ public class BlOptions
      **************************************************************************/
     public BlOptions( BlOptions data )
     {
-        this.config = data.config == null ? new EventConfig()
-            : new EventConfig( data.config );
+        this.config = data.config == null ? new BlEventConfig()
+            : new BlEventConfig( data.config );
         this.useFauxGpio = data.useFauxGpio;
     }
 }

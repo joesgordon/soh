@@ -1,9 +1,5 @@
 package soinc.boomilever.ui;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-
 import javax.swing.JPanel;
 
 import org.jutils.ui.StandardFormView;
@@ -11,17 +7,19 @@ import org.jutils.ui.fields.ComboFormField;
 import org.jutils.ui.fields.IntegerFormField;
 import org.jutils.ui.model.IDataView;
 
-import soinc.boomilever.data.CompetitionConfig;
+import soinc.boomilever.data.TrackConfig;
 import soinc.lib.ui.PhysicalKey;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class CompetitionConfigView implements IDataView<CompetitionConfig>
+public class TrackConfigView implements IDataView<TrackConfig>
 {
     /**  */
     private final JPanel view;
 
+    /**  */
+    private final IntegerFormField powerRelayField;
     /**  */
     private final IntegerFormField redRelayField;
     /**  */
@@ -36,13 +34,15 @@ public class CompetitionConfigView implements IDataView<CompetitionConfig>
     private final ComboFormField<PhysicalKey> clearKeyField;
 
     /**  */
-    private CompetitionConfig config;
+    private TrackConfig config;
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public CompetitionConfigView()
+    public TrackConfigView()
     {
+        this.powerRelayField = new IntegerFormField( "Power Relay", null, 8, 0,
+            8 );
         this.redRelayField = new IntegerFormField( "Red Relay", null, 8, 0, 8 );
         this.greenRelayField = new IntegerFormField( "Red Relay", null, 8, 0,
             8 );
@@ -56,10 +56,11 @@ public class CompetitionConfigView implements IDataView<CompetitionConfig>
         this.clearKeyField = new ComboFormField<PhysicalKey>( "Clear Key",
             PhysicalKey.values() );
 
-        this.view = createView();
+        this.view = createForm();
 
-        setData( new CompetitionConfig() );
+        setData( new TrackConfig() );
 
+        powerRelayField.setUpdater( ( d ) -> config.powerRelay = d );
         redRelayField.setUpdater( ( d ) -> config.redRelay = d );
         greenRelayField.setUpdater( ( d ) -> config.greenRelay = d );
         blueRelayField.setUpdater( ( d ) -> config.blueRelay = d );
@@ -72,28 +73,11 @@ public class CompetitionConfigView implements IDataView<CompetitionConfig>
     /***************************************************************************
      * @return
      **************************************************************************/
-    private JPanel createView()
-    {
-        JPanel panel = new JPanel( new GridBagLayout() );
-        GridBagConstraints constraints;
-
-        int pad = StandardFormView.DEFAULT_FORM_MARGIN;
-
-        constraints = new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0,
-            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-            new Insets( 0, 0, 0, 0 ), 0, 0 );
-        panel.add( createForm(), constraints );
-
-        return panel;
-    }
-
-    /***************************************************************************
-     * @return
-     **************************************************************************/
     private JPanel createForm()
     {
         StandardFormView form = new StandardFormView();
 
+        form.addField( powerRelayField );
         form.addField( redRelayField );
         form.addField( greenRelayField );
         form.addField( blueRelayField );
@@ -118,7 +102,7 @@ public class CompetitionConfigView implements IDataView<CompetitionConfig>
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public CompetitionConfig getData()
+    public TrackConfig getData()
     {
         return config;
     }
@@ -127,10 +111,11 @@ public class CompetitionConfigView implements IDataView<CompetitionConfig>
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public void setData( CompetitionConfig config )
+    public void setData( TrackConfig config )
     {
         this.config = config;
 
+        powerRelayField.setValue( config.powerRelay );
         redRelayField.setValue( config.redRelay );
         greenRelayField.setValue( config.greenRelay );
         blueRelayField.setValue( config.blueRelay );
