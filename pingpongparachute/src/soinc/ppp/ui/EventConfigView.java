@@ -24,55 +24,40 @@ import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.fields.IntegerFormField;
 import org.jutils.ui.model.IDataView;
 
-import soinc.lib.ui.Pi3InputPinField;
-import soinc.lib.ui.Pi3OutputPinField;
 import soinc.ppp.PppMain;
-import soinc.ppp.data.CompetitionConfig;
+import soinc.ppp.data.EventConfig;
 import soinc.ppp.data.PppOptions;
 import soinc.ppp.data.Team;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class ConfigView implements IDataView<CompetitionConfig>
+public class EventConfigView implements IDataView<EventConfig>
 {
     /**  */
     private final JPanel view;
     /**  */
     private final IntegerFormField periodTimeField;
     /**  */
-    private final Pi3OutputPinField timerAOutField;
+    private final TrackConfigView trackAView;
     /**  */
-    private final Pi3OutputPinField timerSOutField;
-    /**  */
-    private final Pi3OutputPinField timerDOutField;
-    /**  */
-    private final Pi3InputPinField timerAInField;
-    /**  */
-    private final Pi3InputPinField timerSInField;
-    /**  */
-    private final Pi3InputPinField timerDInField;
+    private final TrackConfigView trackBView;
     /**  */
     private final ItemListView<Team> teamsView;
 
     /**  */
-    private CompetitionConfig config;
+    private EventConfig config;
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public ConfigView()
+    public EventConfigView()
     {
         this.periodTimeField = new IntegerFormField( "Period Time", "seconds",
             8, 10, 60 * 60 );
 
-        this.timerAInField = new Pi3InputPinField( "Timer A Input" );
-        this.timerSInField = new Pi3InputPinField( "Timer S Input" );
-        this.timerDInField = new Pi3InputPinField( "Timer D Input" );
-
-        this.timerAOutField = new Pi3OutputPinField( "Timer A Output" );
-        this.timerSOutField = new Pi3OutputPinField( "Timer S Output" );
-        this.timerDOutField = new Pi3OutputPinField( "Timer D Output" );
+        this.trackAView = new TrackConfigView();
+        this.trackBView = new TrackConfigView();
 
         this.teamsView = createTeamsView();
 
@@ -85,16 +70,11 @@ public class ConfigView implements IDataView<CompetitionConfig>
         setData( config );
 
         periodTimeField.setUpdater( ( d ) -> config.periodTime = d );
-
-        timerAInField.setUpdater( ( d ) -> config.timerAIn.set( d ) );
-        timerSInField.setUpdater( ( d ) -> config.timerSIn.set( d ) );
-        timerDInField.setUpdater( ( d ) -> config.timerDIn.set( d ) );
-
-        timerAOutField.setUpdater( ( d ) -> config.timerAOut.set( d ) );
-        timerSOutField.setUpdater( ( d ) -> config.timerSOut.set( d ) );
-        timerDOutField.setUpdater( ( d ) -> config.timerDOut.set( d ) );
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
     private ItemListView<Team> createTeamsView()
     {
         ItemListView<Team> view = new ItemListView<>( new TeamView(),
@@ -104,6 +84,9 @@ public class ConfigView implements IDataView<CompetitionConfig>
         return view;
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
     private JButton createInitButton()
     {
         Action action;
@@ -132,6 +115,14 @@ public class ConfigView implements IDataView<CompetitionConfig>
         }
 
         deselectTeams();
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    public void deselectTeams()
+    {
+        teamsView.setSelected( null );
     }
 
     /***************************************************************************
@@ -168,14 +159,10 @@ public class ConfigView implements IDataView<CompetitionConfig>
 
         form.addField( periodTimeField );
 
-        form.addField( timerAOutField );
-        form.addField( timerAInField );
-
-        form.addField( timerSOutField );
-        form.addField( timerSInField );
-
-        form.addField( timerDOutField );
-        form.addField( timerDInField );
+        form.addComponent(
+            new TitleView( "Track A", trackAView.getView() ).getView() );
+        form.addComponent(
+            new TitleView( "Track B", trackBView.getView() ).getView() );
 
         return form.getView();
     }
@@ -193,7 +180,7 @@ public class ConfigView implements IDataView<CompetitionConfig>
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public CompetitionConfig getData()
+    public EventConfig getData()
     {
         return config;
     }
@@ -202,19 +189,14 @@ public class ConfigView implements IDataView<CompetitionConfig>
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public void setData( CompetitionConfig config )
+    public void setData( EventConfig config )
     {
         this.config = config;
 
         periodTimeField.setValue( config.periodTime );
 
-        timerAInField.setValue( config.timerAIn );
-        timerSInField.setValue( config.timerSIn );
-        timerDInField.setValue( config.timerDIn );
-
-        timerAOutField.setValue( config.timerAOut );
-        timerSOutField.setValue( config.timerSOut );
-        timerDOutField.setValue( config.timerDOut );
+        trackAView.setData( config.trackA );
+        trackBView.setData( config.trackB );
 
         teamsView.setData( config.teams );
     }
@@ -265,10 +247,5 @@ public class ConfigView implements IDataView<CompetitionConfig>
 
             return team;
         }
-    }
-
-    public void deselectTeams()
-    {
-        teamsView.setSelected( null );
     }
 }

@@ -31,11 +31,11 @@ import org.jutils.ui.model.IView;
 import org.jutils.ui.model.LabelListCellRenderer.IListCellLabelDecorator;
 
 import soinc.boomilever.data.Team;
-import soinc.boomilever.data.TimeDuration;
 import soinc.boomilever.data.TrackData;
 import soinc.boomilever.data.TrackState;
 import soinc.boomilever.tasks.Track;
 import soinc.lib.UiUtils;
+import soinc.lib.data.TimeDuration;
 
 /***************************************************************************
  * 
@@ -57,14 +57,14 @@ public class TrackView implements IView<JComponent>
     private final JLabel stateField;
 
     /**  */
-    private Track competition;
+    private Track track;
 
     /***************************************************************************
      * @param track
      **************************************************************************/
     public TrackView( Track track )
     {
-        this.competition = track;
+        this.track = track;
         this.teamButton = new JButton( "No Teams Entered" );
         this.periodField = UiUtils.createNumLabel( "-:-- s", LRG_FONT );
         this.stateField = UiUtils.createTextLabel( "-----", REG_FONT );
@@ -191,7 +191,7 @@ public class TrackView implements IView<JComponent>
 
         // ---------------------------------------------------------------------
 
-        stateField.setText( competition.getState().name );
+        stateField.setText( track.getState().name );
         stateField.setOpaque( true );
         stateField.setBackground( Color.black );
 
@@ -210,7 +210,7 @@ public class TrackView implements IView<JComponent>
      **************************************************************************/
     private void showTeamPopup( MouseEvent e )
     {
-        if( competition.isRunning() )
+        if( track.isRunning() )
         {
             JPopupMenu menu = new JPopupMenu();
             ActionListener listener = ( evt ) -> unloadTeam();
@@ -221,7 +221,7 @@ public class TrackView implements IView<JComponent>
         else
         {
             JPopupMenu menu = new JPopupMenu();
-            List<Team> teams = competition.getAvailableTeams();
+            List<Team> teams = track.getAvailableTeams();
 
             if( teams.isEmpty() )
             {
@@ -248,16 +248,16 @@ public class TrackView implements IView<JComponent>
      */
     private void showTeamChooser()
     {
-        if( competition.isRunning() )
+        if( track.isRunning() )
         {
-            OptionUtils.showErrorMessage(
-                getView(), "Cannot change teams until " +
-                    competition.getTeam().name + " has finished",
+            OptionUtils.showErrorMessage( getView(),
+                "Cannot change teams until " + track.getTeam().name +
+                    " has finished",
                 "Input Error" );
             return;
         }
 
-        List<Team> teams = competition.getAvailableTeams();
+        List<Team> teams = track.getAvailableTeams();
         ItemsListField<Team> teamsField = new ItemsListField<>( "Teams", teams,
             ( t ) -> t.name );
         teamsField.setDecorator( new TeamsDecorator() );
@@ -292,16 +292,16 @@ public class TrackView implements IView<JComponent>
      **************************************************************************/
     public void setData( Track track )
     {
-        this.competition = track;
+        this.track = track;
 
-        TrackData data = competition.data;
+        TrackData data = track.data;
 
         boolean enabled = data.team == null ? true : false;
         String name = data.team == null ? "Select Team" : data.team.name;
 
         if( data.team == null )
         {
-            if( competition.getAvailableTeams().isEmpty() )
+            if( track.getAvailableTeams().isEmpty() )
             {
                 name = "Teams Complete";
                 enabled = false;
@@ -315,8 +315,7 @@ public class TrackView implements IView<JComponent>
         {
             // LogUtils.printDebug( "Time %d of %d", data.periodTime,
             // competition.config.periodTime );
-            long millis = competition.config.periodTime * 1000 -
-                data.periodTime;
+            long millis = track.config.periodTime * 1000 - data.periodTime;
             TimeDuration d = new TimeDuration( millis );
             String time = String.format( " %1d:%02d ", d.totalMinutes,
                 d.seconds );
@@ -359,7 +358,7 @@ public class TrackView implements IView<JComponent>
      **************************************************************************/
     public boolean isRunning()
     {
-        return competition.isRunning();
+        return track.isRunning();
     }
 
     /***************************************************************************
@@ -375,14 +374,14 @@ public class TrackView implements IView<JComponent>
      **************************************************************************/
     public void reset()
     {
-        competition.signalClearTeam();
+        track.signalClearTeam();
 
-        if( competition.config.teams.isEmpty() )
+        if( track.config.teams.isEmpty() )
         {
             teamButton.setText( "No Teams Entered" );
             teamButton.setEnabled( false );
         }
-        else if( competition.getAvailableTeams().isEmpty() )
+        else if( track.getAvailableTeams().isEmpty() )
         {
             teamButton.setText( "Teams Complete" );
             teamButton.setEnabled( false );
@@ -399,7 +398,7 @@ public class TrackView implements IView<JComponent>
      **************************************************************************/
     public void disconnect()
     {
-        competition.disconnect();
+        track.disconnect();
     }
 
     /***************************************************************************
@@ -407,7 +406,7 @@ public class TrackView implements IView<JComponent>
      **************************************************************************/
     private void unloadTeam()
     {
-        competition.signalClearTeam();
+        track.signalClearTeam();
         reset();
     }
 
@@ -419,9 +418,7 @@ public class TrackView implements IView<JComponent>
         teamButton.setText( team.name );
         teamButton.setEnabled( false );
 
-        competition.signalLoadTeam( team );
-
-        // TODO Auto-generated method stub
+        track.signalLoadTeam( team );
     }
 
     /***************************************************************************

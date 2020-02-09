@@ -40,12 +40,12 @@ import org.jutils.ui.model.LabelListCellRenderer.IListCellLabelDecorator;
 
 import soinc.lib.SciolyIcons;
 import soinc.lib.UiUtils;
+import soinc.lib.data.TimeDuration;
 import soinc.rollercoaster.RcIcons;
 import soinc.rollercoaster.RcMain;
 import soinc.rollercoaster.data.RcCompetitionData;
 import soinc.rollercoaster.data.RcCompetitionData.RunState;
 import soinc.rollercoaster.data.RcTeam;
-import soinc.rollercoaster.data.TimeDuration;
 import soinc.rollercoaster.tasks.RcTeamCompetition;
 
 /*******************************************************************************

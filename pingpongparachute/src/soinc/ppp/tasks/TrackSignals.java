@@ -17,69 +17,65 @@ import soinc.lib.gpio.ITimerCallback;
 import soinc.lib.gpio.TimerPins;
 import soinc.lib.relay.IRelays;
 import soinc.ppp.PppMain;
-import soinc.ppp.data.CompetitionData;
-import soinc.ppp.data.CompetitionConfig;
-import soinc.ppp.ui.CompetitionView;
+import soinc.ppp.data.TrackConfig;
+import soinc.ppp.ui.TrackView;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class PiSignals implements ISignals
+public class TrackSignals
 {
     /**  */
     private final GpioController gpio;
     /**  */
-    private final TimerPins timerA;
+    private final TimerPins timer1;
     /**  */
-    private final TimerPins timerS;
-    /**  */
-    private final TimerPins timerD;
+    private final TimerPins timer2;
     /**  */
     private final List<TimerPins> timerPins;
     /**  */
-    private final IRelays relay;
+    private final IRelays relays;
     /**  */
-    private final CompetitionConfig config;
+    private final TrackConfig trackCfg;
 
     /**  */
-    private CompetitionView view;
+    private TrackView view;
 
     /***************************************************************************
+     * @param trackCfg
      * @param gpio
-     * @param config
+     * @param relays
      * @throws IOException
      **************************************************************************/
-    public PiSignals( GpioController gpio, CompetitionConfig config )
+    public TrackSignals( TrackConfig trackCfg, GpioController gpio,
+        IRelays relays )
     {
+        this.trackCfg = trackCfg;
         this.gpio = gpio;
-        this.config = config;
-        this.timerA = new TimerPins(
-            config.timerAIn.resistance == PinResistance.PULL_UP );
-        this.timerS = new TimerPins(
-            config.timerSIn.resistance == PinResistance.PULL_UP );
-        this.timerD = new TimerPins(
-            config.timerDIn.resistance == PinResistance.PULL_UP );
-        this.timerPins = new ArrayList<>();
-        this.relay = PppMain.getRelay();
 
-        timerPins.add( timerA );
-        timerPins.add( timerS );
-        timerPins.add( timerD );
+        this.timer1 = new TimerPins(
+            trackCfg.timer1In.resistance == PinResistance.PULL_UP );
+        this.timer2 = new TimerPins(
+            trackCfg.timer2In.resistance == PinResistance.PULL_UP );
+        this.timerPins = new ArrayList<>();
+        this.relays = PppMain.getRelays();
+
+        timerPins.add( timer1 );
+        timerPins.add( timer2 );
     }
 
     /***************************************************************************
-     * {@inheritDoc}
+     * @param competition
      * @param view
+     * @throws IOException
      **************************************************************************/
-    @Override
-    public void connect( TeamCompetition competition, CompetitionView view )
-        throws IOException
+    public void connect( Track competition, TrackView view ) throws IOException
     {
         this.view = view;
 
-        relay.initialize();
+        relays.initialize();
 
-        JComponent jview = view.getContent();
+        JComponent jview = view.getView();
 
         ActionListener callback;
 
@@ -99,26 +95,19 @@ public class PiSignals implements ISignals
 
         // ---------------------------------------------------------------------
 
-        callback = ( e ) -> timerA.togglePin();
+        callback = ( e ) -> timer1.togglePin();
         SwingUtils.addKeyListener( jview, "J", callback, "TimerA toggle",
             true );
 
-        callback = ( e ) -> clearTimer( competition, timerA, 0 );
+        callback = ( e ) -> clearTimer( competition, timer1, 0 );
         SwingUtils.addKeyListener( jview, "A", callback, "TimerA clear", true );
 
-        callback = ( e ) -> timerS.togglePin();
+        callback = ( e ) -> timer2.togglePin();
         SwingUtils.addKeyListener( jview, "K", callback, "TimerS toggle",
             true );
 
-        callback = ( e ) -> clearTimer( competition, timerS, 1 );
+        callback = ( e ) -> clearTimer( competition, timer2, 1 );
         SwingUtils.addKeyListener( jview, "S", callback, "TimerS clear", true );
-
-        callback = ( e ) -> timerD.togglePin();
-        SwingUtils.addKeyListener( jview, "L", callback, "TimerD toggle",
-            true );
-
-        callback = ( e ) -> clearTimer( competition, timerD, 2 );
-        SwingUtils.addKeyListener( jview, "D", callback, "TimerD clear", true );
 
         // ---------------------------------------------------------------------
 
@@ -127,67 +116,62 @@ public class PiSignals implements ISignals
 
         // ---------------------------------------------------------------------
 
-        timerA.provision( gpio, config.timerAOut, config.timerAIn, 'A' );
-        timerS.provision( gpio, config.timerSOut, config.timerSIn, 'S' );
-        timerD.provision( gpio, config.timerDOut, config.timerDIn, 'D' );
+        timer1.provision( gpio, trackCfg.timer1Out, trackCfg.timer1In, 'A' );
+        timer2.provision( gpio, trackCfg.timer2Out, trackCfg.timer2In, 'S' );
     }
 
-    /**
+    /***************************************************************************
      * @param competition
      * @param timer
      * @param index
-     */
-    private void clearTimer( TeamCompetition competition, TimerPins timer,
-        int index )
+     **************************************************************************/
+    private void clearTimer( Track competition, TimerPins timer, int index )
     {
         timer.clear();
         competition.signalTimerClear( index );
     }
 
     /***************************************************************************
-     * {@inheritDoc}
+     * 
      **************************************************************************/
-    @Override
     public void disconnect()
     {
-        timerA.unprovisionAll( gpio );
-        timerS.unprovisionAll( gpio );
-        timerD.unprovisionAll( gpio );
+        timer1.unprovisionAll( gpio );
+        timer2.unprovisionAll( gpio );
     }
 
     /***************************************************************************
-     * {@inheritDoc}
+     * @param red
+     * @param green
+     * @param blue
      **************************************************************************/
-    @Override
     public void setLights( boolean red, boolean green, boolean blue )
     {
-        relay.setRelay( 0, red );
-        relay.setRelay( 1, green );
-        relay.setRelay( 2, blue );
+        relays.setRelay( 0, red );
+        relays.setRelay( 1, green );
+        relays.setRelay( 2, blue );
     }
 
     /***************************************************************************
-     * {@inheritDoc}
+     * @return
      **************************************************************************/
-    @Override
     public int getTimerCount()
     {
         return timerPins.size();
     }
 
     /***************************************************************************
-     * {@inheritDoc}
+     * @param index
+     * @param callback
      **************************************************************************/
-    @Override
     public void setTimerCallback( int index, ITimerCallback callback )
     {
         timerPins.get( index ).setCallback( callback );
     }
 
     /***************************************************************************
-     * {@inheritDoc}
+     * 
      **************************************************************************/
-    @Override
     public void clearTimers()
     {
         for( TimerPins pin : timerPins )
@@ -197,10 +181,9 @@ public class PiSignals implements ISignals
     }
 
     /***************************************************************************
-     * {@inheritDoc}
+     * @param data
      **************************************************************************/
-    @Override
-    public void updateUI( CompetitionData data )
+    public void updateUI( Track data )
     {
         SwingUtilities.invokeLater( () -> view.setData( data ) );
     }

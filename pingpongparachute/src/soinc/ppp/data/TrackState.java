@@ -11,7 +11,7 @@ import soinc.ppp.PppIcons;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public enum CompetitionState implements INamedItem
+public enum TrackState implements INamedItem
 {
     /** No team has been loaded. */
     NO_TEAM( "New Run", Color.black, "NO_TEAM.png", false, 0x5 ),
@@ -46,7 +46,7 @@ public enum CompetitionState implements INamedItem
      * @param color
      * @param iconName
      **************************************************************************/
-    private CompetitionState( String name, Color bg, String iconName,
+    private TrackState( String name, Color bg, String iconName,
         boolean isRunning, int lights )
     {
         this( name, bg, Color.white, iconName, isRunning, lights );
@@ -57,7 +57,7 @@ public enum CompetitionState implements INamedItem
      * @param color
      * @param iconName
      **************************************************************************/
-    private CompetitionState( String name, Color bg, Color fg, String iconName,
+    private TrackState( String name, Color bg, Color fg, String iconName,
         boolean isRunning, int lights )
     {
         this.name = name;

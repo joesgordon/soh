@@ -7,12 +7,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.List;
 
 import javax.swing.Action;
@@ -20,7 +17,6 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
@@ -40,18 +36,16 @@ import org.jutils.ui.model.LabelListCellRenderer.IListCellLabelDecorator;
 
 import soinc.lib.SciolyIcons;
 import soinc.lib.UiUtils;
-import soinc.ppp.PppIcons;
-import soinc.ppp.PppMain;
-import soinc.ppp.data.CompetitionData;
-import soinc.ppp.data.CompetitionData.RunState;
+import soinc.lib.data.TimeDuration;
 import soinc.ppp.data.Team;
-import soinc.ppp.data.TimeDuration;
-import soinc.ppp.tasks.TeamCompetition;
+import soinc.ppp.data.TrackData;
+import soinc.ppp.data.TrackData.RunState;
+import soinc.ppp.tasks.Track;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class CompetitionView implements IView<JFrame>
+public class TrackView implements IView<JComponent>
 {
     /**  */
     private static final float LRG_FONT = 64.0f;
@@ -59,7 +53,7 @@ public class CompetitionView implements IView<JFrame>
     private static final float REG_FONT = UiUtils.DEFAULT_FONT_SIZE;
 
     /**  */
-    private final TeamCompetition competition;
+    private final JComponent view;
 
     /**  */
     private final Icon blankIcon;
@@ -68,8 +62,6 @@ public class CompetitionView implements IView<JFrame>
     /**  */
     private final Icon xIcon;
 
-    /**  */
-    private final JFrame frame;
     /**  */
     private final JButton teamButton;
     /**  */
@@ -96,26 +88,18 @@ public class CompetitionView implements IView<JFrame>
     private final JLabel scoreIconField;
 
     /**  */
-    private final JComponent content;
-
-    /**  */
-    private CompetitionData compData;
+    private Track track;
 
     /***************************************************************************
-     * @param competition
-     * @param icons
-     * @param dimension
+     * @param track
      **************************************************************************/
-    public CompetitionView( TeamCompetition competition, List<Image> icons,
-        Dimension size )
+    public TrackView( Track track )
     {
-        this.competition = competition;
+        this.track = track;
 
         this.blankIcon = new ColorIcon( new Color( 20, 20, 20 ), 36 );
         this.checkIcon = SciolyIcons.getCheckIcon( 36 );
         this.xIcon = SciolyIcons.getXIcon( 36 );
-
-        this.frame = new JFrame( "Roller Coaster Competition" );
 
         this.teamButton = new JButton( "No Teams Entered" );
         this.periodField = UiUtils.createNumLabel( "-:-- s", LRG_FONT );
@@ -138,14 +122,7 @@ public class CompetitionView implements IView<JFrame>
         run2Icon.setMinimumSize( new Dimension( 38, 38 ) );
         run2Icon.setMaximumSize( new Dimension( 38, 38 ) );
 
-        this.content = createCompetitionPanel();
-
-        frame.setIconImages( icons );
-        frame.setContentPane( content );
-        frame.setDefaultCloseOperation( JDialog.DO_NOTHING_ON_CLOSE );
-        frame.addWindowListener( new CompetitionFrameListener( this ) );
-        frame.setUndecorated( true );
-        frame.setSize( size );
+        this.view = createCompetitionPanel();
     }
 
     /***************************************************************************
@@ -160,13 +137,6 @@ public class CompetitionView implements IView<JFrame>
         // panel.setBackground( new Color( 10, 10, 10 ) );
         panel.setBackground( Color.black );
         // panel.setOpaque( false );
-
-        // ---------------------------------------------------------------------
-
-        constraints = new GridBagConstraints( 0, row++, 1, 1, 0.0, 0.0,
-            GridBagConstraints.CENTER, GridBagConstraints.NONE,
-            new Insets( 0, 0, 0, 0 ), 0, 0 );
-        panel.add( createBannerPanel(), constraints );
 
         // ---------------------------------------------------------------------
 
@@ -231,17 +201,6 @@ public class CompetitionView implements IView<JFrame>
         // ---------------------------------------------------------------------
 
         return panel;
-    }
-
-    /***************************************************************************
-     * @return
-     **************************************************************************/
-    private static Component createBannerPanel()
-    {
-        Icon bannerIcon = PppIcons.getBannerImage();
-        JLabel soLabel = new JLabel( bannerIcon );
-
-        return soLabel;
     }
 
     /***************************************************************************
@@ -427,7 +386,7 @@ public class CompetitionView implements IView<JFrame>
 
         // ---------------------------------------------------------------------
 
-        stateField.setText( competition.getState().name );
+        stateField.setText( track.getState().name );
         stateField.setOpaque( true );
         stateField.setBackground( Color.black );
 
@@ -453,7 +412,7 @@ public class CompetitionView implements IView<JFrame>
 
         // ---------------------------------------------------------------------
 
-        scoreIconField.setIcon( competition.getState().icon );
+        scoreIconField.setIcon( track.getState().icon );
 
         constraints = new GridBagConstraints( 0, 0, 1, 1, 1.0, 1.0,
             GridBagConstraints.WEST, GridBagConstraints.NONE,
@@ -463,9 +422,12 @@ public class CompetitionView implements IView<JFrame>
         return panel;
     }
 
+    /***************************************************************************
+     * @param e
+     **************************************************************************/
     private void showTeamPopup( MouseEvent e )
     {
-        if( competition.isRunning() )
+        if( track.isRunning() )
         {
             JPopupMenu menu = new JPopupMenu();
             ActionListener listener = ( evt ) -> unloadTeam();
@@ -476,7 +438,7 @@ public class CompetitionView implements IView<JFrame>
         else
         {
             JPopupMenu menu = new JPopupMenu();
-            List<Team> teams = competition.getAvailableTeams();
+            List<Team> teams = track.getAvailableTeams();
 
             if( teams.isEmpty() )
             {
@@ -498,21 +460,21 @@ public class CompetitionView implements IView<JFrame>
         }
     }
 
-    /**
+    /***************************************************************************
      * 
-     */
+     **************************************************************************/
     private void showTeamChooser()
     {
-        if( competition.isRunning() )
+        if( track.isRunning() )
         {
-            OptionUtils.showErrorMessage(
-                getView(), "Cannot change teams until " +
-                    competition.getTeam().name + " has finished",
+            OptionUtils.showErrorMessage( getView(),
+                "Cannot change teams until " + track.getTeam().name +
+                    " has finished",
                 "Input Error" );
             return;
         }
 
-        List<Team> teams = competition.getAvailableTeams();
+        List<Team> teams = track.getAvailableTeams();
         ItemsListField<Team> teamsField = new ItemsListField<>( "Teams", teams,
             ( t ) -> t.name );
         teamsField.setDecorator( new TeamsDecorator() );
@@ -546,144 +508,88 @@ public class CompetitionView implements IView<JFrame>
      * {@inheritDoc}
      **************************************************************************/
     @Override
-    public JFrame getView()
+    public JComponent getView()
     {
-        return frame;
-    }
-
-    public JComponent getContent()
-    {
-        return content;
+        return view;
     }
 
     /***************************************************************************
-     * @param visible
+     * @param track
      **************************************************************************/
-    public void setVisible( boolean visible )
+    public void setData( Track track )
     {
-        if( visible )
-        {
-            reset();
+        this.track = track;
 
-            frame.validate();
-            frame.setVisible( true );
+        TrackData data = track.getData();
+
+        boolean enabled = data.team == null ? true : false;
+        String name = data.team == null ? "Select Team" : data.team.name;
+
+        if( data.team == null )
+        {
+            if( track.getAvailableTeams().isEmpty() )
+            {
+                name = "Teams Complete";
+                enabled = false;
+            }
+        }
+
+        teamButton.setText( name );
+        teamButton.setEnabled( enabled );
+
+        if( data.periodTime > -1 )
+        {
+            TimeDuration d = new TimeDuration( data.periodTime );
+            String time = String.format( " %1d:%02d ", d.totalMinutes,
+                d.seconds );
+            periodField.setText( time );
         }
         else
         {
-            competition.disconnect();
-
-            // setFullScreen( false );
-
-            frame.setVisible( false );
-            frame.dispose();
-        }
-    }
-
-    /***************************************************************************
-     * @param data
-     **************************************************************************/
-    public void setData( CompetitionData data )
-    {
-        if( this.compData == null )
-        {
-            this.compData = data;
+            periodField.setText( " -:-- " );
         }
 
-        if( data.team != compData.team )
+        if( data.periodTime > track.config.periodTime * 7000 / 8 &&
+            data.periodTime > track.config.periodTime )
         {
-            boolean enabled = data.team == null ? true : false;
-            String name = data.team == null ? "Select Team" : data.team.name;
-
-            if( data.team == null )
+            if( periodField.getBackground() != Color.orange )
             {
-                if( competition.getAvailableTeams().isEmpty() )
-                {
-                    name = "Teams Complete";
-                    enabled = false;
-                }
+                periodField.setBackground( Color.orange );
+                periodField.setForeground( Color.black );
             }
-
-            teamButton.setText( name );
-            teamButton.setEnabled( enabled );
         }
-
-        if( data.periodTime != compData.periodTime )
+        else if( data.periodTime > track.config.periodTime * 1000 )
         {
-            if( data.periodTime > -1 )
+            if( periodField.getBackground() != Color.red )
             {
-                TimeDuration d = new TimeDuration( data.periodTime );
-                String time = String.format( " %1d:%02d ", d.totalMinutes,
-                    d.seconds );
-                periodField.setText( time );
-            }
-            else
-            {
-                periodField.setText( " -:-- " );
-            }
-
-            if( data.periodTime > competition.config.getPeriodTime() * 7000 /
-                8 && data.periodTime > competition.config.getPeriodTime() )
-            {
-                if( periodField.getBackground() != Color.orange )
-                {
-                    periodField.setBackground( Color.orange );
-                    periodField.setForeground( Color.black );
-                }
-            }
-            else if( data.periodTime > competition.config.getPeriodTime() *
-                1000 )
-            {
-                if( periodField.getBackground() != Color.red )
-                {
-                    periodField.setBackground( Color.red );
-                    periodField.setForeground( Color.white );
-                }
-            }
-            else if( periodField.getBackground() != Color.black )
-            {
-                periodField.setBackground( Color.black );
+                periodField.setBackground( Color.red );
                 periodField.setForeground( Color.white );
             }
+        }
+        else if( periodField.getBackground() != Color.black )
+        {
+            periodField.setBackground( Color.black );
+            periodField.setForeground( Color.white );
         }
 
         setTimer( data, timerAField, 0 );
         setTimer( data, timerSField, 1 );
         setTimer( data, timerDField, 2 );
 
-        if( data.officialTime != compData.officialTime )
-        {
-            setDecisecondsTimeField( data.officialTime, officialField );
-        }
+        setDecisecondsTimeField( data.officialTime, officialField );
 
-        if( data.state != compData.state )
-        {
-            stateField.setText( " " + data.state.name + " " );
-            stateField.setBackground( data.state.background );
-            stateField.setForeground( data.state.foreground );
-            scoreIconField.setIcon( data.state.icon );
-        }
+        stateField.setText( " " + data.state.name + " " );
+        stateField.setBackground( data.state.background );
+        stateField.setForeground( data.state.foreground );
+        scoreIconField.setIcon( data.state.icon );
 
-        if( data.run1Time != compData.run1Time )
-        {
-            setSecondsTimeField( data.run1Time, run1Field );
-        }
+        setSecondsTimeField( data.run1Time, run1Field );
 
-        if( data.run2Time != compData.run2Time )
-        {
-            setSecondsTimeField( data.run2Time, run2Field );
-        }
+        setSecondsTimeField( data.run2Time, run2Field );
 
-        if( data.run1State != compData.run1State )
-        {
-            setFieldIcon( data.run1State, run1Icon );
-        }
+        setFieldIcon( data.run1State, run1Icon );
 
-        if( data.run2State != compData.run2State )
-        {
-            setFieldIcon( data.run2State, run2Icon );
-        }
-
-        this.compData = data;
+        setFieldIcon( data.run2State, run2Icon );
     }
 
     /***************************************************************************
@@ -691,7 +597,7 @@ public class CompetitionView implements IView<JFrame>
      **************************************************************************/
     public boolean isRunning()
     {
-        return competition.isRunning();
+        return track.isRunning();
     }
 
     /***************************************************************************
@@ -725,14 +631,18 @@ public class CompetitionView implements IView<JFrame>
      * @param timerField
      * @param index
      **************************************************************************/
-    private void setTimer( CompetitionData data, JLabel timerField, int index )
+    private void setTimer( TrackData data, JLabel timerField, int index )
     {
-        if( data.timers[index] != compData.timers[index] )
+        if( data.timers[index] != data.timers[index] )
         {
             setDecisecondsTimeField( data.timers[index], timerField );
         }
     }
 
+    /***************************************************************************
+     * @param duration
+     * @param timeField
+     **************************************************************************/
     private void setDecisecondsTimeField( long duration, JLabel timeField )
     {
         String time = null;
@@ -751,6 +661,10 @@ public class CompetitionView implements IView<JFrame>
         timeField.setText( time );
     }
 
+    /***************************************************************************
+     * @param duration
+     * @param timeField
+     **************************************************************************/
     private void setSecondsTimeField( long duration, JLabel timeField )
     {
         String time = null;
@@ -768,19 +682,19 @@ public class CompetitionView implements IView<JFrame>
         timeField.setText( time );
     }
 
-    /**
+    /***************************************************************************
      * 
-     */
-    private void reset()
+     **************************************************************************/
+    public void reset()
     {
-        competition.signalClearTeam();
+        track.signalClearTeam();
 
-        if( competition.config.getTeams().isEmpty() )
+        if( track.config.teams.isEmpty() )
         {
             teamButton.setText( "No Teams Entered" );
             teamButton.setEnabled( false );
         }
-        else if( competition.getAvailableTeams().isEmpty() )
+        else if( track.getAvailableTeams().isEmpty() )
         {
             teamButton.setText( "Teams Complete" );
             teamButton.setEnabled( false );
@@ -792,51 +706,32 @@ public class CompetitionView implements IView<JFrame>
         }
     }
 
-    private void unloadTeam()
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    public void disconnect()
     {
-        competition.signalClearTeam();
-        reset();
-    }
-
-    private void setTeamData( Team team )
-    {
-        teamButton.setText( team.name );
-        teamButton.setEnabled( false );
-
-        competition.signalLoadTeam( team );
-
-        // TODO Auto-generated method stub
+        track.disconnect();
     }
 
     /***************************************************************************
      * 
      **************************************************************************/
-    private static final class CompetitionFrameListener extends WindowAdapter
+    private void unloadTeam()
     {
-        /**  */
-        private final CompetitionView view;
+        track.signalClearTeam();
+        reset();
+    }
 
-        /**
-         * @param view
-         */
-        public CompetitionFrameListener( CompetitionView view )
-        {
-            this.view = view;
-        }
+    /***************************************************************************
+     * @param team
+     **************************************************************************/
+    private void setTeamData( Team team )
+    {
+        teamButton.setText( team.name );
+        teamButton.setEnabled( false );
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void windowClosing( WindowEvent e )
-        {
-            if( !view.competition.isRunning() )
-            {
-                PppMain.getOptions().write();
-                UiUtils.setFullScreen( false, view.frame );
-                view.frame.setVisible( false );
-            }
-        }
+        track.signalLoadTeam( team );
     }
 
     /***************************************************************************
@@ -848,6 +743,9 @@ public class CompetitionView implements IView<JFrame>
         /**  */
         private final Font f = UiUtils.getTextFont( 36 );
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void decorate( JLabel label, JList<? extends Team> list,
             Team value, int index, boolean isSelected, boolean cellHasFocus )

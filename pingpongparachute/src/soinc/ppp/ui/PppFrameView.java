@@ -29,13 +29,14 @@ import com.pi4j.io.gpio.GpioController;
 
 import soinc.lib.UiUtils;
 import soinc.lib.gpio.SciolyGpio;
+import soinc.lib.relay.IRelays;
 import soinc.lib.ui.RelayTestView;
 import soinc.ppp.PppIcons;
 import soinc.ppp.PppMain;
+import soinc.ppp.data.EventConfig;
 import soinc.ppp.data.PppOptions;
-import soinc.ppp.tasks.ISignals;
-import soinc.ppp.tasks.PiSignals;
-import soinc.ppp.tasks.TeamCompetition;
+import soinc.ppp.tasks.PppEvent;
+import soinc.ppp.tasks.TrackSignals;
 
 /*******************************************************************************
  *
@@ -45,13 +46,13 @@ public class PppFrameView implements IView<JFrame>
     /**  */
     private final StandardFrameView view;
     /**  */
-    private final ConfigView configView;
+    private final EventConfigView configView;
 
     /**  */
     private final JCheckBoxMenuItem mockIoMenuItem;
 
     /**  */
-    private CompetitionView competitionView;
+    private EventView eventView;
 
     /***************************************************************************
      * 
@@ -59,9 +60,9 @@ public class PppFrameView implements IView<JFrame>
     public PppFrameView()
     {
         this.view = new StandardFrameView();
-        this.configView = new ConfigView();
+        this.configView = new EventConfigView();
         this.mockIoMenuItem = createMockGpioMenuItem();
-        this.competitionView = null;
+        this.eventView = null;
 
         createMenubar( view.getMenuBar(), view.getFileMenu() );
 
@@ -136,7 +137,7 @@ public class PppFrameView implements IView<JFrame>
 
         menu.setMnemonic( 'G' );
 
-        action = new ActionAdapter( ( e ) -> showCompetition( true ),
+        action = new ActionAdapter( ( e ) -> showEvent( true ),
             "Start Competition", PppIcons.getRollercoaster16() );
         KeyStroke key = KeyStroke.getKeyStroke( "F8" );
         action.putValue( Action.ACCELERATOR_KEY, key );
@@ -145,7 +146,7 @@ public class PppFrameView implements IView<JFrame>
         item.setMnemonic( 'S' );
 
         UiUtils.addHotKey( ( JComponent )getView().getContentPane(), "F8",
-            ( e ) -> showCompetition( competitionView == null ) );
+            ( e ) -> showEvent( eventView == null ) );
 
         return menu;
     }
@@ -153,47 +154,44 @@ public class PppFrameView implements IView<JFrame>
     /***************************************************************************
      * @param show
      **************************************************************************/
-    private void showCompetition( boolean show )
+    private void showEvent( boolean show )
     {
         mockIoMenuItem.setEnabled( false );
 
         // LogUtils.printDebug( "showCompetition(%s)", show );
 
-        OptionsSerializer<PppOptions> userio = PppMain.getOptions();
-        PppOptions options = userio.getOptions();
-        userio.write();
+        EventConfig eventCfg = configView.getData();
 
-        if( show && competitionView == null )
+        OptionsSerializer<PppOptions> userio = PppMain.getOptions();
+        PppOptions options = new PppOptions( userio.getOptions() );
+        options.config.set( eventCfg );
+        userio.write( options );
+
+        if( show && eventView == null )
         {
             try
             {
                 GpioController gpio = SciolyGpio.startup();
+                IRelays relays = PppMain.getRelays();
 
-                ISignals signals = new PiSignals( gpio, options.config );
+                TrackSignals signalsA = new TrackSignals( eventCfg.trackA, gpio,
+                    relays );
+                TrackSignals signalsB = new TrackSignals( eventCfg.trackB, gpio,
+                    relays );
 
-                TeamCompetition competition = new TeamCompetition(
-                    options.config, signals );
+                PppEvent event = new PppEvent( eventCfg, signalsA, signalsB );
 
-                this.competitionView = new CompetitionView( competition,
+                this.eventView = new EventView( event,
                     getView().getIconImages(), getView().getSize() );
 
-                try
-                {
-                    competition.connect( competitionView );
-                }
-                catch( IOException ex )
-                {
-                    OptionUtils.showErrorMessage( getView(),
-                        "Unable to connect to Pi " + ex.getMessage(),
-                        "I/O Error" );
-                    return;
-                }
+                event.trackA.connect( eventView.trackAView );
+                event.trackB.connect( eventView.trackBView );
 
-                JFrame frame = competitionView.getView();
+                JFrame frame = eventView.getView();
 
                 JComponent comp = ( JComponent )frame.getContentPane();
-                ActionListener hideListener = ( e ) -> showCompetition(
-                    this.competitionView == null );
+                ActionListener hideListener = ( e ) -> showEvent(
+                    this.eventView == null );
 
                 UiUtils.addHotKey( comp, "F8", hideListener );
                 UiUtils.addHotKey( comp, "ESCAPE", hideListener );
@@ -201,7 +199,8 @@ public class PppFrameView implements IView<JFrame>
                 // setFullScreen( true );
                 configView.deselectTeams();
 
-                competitionView.setVisible( true );
+                eventView.setVisible( true );
+
             }
             catch( IllegalStateException ex )
             {
@@ -209,12 +208,17 @@ public class PppFrameView implements IView<JFrame>
                     "Pi4j library was not found" );
                 return;
             }
+            catch( IOException ex )
+            {
+                OptionUtils.showErrorMessage( getView(),
+                    "Unable to connect to Pi " + ex.getMessage(), "I/O Error" );
+                return;
+            }
         }
-        else if( !show && competitionView != null &&
-            !competitionView.isRunning() )
+        else if( !show && eventView != null )
         {
-            competitionView.setVisible( false );
-            competitionView = null;
+            eventView.setVisible( false );
+            eventView = null;
         }
     }
 
@@ -242,7 +246,7 @@ public class PppFrameView implements IView<JFrame>
      **************************************************************************/
     private static void showTestRelayScreen( JFrame parent )
     {
-        RelayTestView view = new RelayTestView( PppMain.getRelay() );
+        RelayTestView view = new RelayTestView( PppMain.getRelays() );
         OkDialogView okView = new OkDialogView( parent, view.getView(),
             ModalityType.DOCUMENT_MODAL, OkDialogButtons.OK_ONLY );
 

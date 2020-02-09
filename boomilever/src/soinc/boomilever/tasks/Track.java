@@ -23,7 +23,7 @@ public class Track
     /**  */
     public final BlEventConfig config;
     /**  */
-    private final CompetitionSignals signals;
+    private final TrackSignals signals;
 
     /** The state of the competition. It should never be {@code null}. */
     private final StateMachine stateMachine;
@@ -39,7 +39,7 @@ public class Track
      * @param config
      * @param signals
      **************************************************************************/
-    public Track( BlEventConfig config, CompetitionSignals signals )
+    public Track( BlEventConfig config, TrackSignals signals )
     {
         this.config = config;
         this.signals = signals;

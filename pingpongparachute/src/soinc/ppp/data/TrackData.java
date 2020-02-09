@@ -2,12 +2,15 @@ package soinc.ppp.data;
 
 import java.util.Arrays;
 
-public class CompetitionData
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+public class TrackData
 {
     /**  */
     public Team team;
     /**  */
-    public CompetitionState state;
+    public TrackState state;
 
     /** Milliseconds */
     public long periodTime;
@@ -30,13 +33,13 @@ public class CompetitionData
     /**
      * @param timerCount
      */
-    public CompetitionData( int timerCount )
+    public TrackData( int timerCount )
     {
         this.timers = new long[timerCount];
         reset();
     }
 
-    public CompetitionData( CompetitionData data )
+    public TrackData( TrackData data )
     {
         this.team = data.team;
         this.state = data.state;
@@ -52,7 +55,7 @@ public class CompetitionData
     public void reset()
     {
         this.team = null;
-        this.state = CompetitionState.NO_TEAM;
+        this.state = TrackState.NO_TEAM;
         this.periodTime = -1L;
         for( int i = 0; i < timers.length; i++ )
         {

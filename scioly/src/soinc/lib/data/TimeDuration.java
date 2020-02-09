@@ -1,15 +1,26 @@
-package soinc.ppp.data;
+package soinc.lib.data;
 
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 public class TimeDuration
 {
+    /**  */
     public final long totalMillis;
+    /**  */
     public long millis;
 
+    /**  */
     public long totalSeconds;
+    /**  */
     public long seconds;
 
+    /**  */
     public long totalMinutes;
 
+    /***************************************************************************
+     * @param milliseconds
+     **************************************************************************/
     public TimeDuration( long milliseconds )
     {
         this.totalMillis = milliseconds;

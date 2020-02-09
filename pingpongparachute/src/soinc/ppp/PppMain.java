@@ -37,16 +37,16 @@ public class PppMain
     /***************************************************************************
      * @return
      **************************************************************************/
-    public static IRelays getRelay()
+    public static IRelays getRelays()
     {
-        return getRelay( SciolyGpio.FAUX_CONNECT );
+        return getRelays( SciolyGpio.FAUX_CONNECT );
     }
 
     /***************************************************************************
      * @param mock
      * @return
      **************************************************************************/
-    public static IRelays getRelay( boolean mock )
+    public static IRelays getRelays( boolean mock )
     {
         if( mock )
         {

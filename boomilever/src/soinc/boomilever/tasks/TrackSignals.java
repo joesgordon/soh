@@ -15,7 +15,7 @@ import soinc.lib.relay.IRelays;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class CompetitionSignals
+public class TrackSignals
 {
     /**  */
     private final IRelays relays;
@@ -30,7 +30,7 @@ public class CompetitionSignals
      * @param config
      * @throws IOException
      **************************************************************************/
-    public CompetitionSignals( IRelays relays, TrackConfig config )
+    public TrackSignals( IRelays relays, TrackConfig config )
     {
         this.relays = relays;
         this.config = config;

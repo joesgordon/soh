@@ -17,8 +17,8 @@ public class BlEvent
      * @param signalsA
      * @param signalsB
      **************************************************************************/
-    public BlEvent( BlEventConfig config, CompetitionSignals signalsA,
-        CompetitionSignals signalsB )
+    public BlEvent( BlEventConfig config, TrackSignals signalsA,
+        TrackSignals signalsB )
     {
         this.trackA = new Track( config, signalsA );
         this.trackB = new Track( config, signalsB );

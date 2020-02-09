@@ -2,8 +2,8 @@ package soinc.ppp.tasks;
 
 import org.jutils.ui.event.updater.IUpdater;
 
-import soinc.ppp.data.CompetitionData;
-import soinc.ppp.data.CompetitionState;
+import soinc.ppp.data.TrackData;
+import soinc.ppp.data.TrackState;
 
 /*******************************************************************************
  * 
@@ -11,27 +11,27 @@ import soinc.ppp.data.CompetitionState;
 public class StateMachine
 {
     /**  */
-    private final TeamCompetition competition;
+    private final Track competition;
 
     /** The state of the competition. It should never be {@code null}. */
-    private CompetitionState state;
+    private TrackState state;
 
-    private IUpdater<CompetitionState> updater;
+    private IUpdater<TrackState> updater;
 
     /***************************************************************************
      * @param competition
      **************************************************************************/
-    public StateMachine( TeamCompetition competition )
+    public StateMachine( Track competition )
     {
         this.competition = competition;
 
-        setState( CompetitionState.NO_TEAM );
+        setState( TrackState.NO_TEAM );
     }
 
     /***************************************************************************
      * @return
      **************************************************************************/
-    public CompetitionState getState()
+    public TrackState getState()
     {
         return state;
     }
@@ -41,11 +41,11 @@ public class StateMachine
      **************************************************************************/
     public String signalTeamLoaded()
     {
-        if( this.state == CompetitionState.NO_TEAM ||
-            this.state == CompetitionState.LOADED ||
-            this.state == CompetitionState.COMPLETE )
+        if( this.state == TrackState.NO_TEAM ||
+            this.state == TrackState.LOADED ||
+            this.state == TrackState.COMPLETE )
         {
-            setState( CompetitionState.LOADED );
+            setState( TrackState.LOADED );
             return null;
         }
 
@@ -57,10 +57,10 @@ public class StateMachine
      **************************************************************************/
     public String signalPeriodStarted()
     {
-        if( this.state == CompetitionState.LOADED ||
-            this.state == CompetitionState.AWAITING )
+        if( this.state == TrackState.LOADED ||
+            this.state == TrackState.AWAITING )
         {
-            setState( CompetitionState.AWAITING );
+            setState( TrackState.AWAITING );
             return null;
         }
 
@@ -72,10 +72,10 @@ public class StateMachine
      **************************************************************************/
     public String signalTimersStarted()
     {
-        if( this.state == CompetitionState.AWAITING ||
-            this.state == CompetitionState.SCORE_TIME )
+        if( this.state == TrackState.AWAITING ||
+            this.state == TrackState.SCORE_TIME )
         {
-            setState( CompetitionState.SCORE_TIME );
+            setState( TrackState.SCORE_TIME );
             return null;
         }
 
@@ -87,9 +87,9 @@ public class StateMachine
      **************************************************************************/
     public String signalPeriodTimeElapsed()
     {
-        if( this.state == CompetitionState.AWAITING )
+        if( this.state == TrackState.AWAITING )
         {
-            setState( CompetitionState.COMPLETE );
+            setState( TrackState.COMPLETE );
             return null;
         }
         else if( this.state.isRunning )
@@ -107,14 +107,14 @@ public class StateMachine
     {
         if( this.state.isRunning )
         {
-            CompetitionData data = competition.getData();
+            TrackData data = competition.getData();
             if( data.run1State.isComplete )
             {
-                setState( CompetitionState.COMPLETE );
+                setState( TrackState.COMPLETE );
             }
             else
             {
-                setState( CompetitionState.AWAITING );
+                setState( TrackState.AWAITING );
             }
             return null;
         }
@@ -129,7 +129,7 @@ public class StateMachine
     {
         if( this.state.isRunning )
         {
-            setState( CompetitionState.AWAITING );
+            setState( TrackState.AWAITING );
 
             return null;
         }
@@ -142,10 +142,10 @@ public class StateMachine
      **************************************************************************/
     public String signalResetRun()
     {
-        if( this.state == CompetitionState.AWAITING ||
-            this.state == CompetitionState.COMPLETE )
+        if( this.state == TrackState.AWAITING ||
+            this.state == TrackState.COMPLETE )
         {
-            setState( CompetitionState.AWAITING );
+            setState( TrackState.AWAITING );
             return null;
         }
 
@@ -157,11 +157,11 @@ public class StateMachine
      **************************************************************************/
     public String signalClearTeam()
     {
-        if( this.state == CompetitionState.LOADED ||
-            this.state == CompetitionState.COMPLETE ||
-            this.state == CompetitionState.NO_TEAM )
+        if( this.state == TrackState.LOADED ||
+            this.state == TrackState.COMPLETE ||
+            this.state == TrackState.NO_TEAM )
         {
-            setState( CompetitionState.NO_TEAM );
+            setState( TrackState.NO_TEAM );
             return null;
         }
 
@@ -171,7 +171,7 @@ public class StateMachine
     /***************************************************************************
      * @param state
      **************************************************************************/
-    private void setState( CompetitionState state )
+    private void setState( TrackState state )
     {
         this.state = state;
 
@@ -191,7 +191,7 @@ public class StateMachine
     /***************************************************************************
      * @param updater
      **************************************************************************/
-    public void setUpdater( IUpdater<CompetitionState> updater )
+    public void setUpdater( IUpdater<TrackState> updater )
     {
         this.updater = updater;
     }

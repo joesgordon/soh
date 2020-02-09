@@ -30,10 +30,10 @@ import soinc.boomilever.BlMain;
 import soinc.boomilever.data.BlEventConfig;
 import soinc.boomilever.data.BlOptions;
 import soinc.boomilever.tasks.BlEvent;
-import soinc.boomilever.tasks.CompetitionSignals;
-import soinc.boomilever.tasks.Track;
+import soinc.boomilever.tasks.TrackSignals;
 import soinc.lib.UiUtils;
 import soinc.lib.gpio.SciolyGpio;
+import soinc.lib.relay.IRelays;
 import soinc.lib.ui.RelayTestView;
 
 /*******************************************************************************
@@ -160,46 +160,51 @@ public class BlFrameView implements IView<JFrame>
     {
         mockIoMenuItem.setEnabled( false );
 
+        BlEventConfig eventCfg = configView.getData();
+
         // LogUtils.printDebug( "showCompetition(%s)", show );
 
         OptionsSerializer<BlOptions> userio = BlMain.getOptions();
         BlOptions options = new BlOptions( userio.getOptions() );
-        options.config.set( configView.getData() );
+        options.config.set( eventCfg );
         userio.write( options );
 
         if( show && eventView == null )
         {
-            BlEventConfig cfg = configView.getData();
-            CompetitionSignals signalsA = new CompetitionSignals(
-                BlMain.getRelays(), cfg.trackA );
-            CompetitionSignals signalsB = new CompetitionSignals(
-                BlMain.getRelays(), cfg.trackB );
-            BlEvent evt = new BlEvent( cfg, signalsA, signalsB );
-
-            this.eventView = new BlEventView( evt, getView().getIconImages(),
-                getView().getSize() );
-
-            showCompetition( evt.trackA, eventView.trackAView );
-            showCompetition( evt.trackB, eventView.trackBView );
-        }
-        else if( !show && eventView != null )
-        {
-            eventView.setVisible( false );
-            eventView = null;
-        }
-    }
-
-    /**
-     * @param competition
-     * @param trackAView
-     */
-    private void showCompetition( Track competition, TrackView trackView )
-    {
-        try
-        {
             try
             {
-                competition.connect( trackView );
+                IRelays relays = BlMain.getRelays();
+
+                TrackSignals signalsA = new TrackSignals( relays, eventCfg.trackA );
+                TrackSignals signalsB = new TrackSignals( relays, eventCfg.trackB );
+
+                BlEvent event = new BlEvent( eventCfg, signalsA, signalsB );
+
+                this.eventView = new BlEventView( event,
+                    getView().getIconImages(), getView().getSize() );
+
+                event.trackA.connect( eventView.trackAView );
+                event.trackB.connect( eventView.trackBView );
+
+                JFrame frame = eventView.getView();
+
+                JComponent comp = ( JComponent )frame.getContentPane();
+                ActionListener hideListener = ( e ) -> showEvent(
+                    this.eventView == null );
+
+                UiUtils.addHotKey( comp, "F8", hideListener );
+                UiUtils.addHotKey( comp, "ESCAPE", hideListener );
+
+                // setFullScreen( true );
+                configView.deselectTeams();
+
+                eventView.setVisible( true );
+            }
+            catch( IllegalStateException ex )
+            {
+                OptionUtils.showErrorMessage( getView(), "Setup Error",
+                    "Pi4j library was not found" );
+                return;
             }
             catch( IOException ex )
             {
@@ -207,26 +212,11 @@ public class BlFrameView implements IView<JFrame>
                     "Unable to connect to Pi " + ex.getMessage(), "I/O Error" );
                 return;
             }
-
-            JFrame frame = eventView.getView();
-
-            JComponent comp = ( JComponent )frame.getContentPane();
-            ActionListener hideListener = ( e ) -> showEvent(
-                this.eventView == null );
-
-            UiUtils.addHotKey( comp, "F8", hideListener );
-            UiUtils.addHotKey( comp, "ESCAPE", hideListener );
-
-            // setFullScreen( true );
-            configView.deselectTeams();
-
-            eventView.setVisible( true );
         }
-        catch( IllegalStateException ex )
+        else if( !show && eventView != null )
         {
-            OptionUtils.showErrorMessage( getView(), "Setup Error",
-                "Pi4j library was not found" );
-            return;
+            eventView.setVisible( false );
+            eventView = null;
         }
     }
 

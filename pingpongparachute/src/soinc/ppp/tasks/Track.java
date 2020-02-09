@@ -10,29 +10,29 @@ import org.jutils.io.LogUtils;
 import org.jutils.utils.Stopwatch;
 
 import soinc.lib.RunnableTask;
-import soinc.ppp.data.CompetitionData;
-import soinc.ppp.data.CompetitionData.RunState;
-import soinc.ppp.data.CompetitionState;
-import soinc.ppp.data.ICompetitionConfig;
+import soinc.ppp.data.EventConfig;
 import soinc.ppp.data.Team;
-import soinc.ppp.ui.CompetitionView;
+import soinc.ppp.data.TrackData;
+import soinc.ppp.data.TrackData.RunState;
+import soinc.ppp.data.TrackState;
+import soinc.ppp.ui.TrackView;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class TeamCompetition
+public class Track
 {
     /**  */
-    public final ICompetitionConfig config;
+    public final EventConfig config;
     /**  */
-    private final ISignals signals;
+    private final TrackSignals signals;
 
     /**  */
     private final RcTimers timers;
     /** The state of the competition. It should never be {@code null}. */
     private final StateMachine stateMachine;
     /**  */
-    private final CompetitionData data;
+    private final TrackData data;
     /**  */
     private final Timer timer;
 
@@ -43,13 +43,13 @@ public class TeamCompetition
      * @param config
      * @param gpio
      **************************************************************************/
-    public TeamCompetition( ICompetitionConfig config, ISignals signals )
+    public Track( EventConfig config, TrackSignals signals )
     {
         this.config = config;
         this.signals = signals;
         this.timers = new RcTimers( signals.getTimerCount() );
         this.stateMachine = new StateMachine( this );
-        this.data = new CompetitionData( signals.getTimerCount() );
+        this.data = new TrackData( signals.getTimerCount() );
         this.timer = new Timer( "RC Competition" );
         this.periodTimer = new Stopwatch();
 
@@ -63,7 +63,7 @@ public class TeamCompetition
     /***************************************************************************
      * @param state
      **************************************************************************/
-    private void handleStateUpdated( CompetitionState state )
+    private void handleStateUpdated( TrackState state )
     {
         this.data.state = state;
 
@@ -86,23 +86,23 @@ public class TeamCompetition
             this.data.periodTime = periodTimer.getElapsed();
             timers.setData( data );
 
-            if( data.periodTime > config.getPeriodTime() * 1000 &&
+            if( data.periodTime > config.periodTime * 1000 &&
                 !data.state.isRunning )
             {
                 signalPeriodElapsed();
             }
         }
 
-        signals.updateUI( new CompetitionData( data ) );
+        signals.updateUI( this );
     }
 
     /***************************************************************************
-     * @param competitionView
+     * @param trackView
      * @throws IOException
      **************************************************************************/
-    public void connect( CompetitionView competitionView ) throws IOException
+    public void connect( TrackView trackView ) throws IOException
     {
-        signals.connect( this, competitionView );
+        signals.connect( this, trackView );
 
         for( int i = 0; i < signals.getTimerCount(); i++ )
         {
@@ -134,7 +134,7 @@ public class TeamCompetition
     {
         List<Team> remaining = new ArrayList<>();
 
-        for( Team team : config.getTeams() )
+        for( Team team : config.teams )
         {
             if( !team.loaded )
             {
@@ -155,7 +155,7 @@ public class TeamCompetition
     /***************************************************************************
      * @return
      **************************************************************************/
-    public CompetitionState getState()
+    public TrackState getState()
     {
         return stateMachine.getState();
     }
@@ -220,7 +220,7 @@ public class TeamCompetition
         {
             data.reset();
             data.team = team;
-            data.state = CompetitionState.LOADED;
+            data.state = TrackState.LOADED;
         }
         else
         {
@@ -375,7 +375,7 @@ public class TeamCompetition
 
             timers.clear();
 
-            if( data.state == CompetitionState.COMPLETE )
+            if( data.state == TrackState.COMPLETE )
             {
                 setPeriodComplete();
             }
@@ -459,7 +459,7 @@ public class TeamCompetition
             return used[index] && timers[index].isStopped();
         }
 
-        public void setData( CompetitionData data )
+        public void setData( TrackData data )
         {
             long now = System.currentTimeMillis();
             for( int i = 0; i < timers.length; i++ )
@@ -593,8 +593,8 @@ public class TeamCompetition
         }
     }
 
-    public CompetitionData getData()
+    public TrackData getData()
     {
-        return new CompetitionData( data );
+        return new TrackData( data );
     }
 }

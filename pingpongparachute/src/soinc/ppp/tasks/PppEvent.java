@@ -1,31 +1,34 @@
-package soinc.ppp.data;
+package soinc.ppp.tasks;
+
+import soinc.ppp.data.EventConfig;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class PppOptions
+public class PppEvent
 {
     /**  */
-    public final EventConfig config;
+    public final Track trackA;
     /**  */
-    public boolean useFauxGpio;
+    public final Track trackB;
 
     /***************************************************************************
-     * 
+     * @param config
+     * @param signalsA
+     * @param signalsB
      **************************************************************************/
-    public PppOptions()
+    public PppEvent( EventConfig config, TrackSignals signalsA,
+        TrackSignals signalsB )
     {
-        this.config = new EventConfig();
-        this.useFauxGpio = false;
+        this.trackA = new Track( config, signalsA );
+        this.trackB = new Track( config, signalsB );
     }
 
     /***************************************************************************
-     * @param data
+     * @return
      **************************************************************************/
-    public PppOptions( PppOptions data )
+    public boolean isRunning()
     {
-        this.config = data.config == null ? new EventConfig()
-            : new EventConfig( data.config );
-        this.useFauxGpio = data.useFauxGpio;
+        return trackA.getState().isRunning || trackB.getState().isRunning;
     }
 }
