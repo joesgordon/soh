@@ -6,7 +6,7 @@ import org.jutils.ui.app.IFrameApp;
 
 import soinc.gravityvehicle.ui.HovercraftFrameView;
 
-public class HovercraftApp implements IFrameApp
+public class GvApp implements IFrameApp
 {
     private HovercraftFrameView view;
 

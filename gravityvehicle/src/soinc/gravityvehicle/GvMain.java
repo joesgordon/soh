@@ -14,7 +14,7 @@ import soinc.lib.gpio.SciolyGpio;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class HovercraftMain
+public class GvMain
 {
     /**  */
     private static final File USERS_FILE = IOUtils.getUsersFile(
@@ -28,11 +28,11 @@ public class HovercraftMain
      **************************************************************************/
     public static void main( String [] args )
     {
-        OptionsSerializer<HovercraftOptions> options = HovercraftMain.getOptions();
+        OptionsSerializer<HovercraftOptions> options = GvMain.getOptions();
 
         SciolyGpio.FAUX_CONNECT = options.getOptions().useFauxGpio;
 
-        FrameRunner.invokeLater( new HovercraftApp() );
+        FrameRunner.invokeLater( new GvApp() );
     }
 
     /***************************************************************************

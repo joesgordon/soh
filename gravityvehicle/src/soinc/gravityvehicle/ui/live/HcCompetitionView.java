@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 
 import org.jutils.ui.model.IView;
 
-import soinc.gravityvehicle.HovercraftIcons;
+import soinc.gravityvehicle.GvIcons;
 import soinc.gravityvehicle.data.HoverConfig;
 import soinc.gravityvehicle.tasks.HcTeamCompetition;
 import soinc.gravityvehicle.tasks.HovercraftCompetition;
@@ -118,7 +118,7 @@ public class HcCompetitionView implements IView<JComponent>
         JPanel panel = new JPanel( new GridBagLayout() );
         GridBagConstraints constraints;
 
-        Icon bannerIcon = HovercraftIcons.getBannerImage();
+        Icon bannerIcon = GvIcons.getBannerImage();
 
         JLabel soLabel = new JLabel( bannerIcon );
 

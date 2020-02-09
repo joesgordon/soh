@@ -12,16 +12,16 @@ import soinc.lib.SciolyIcons;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class HovercraftIcons
+public class GvIcons
 {
     /**  */
     private static final IconLoader loader = new IconLoader(
-        HovercraftIcons.class, "icons" );
+        GvIcons.class, "icons" );
 
     /***************************************************************************
      * Private constructor to prevent instantiation.
      **************************************************************************/
-    private HovercraftIcons()
+    private GvIcons()
     {
     }
 

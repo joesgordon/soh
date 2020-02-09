@@ -9,17 +9,12 @@
 	<property name="dir.build" location="${dir.proj}/build" />
 	<property name="dir.src" location="${dir.proj}/src" />
 	<property name="dir.release" location="${dir.build}/release" />
-	<property name="dir.debug" location="${dir.build}/debug" />
-	<property name="dir.libs" location="${dir.proj}/../libs/libs" />
 
 	<property name="jar.release" location="${dir.build}/${projname}.jar" />
-	<property name="jar.debug" location="${dir.build}/${projname}_debug.jar" />
-	<property name="jar.source" location="${dir.build}/${projname}_source.jar" />
 
-	<property name="lib.jutils" location="${dir.proj}/../../jutils/JUtils/build/jutils.jar" />
-	<property name="lib.scioly" location="${dir.proj}../scioly/scioly.jar" />
+	<property name="lib.scioly" location="${dir.proj}/../scioly/build/scioly.jar" />
 
-	<property name="libpath" value="${lib.jutils};${lib.scioly}" />
+	<property name="libpath" value="${lib.scioly}" />
 
 	<target name="clean" description="Removes intermediate and compiled files">
 		<delete dir="${dir.build}" failonerror="false" quiet="true" />
@@ -43,7 +38,7 @@
 		<jar destfile="${jar.release}" filesetmanifest="mergewithoutmain">
 			<manifest>
 				<attribute name="Main-Class" value="${class.main}" />
-				<attribute name="Class-Path" value="jutils.jar:scioly.jar" />
+				<attribute name="Class-Path" value="scioly.jar" />
 			</manifest>
 			<fileset dir="${dir.release}" />
 		</jar>

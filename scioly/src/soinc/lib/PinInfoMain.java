@@ -1,4 +1,4 @@
-package soinc.hovercraft;
+package soinc.lib;
 
 import java.util.EnumSet;
 

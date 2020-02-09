@@ -33,8 +33,8 @@ import org.jutils.ui.event.FileChooserListener.IFileSelected;
 import org.jutils.ui.event.FileChooserListener.ILastFile;
 import org.jutils.ui.model.IView;
 
-import soinc.gravityvehicle.HovercraftIcons;
-import soinc.gravityvehicle.HovercraftMain;
+import soinc.gravityvehicle.GvIcons;
+import soinc.gravityvehicle.GvMain;
 import soinc.gravityvehicle.data.HoverConfig;
 import soinc.gravityvehicle.data.HovercraftOptions;
 import soinc.gravityvehicle.tasks.HovercraftCompetition;
@@ -91,9 +91,9 @@ public class HovercraftFrameView implements IView<JFrame>
         frameView.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
         frameView.setSize( 1280, 800 );
         frameView.getView().setIconImages(
-            HovercraftIcons.getHovercraftIcons() );
+            GvIcons.getHovercraftIcons() );
 
-        OptionsSerializer<HovercraftOptions> options = HovercraftMain.getOptions();
+        OptionsSerializer<HovercraftOptions> options = GvMain.getOptions();
 
         configView.setData( options.getOptions().config );
     }
@@ -117,7 +117,7 @@ public class HovercraftFrameView implements IView<JFrame>
     {
         Icon icon = IconConstants.getIcon( IconConstants.OPEN_FILE_16 );
         IFileSelected ifs = ( f ) -> openFile( f );
-        ILastFile ifl = () -> HovercraftMain.getOptions().getOptions().lastConfigFile;
+        ILastFile ifl = () -> GvMain.getOptions().getOptions().lastConfigFile;
         FileChooserListener listener = new FileChooserListener( getView(),
             "Open Configuration", false, ifs, ifl );
 
@@ -133,7 +133,7 @@ public class HovercraftFrameView implements IView<JFrame>
     {
         Icon icon = IconConstants.getIcon( IconConstants.SAVE_16 );
         IFileSelected ifs = ( f ) -> saveFile( f );
-        ILastFile ifl = () -> HovercraftMain.getOptions().getOptions().lastConfigFile;
+        ILastFile ifl = () -> GvMain.getOptions().getOptions().lastConfigFile;
         FileChooserListener listener = new FileChooserListener( getView(),
             "Save Configuration", true, ifs, ifl );
 
@@ -147,7 +147,7 @@ public class HovercraftFrameView implements IView<JFrame>
      **************************************************************************/
     private void openFile( File file )
     {
-        OptionsSerializer<HovercraftOptions> options = HovercraftMain.getOptions();
+        OptionsSerializer<HovercraftOptions> options = GvMain.getOptions();
         options.getOptions().lastConfigFile = file;
         options.write();
 
@@ -186,7 +186,7 @@ public class HovercraftFrameView implements IView<JFrame>
      **************************************************************************/
     private void saveFile( File file )
     {
-        OptionsSerializer<HovercraftOptions> options = HovercraftMain.getOptions();
+        OptionsSerializer<HovercraftOptions> options = GvMain.getOptions();
         options.getOptions().lastConfigFile = file;
         options.write();
 
@@ -293,7 +293,7 @@ public class HovercraftFrameView implements IView<JFrame>
         ActionListener listener = ( e ) -> {
             SciolyGpio.FAUX_CONNECT = !SciolyGpio.FAUX_CONNECT;
             fauxGpioMenuItem.setSelected( SciolyGpio.FAUX_CONNECT );
-            OptionsSerializer<HovercraftOptions> options = HovercraftMain.getOptions();
+            OptionsSerializer<HovercraftOptions> options = GvMain.getOptions();
 
             options.getOptions().useFauxGpio = SciolyGpio.FAUX_CONNECT;
             options.write();
@@ -320,7 +320,7 @@ public class HovercraftFrameView implements IView<JFrame>
         menu.setMnemonic( 'G' );
 
         action = new ActionAdapter( ( e ) -> showCompetition( true ),
-            "Start Competition", HovercraftIcons.getHovercraft16() );
+            "Start Competition", GvIcons.getHovercraft16() );
         KeyStroke key = KeyStroke.getKeyStroke( "F8" );
         action.putValue( Action.ACCELERATOR_KEY, key );
         menu.add( action ).setMnemonic( 'S' );
@@ -337,7 +337,7 @@ public class HovercraftFrameView implements IView<JFrame>
     private HoverConfig saveUserConfig()
     {
         HoverConfig config = configView.getData();
-        OptionsSerializer<HovercraftOptions> options = HovercraftMain.getOptions();
+        OptionsSerializer<HovercraftOptions> options = GvMain.getOptions();
 
         options.getOptions().config = config;
         options.write();
