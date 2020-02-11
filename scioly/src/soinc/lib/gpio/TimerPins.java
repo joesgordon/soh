@@ -42,12 +42,9 @@ public class TimerPins
 
     /***************************************************************************
      * @param gpio
-     * @param inputPin
      * @param outputPin
-     * @param config
-     * @param toggleA
-     * @param toggleS
-     * @param toggleD
+     * @param inputPin
+     * @param timer
      **************************************************************************/
     public void provision( GpioController gpio, Pi3OutputPin outputPin,
         Pi3InputPin inputPin, char timer )

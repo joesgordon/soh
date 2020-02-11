@@ -3,12 +3,11 @@ package soinc.boomilever.ui;
 import javax.swing.JPanel;
 
 import org.jutils.ui.StandardFormView;
-import org.jutils.ui.fields.ComboFormField;
 import org.jutils.ui.fields.IntegerFormField;
 import org.jutils.ui.model.IDataView;
 
 import soinc.boomilever.data.TrackConfig;
-import soinc.lib.ui.PhysicalKey;
+import soinc.lib.ui.PhysicalKeyField;
 
 /*******************************************************************************
  * 
@@ -27,11 +26,11 @@ public class TrackConfigView implements IDataView<TrackConfig>
     /**  */
     private final IntegerFormField blueRelayField;
     /**  */
-    private final ComboFormField<PhysicalKey> loadKeyField;
+    private final PhysicalKeyField loadKeyField;
     /**  */
-    private final ComboFormField<PhysicalKey> startPauseKeyField;
+    private final PhysicalKeyField startPauseKeyField;
     /**  */
-    private final ComboFormField<PhysicalKey> clearKeyField;
+    private final PhysicalKeyField clearKeyField;
 
     /**  */
     private TrackConfig config;
@@ -49,12 +48,9 @@ public class TrackConfigView implements IDataView<TrackConfig>
         this.blueRelayField = new IntegerFormField( "Red Relay", null, 8, 0,
             8 );
 
-        this.loadKeyField = new ComboFormField<PhysicalKey>( "Load Key",
-            PhysicalKey.values() );
-        this.startPauseKeyField = new ComboFormField<PhysicalKey>( "Start Key",
-            PhysicalKey.values() );
-        this.clearKeyField = new ComboFormField<PhysicalKey>( "Clear Key",
-            PhysicalKey.values() );
+        this.loadKeyField = new PhysicalKeyField( "Load Key" );
+        this.startPauseKeyField = new PhysicalKeyField( "Start Key" );
+        this.clearKeyField = new PhysicalKeyField( "Clear Key" );
 
         this.view = createForm();
 

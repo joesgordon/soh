@@ -215,12 +215,12 @@ public class Track
             if( msg == null )
             {
                 periodTimer.start( now );
+                data.team.loaded = true;
             }
             else
             {
                 showErrorMessage( msg );
             }
-            data.team.loaded = true;
         }
         else
         {
