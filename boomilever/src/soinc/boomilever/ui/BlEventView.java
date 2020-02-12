@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
@@ -19,8 +20,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.border.LineBorder;
 
 import org.jutils.io.options.OptionsSerializer;
+import org.jutils.ui.fields.DoubleFormField;
 import org.jutils.ui.model.IDataView;
 
 import soinc.boomilever.BlIcons;
@@ -83,6 +86,7 @@ public class BlEventView implements IDataView<BlEvent>
 
         panel.add( createBannerPanel(), BorderLayout.NORTH );
         panel.add( createTracksPanel(), BorderLayout.CENTER );
+        panel.add( createConversionPanel(), BorderLayout.SOUTH );
 
         // ---------------------------------------------------------------------
 
@@ -121,6 +125,68 @@ public class BlEventView implements IDataView<BlEvent>
         panel.add( trackBView.getView(), constraints );
 
         // ---------------------------------------------------------------------
+
+        return panel;
+    }
+
+    private JComponent createConversionPanel()
+    {
+        DoubleFormField kgField = new DoubleFormField( "Kilograms" );
+        DoubleFormField lbField = new DoubleFormField( "Pounds" );
+        JPanel panel = new JPanel( new GridBagLayout() );
+        GridBagConstraints constraints;
+
+        JComponent lbComp = lbField.getTextField();
+
+        lbField.getValidationField().setValidBackground( Color.black );
+        lbField.setUpdater( ( d ) -> kgField.setValue( d * 2.2 ) );
+        lbField.setValue( 10.0 );
+        lbComp.setBorder( new LineBorder( Color.white, 2 ) );
+        lbComp.setForeground( Color.white );
+        lbComp.setFont(
+            lbComp.getFont().deriveFont( 14.0f ).deriveFont( Font.BOLD ) );
+
+        JComponent kgComp = kgField.getTextField();
+
+        kgField.setEditable( false );
+        kgComp.setBorder( new LineBorder( Color.white, 2 ) );
+        kgComp.setFont(
+            lbComp.getFont().deriveFont( 14.0f ).deriveFont( Font.BOLD ) );
+        kgField.setValue( 2.2 * lbField.getValue() );
+
+        panel.setOpaque( false );
+
+        JLabel lbLabel = new JLabel( "Pounds :" );
+        lbLabel.setFont(
+            lbComp.getFont().deriveFont( 14.0f ).deriveFont( Font.BOLD ) );
+        lbLabel.setForeground( Color.white );
+
+        JLabel kgLabel = new JLabel( "= Kilograms :" );
+        kgLabel.setFont(
+            lbComp.getFont().deriveFont( 14.0f ).deriveFont( Font.BOLD ) );
+        kgLabel.setForeground( Color.white );
+
+        int x = 0;
+
+        constraints = new GridBagConstraints( x++, 0, 1, 1, 0, 0,
+            GridBagConstraints.EAST, GridBagConstraints.NONE,
+            new Insets( 8, 8, 8, 8 ), 0, 0 );
+        panel.add( lbLabel, constraints );
+
+        constraints = new GridBagConstraints( x++, 0, 1, 1, 0, 0,
+            GridBagConstraints.WEST, GridBagConstraints.NONE,
+            new Insets( 8, 8, 8, 8 ), 0, 0 );
+        panel.add( lbComp, constraints );
+
+        constraints = new GridBagConstraints( x++, 0, 1, 1, 0, 0,
+            GridBagConstraints.EAST, GridBagConstraints.NONE,
+            new Insets( 8, 8, 8, 8 ), 0, 0 );
+        panel.add( kgLabel, constraints );
+
+        constraints = new GridBagConstraints( x++, 0, 1, 1, 0, 0,
+            GridBagConstraints.WEST, GridBagConstraints.NONE,
+            new Insets( 8, 8, 8, 0 ), 0, 0 );
+        panel.add( kgComp, constraints );
 
         return panel;
     }
