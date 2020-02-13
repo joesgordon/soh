@@ -107,6 +107,8 @@ public class Track
 
         timer.scheduleAtFixedRate( new RunnableTask( () -> updateState() ), 100,
             100 );
+
+        signals.setLights( true, true, true );
     }
 
     /***************************************************************************

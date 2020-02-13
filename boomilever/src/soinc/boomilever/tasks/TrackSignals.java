@@ -41,8 +41,7 @@ public class TrackSignals
      * @param view
      * @throws IOException
      **************************************************************************/
-    public void connect( Track competition, TrackView view )
-        throws IOException
+    public void connect( Track competition, TrackView view ) throws IOException
     {
         this.view = view;
 
@@ -78,6 +77,10 @@ public class TrackSignals
     public void disconnect()
     {
         relays.turnAllOff();
+    }
+
+    public void setStripEnabled( int strip, boolean enabled )
+    {
     }
 
     /***************************************************************************

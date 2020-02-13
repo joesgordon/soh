@@ -252,10 +252,11 @@ public class TrackView implements IView<JComponent>
             new Insets( 0, 0, 0, 0 ), 0, 0 );
         panel.add( timer1Label, constraints );
 
-        constraints = new GridBagConstraints( 1, 0, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
-            new Insets( 0, 20, 0, 0 ), 0, 0 );
-        panel.add( timerAField, constraints );
+        /*
+         * constraints = new GridBagConstraints( 1, 0, 1, 1, 0.0, 0.0,
+         * GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, new Insets( 0,
+         * 20, 0, 0 ), 0, 0 ); panel.add( timerAField, constraints );
+         */
 
         // ---------------------------------------------------------------------
 
@@ -266,10 +267,11 @@ public class TrackView implements IView<JComponent>
             new Insets( 10, 0, 0, 0 ), 0, 0 );
         panel.add( timer2Label, constraints );
 
-        constraints = new GridBagConstraints( 1, 1, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 0, 0 ), 0, 0 );
-        panel.add( timerSField, constraints );
+        /*
+         * constraints = new GridBagConstraints( 1, 1, 1, 1, 0.0, 0.0,
+         * GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE, new Insets(
+         * 10, 20, 0, 0 ), 0, 0 ); panel.add( timerSField, constraints );
+         */
 
         return panel;
     }
@@ -518,8 +520,9 @@ public class TrackView implements IView<JComponent>
             periodField.setForeground( Color.white );
         }
 
-        setTimer( data, timerAField, 0 );
-        setTimer( data, timerSField, 1 );
+        /*
+         * setTimer( data, timerAField, 0 ); setTimer( data, timerSField, 1 );
+         */
 
         setDecisecondsTimeField( data.officialTime, officialField );
 
