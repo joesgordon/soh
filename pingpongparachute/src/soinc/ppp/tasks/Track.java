@@ -2,7 +2,6 @@ package soinc.ppp.tasks;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 
@@ -27,8 +26,6 @@ public class Track
     /**  */
     private final TrackSignals signals;
 
-    /**  */
-    private final RcTimers timers;
     /** The state of the competition. It should never be {@code null}. */
     private final StateMachine stateMachine;
     /**  */
@@ -41,15 +38,15 @@ public class Track
 
     /***************************************************************************
      * @param config
-     * @param gpio
+     * @param signals
+     * @param timerCount
      **************************************************************************/
-    public Track( EventConfig config, TrackSignals signals )
+    public Track( EventConfig config, TrackSignals signals, int timerCount )
     {
         this.config = config;
         this.signals = signals;
-        this.timers = new RcTimers( signals.getTimerCount() );
         this.stateMachine = new StateMachine( this );
-        this.data = new TrackData( signals.getTimerCount() );
+        this.data = new TrackData( timerCount );
         this.timer = new Timer( "RC Competition" );
         this.periodTimer = new Stopwatch();
 
@@ -81,15 +78,19 @@ public class Track
     {
         // LogUtils.printDebug( "updating" );
 
-        if( !periodTimer.isStopped() )
+        if( data.state.isRunning )
         {
             this.data.periodTime = periodTimer.getElapsed();
-            timers.setData( data );
 
             if( data.periodTime > config.periodTime * 1000 &&
-                !data.state.isRunning )
+                data.state.isRunning )
             {
                 signalPeriodElapsed();
+            }
+            else if( data.periodTime > config.periodWarning * 1000 &&
+                data.state.isRunning )
+            {
+                signalPeriodWarning();
             }
         }
 
@@ -104,13 +105,6 @@ public class Track
     {
         signals.connect( this, trackView );
 
-        for( int i = 0; i < signals.getTimerCount(); i++ )
-        {
-            int index = i;
-            signals.setTimerCallback( i,
-                ( b ) -> signalTimerStart( index, b ) );
-        }
-
         signalClearTeam();
 
         timer.scheduleAtFixedRate( new RunnableTask( () -> updateState() ), 100,
@@ -123,8 +117,6 @@ public class Track
     public void disconnect()
     {
         timer.cancel();
-        signals.disconnect();
-
     }
 
     /***************************************************************************
@@ -163,17 +155,17 @@ public class Track
     /***************************************************************************
      * @return
      **************************************************************************/
-    public boolean isRunning()
+    public TrackData getData()
     {
-        return !periodTimer.isStopped();
+        return new TrackData( data );
     }
 
     /***************************************************************************
      * @return
      **************************************************************************/
-    public boolean areTimersComplete()
+    public boolean isRunning()
     {
-        return timers.areComplete();
+        return !periodTimer.isStopped();
     }
 
     /***************************************************************************
@@ -194,8 +186,6 @@ public class Track
         {
             data.run2State = RunState.FAILED;
         }
-        timers.clear();
-        timers.setData( data );
 
         data.team.complete = true;
     }
@@ -229,28 +219,65 @@ public class Track
     }
 
     /***************************************************************************
-     * 
+     * @param index s
      **************************************************************************/
-    public void signalPeriodStart()
+    public void signalTimerClear( int index )
     {
-        long now = System.currentTimeMillis();
-        String msg = stateMachine.signalPeriodStarted();
+        String msg = stateMachine.signalRunClear();
 
         if( msg == null )
         {
-            if( periodTimer.isStopped() )
+            if( data.run1State == RunState.RUNNING )
             {
-                periodTimer.start( now );
+                data.run1State = RunState.NOT_RUN;
             }
-            else
+            else if( data.run2State == RunState.RUNNING )
             {
-                periodTimer.pauseResume( now );
+                data.run2State = RunState.NOT_RUN;
             }
-            data.team.loaded = true;
         }
         else
         {
             showErrorMessage( msg );
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    public void signalPeriodStartPause()
+    {
+        LogUtils.printDebug( "Signalling period start/pause" );
+
+        if( periodTimer.isStopped() )
+        {
+            long now = System.currentTimeMillis();
+            String msg = stateMachine.signalPeriodStarted();
+
+            if( msg == null )
+            {
+                if( periodTimer.isStopped() )
+                {
+                    periodTimer.start( now );
+                }
+                else
+                {
+                    periodTimer.pauseResume( now );
+                }
+                data.team.loaded = true;
+            }
+            else
+            {
+                showErrorMessage( msg );
+            }
+        }
+        else
+        {
+            boolean isWarn = periodTimer.getElapsed() > config.periodWarning *
+                1000;
+            stateMachine.signalPeriodPauseResume( isWarn );
+            periodTimer.pauseResume();
+            return;
         }
     }
 
@@ -260,88 +287,27 @@ public class Track
      **************************************************************************/
     public boolean signalTimerStart( int index, boolean start )
     {
-        boolean started = timers.hasStarted( index );
+        String msg = stateMachine.signalTimersStarted();
 
-        if( start && !timers.hasStarted() )
+        if( msg == null )
         {
-            String msg = stateMachine.signalTimersStarted();
-            if( msg == null )
+            if( data.run1State.isComplete )
             {
-                if( data.run1State.isComplete )
-                {
-                    data.run2State = RunState.RUNNING;
-                }
-                else
-                {
-                    data.run1State = RunState.RUNNING;
-                }
-                timers.setTimerStarted( index, start );
-                started = true;
+                data.run2State = RunState.RUNNING;
             }
             else
             {
-                showErrorMessage( msg );
+                data.run1State = RunState.RUNNING;
             }
         }
         else
         {
-            boolean timerHasStopped = timers.hasStopped( index );
+            showErrorMessage( msg );
 
-            boolean timerHasStarted = timers.hasStarted( index );
-
-            if( start && !timerHasStarted )
-            {
-                timers.setTimerStarted( index, start );
-                started = true;
-            }
-            else if( !start && timerHasStarted && !timerHasStopped )
-            {
-                timers.setTimerStarted( index, start );
-                started = false;
-            }
-            else
-            {
-                String action = start ? "start" : "stop";
-                String state = timerHasStarted ? "has started"
-                    : "has not started";
-                String msg = "Unable to " + action + " when " + index + " " +
-                    state;
-
-                showErrorMessage( msg );
-                started = false;
-            }
+            return false;
         }
 
-        return started;
-    }
-
-    /***************************************************************************
-     * @param index s
-     **************************************************************************/
-    public void signalTimerClear( int index )
-    {
-        timers.clearTimer( index );
-
-        if( !timers.hasStarted() )
-        {
-            String msg = stateMachine.signalRunClear();
-
-            if( msg == null )
-            {
-                if( data.run1State == RunState.RUNNING )
-                {
-                    data.run1State = RunState.NOT_RUN;
-                }
-                else if( data.run2State == RunState.RUNNING )
-                {
-                    data.run2State = RunState.NOT_RUN;
-                }
-            }
-            else
-            {
-                showErrorMessage( msg );
-            }
-        }
+        return true;
     }
 
     /***************************************************************************
@@ -349,13 +315,6 @@ public class Track
      **************************************************************************/
     public void signalRunFinished( boolean goodRun )
     {
-        if( !timers.areComplete() )
-        {
-            showErrorMessage(
-                "Unable to finish run when timers are not compelete." );
-            return;
-        }
-
         String msg = stateMachine.signalRunFinished();
 
         if( msg == null )
@@ -365,20 +324,33 @@ public class Track
             if( data.run1State == RunState.RUNNING )
             {
                 data.run1State = rs;
-                data.run1Time = timers.getOfficialDuration();
             }
             else if( data.run2State == RunState.RUNNING )
             {
                 data.run2State = rs;
-                data.run2Time = timers.getOfficialDuration();
             }
-
-            timers.clear();
 
             if( data.state == TrackState.COMPLETE )
             {
                 setPeriodComplete();
             }
+        }
+        else
+        {
+            showErrorMessage( msg );
+        }
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void signalPeriodWarning()
+    {
+        String msg = stateMachine.signalPeriodWarning();
+
+        if( msg == null )
+        {
+            ;
         }
         else
         {
@@ -413,188 +385,11 @@ public class Track
         if( msg == null )
         {
             periodTimer.stop();
-            timers.clear();
             data.reset();
         }
         else
         {
             showErrorMessage( msg );
         }
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    private static final class RcTimers
-    {
-        /**  */
-        private final Stopwatch [] timers;
-        /**  */
-        private final boolean [] used;
-
-        /**
-         * @param timerCount
-         */
-        public RcTimers( int timerCount )
-        {
-            this.timers = new Stopwatch[timerCount];
-            this.used = new boolean[timerCount];
-
-            for( int i = 0; i < timers.length; i++ )
-            {
-                timers[i] = new Stopwatch();
-                timers[i].stop();
-                used[i] = false;
-            }
-        }
-
-        public void clearTimer( int index )
-        {
-            used[index] = false;
-            timers[index].stop();
-        }
-
-        public boolean hasStopped( int index )
-        {
-            return used[index] && timers[index].isStopped();
-        }
-
-        public void setData( TrackData data )
-        {
-            long now = System.currentTimeMillis();
-            for( int i = 0; i < timers.length; i++ )
-            {
-                if( used[i] )
-                {
-                    data.timers[i] = timers[i].getElapsed( now );
-                }
-                else
-                {
-                    data.timers[i] = -1L;
-                }
-            }
-
-            data.officialTime = getOfficialDuration( now );
-        }
-
-        /**
-         * @return
-         */
-        public boolean areComplete()
-        {
-            for( int i = 0; i < timers.length; i++ )
-            {
-                if( !timers[i].isStopped() )
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /**
-         * @param index
-         * @param started
-         */
-        public void setTimerStarted( int index, boolean started )
-        {
-            if( started )
-            {
-                timers[index].start();
-                used[index] = true;
-            }
-            else
-            {
-                timers[index].stop();
-            }
-        }
-
-        /**
-         * @return
-         */
-        public boolean hasStarted()
-        {
-            for( int i = 0; i < timers.length; i++ )
-            {
-                if( used[i] )
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public boolean hasStarted( int index )
-        {
-            return used[index];
-        }
-
-        /**
-         * @return
-         */
-        public long getOfficialDuration()
-        {
-            return getOfficialDuration( -1L );
-        }
-
-        /**
-         * @param end
-         * @return
-         */
-        private long getOfficialDuration( long end )
-        {
-            long sum = 0L;
-            int count = 0;
-            long [] durations = new long[timers.length];
-
-            for( int i = 0; i < timers.length; i++ )
-            {
-                if( used[i] )
-                {
-                    if( end > -1L )
-                    {
-                        durations[i] = timers[i].getElapsed( end );
-                    }
-                    else
-                    {
-                        durations[i] = timers[i].getElapsed();
-                    }
-                    sum += durations[i];
-                    count++;
-                }
-            }
-
-            switch( ( int )count )
-            {
-                case 0:
-                    return -1L;
-
-                case 1:
-                    return sum;
-
-                case 2:
-                    return sum / count;
-
-                default:
-                    Arrays.sort( durations );
-                    return durations[durations.length - count + ( count ) / 2];
-            }
-        }
-
-        public void clear()
-        {
-            for( int i = 0; i < timers.length; i++ )
-            {
-                timers[i].stop();
-                used[i] = false;
-            }
-        }
-    }
-
-    public TrackData getData()
-    {
-        return new TrackData( data );
     }
 }

@@ -58,9 +58,9 @@ public class StateMachine
     public String signalPeriodStarted()
     {
         if( this.state == TrackState.LOADED ||
-            this.state == TrackState.AWAITING )
+            this.state == TrackState.RUNNING )
         {
-            setState( TrackState.AWAITING );
+            setState( TrackState.RUNNING );
             return null;
         }
 
@@ -68,14 +68,64 @@ public class StateMachine
     }
 
     /***************************************************************************
+     * @param isWarning
+     * @return
+     **************************************************************************/
+    public String signalPeriodPauseResume( boolean isWarning )
+    {
+        switch( this.state )
+        {
+            case RUNNING:
+            case WARNING:
+                setState( TrackState.PAUSED );
+                break;
+
+            case PAUSED:
+                if( isWarning )
+                {
+                    setState( TrackState.WARNING );
+                }
+                else
+                {
+                    setState( TrackState.RUNNING );
+                }
+                break;
+
+            default:
+                return "Unable to Pause/Resume in state " + state.name;
+        }
+
+        return null;
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    public String signalPeriodWarning()
+    {
+        switch( this.state )
+        {
+            case RUNNING:
+            case WARNING:
+                setState( TrackState.WARNING );
+                break;
+
+            default:
+                return "Unable to Warn in state " + state.name;
+        }
+
+        return null;
+    }
+
+    /***************************************************************************
      * @return
      **************************************************************************/
     public String signalTimersStarted()
     {
-        if( this.state == TrackState.AWAITING ||
-            this.state == TrackState.SCORE_TIME )
+        if( this.state == TrackState.RUNNING ||
+            this.state == TrackState.LAUNCHED )
         {
-            setState( TrackState.SCORE_TIME );
+            setState( TrackState.LAUNCHED );
             return null;
         }
 
@@ -87,7 +137,7 @@ public class StateMachine
      **************************************************************************/
     public String signalPeriodTimeElapsed()
     {
-        if( this.state == TrackState.AWAITING )
+        if( this.state == TrackState.RUNNING )
         {
             setState( TrackState.COMPLETE );
             return null;
@@ -114,7 +164,7 @@ public class StateMachine
             }
             else
             {
-                setState( TrackState.AWAITING );
+                setState( TrackState.RUNNING );
             }
             return null;
         }
@@ -129,7 +179,7 @@ public class StateMachine
     {
         if( this.state.isRunning )
         {
-            setState( TrackState.AWAITING );
+            setState( TrackState.RUNNING );
 
             return null;
         }
@@ -142,10 +192,10 @@ public class StateMachine
      **************************************************************************/
     public String signalResetRun()
     {
-        if( this.state == TrackState.AWAITING ||
+        if( this.state == TrackState.RUNNING ||
             this.state == TrackState.COMPLETE )
         {
-            setState( TrackState.AWAITING );
+            setState( TrackState.RUNNING );
             return null;
         }
 

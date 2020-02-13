@@ -2,11 +2,9 @@ package soinc.ppp.data;
 
 import java.awt.Color;
 
-import javax.swing.Icon;
-
 import org.jutils.INamedItem;
 
-import soinc.ppp.PppIcons;
+import soinc.lib.relay.Relays;
 
 /*******************************************************************************
  * 
@@ -14,19 +12,20 @@ import soinc.ppp.PppIcons;
 public enum TrackState implements INamedItem
 {
     /** No team has been loaded. */
-    NO_TEAM( "New Run", Color.black, "NO_TEAM.png", false, 0x5 ),
+    NO_TEAM( "No Team", new Color( 0x3A6EA7 ), false, Relays.BLUE_LIGHT ),
     /** Team has been loaded, but the competition has not yet started. */
-    LOADED( "Loaded", Color.black, "NO_TEAM.png", false, 0x7 ),
-    /** Competitors are not running for record. */
-    AWAITING( "Event", Color.black, "AWAITING.png", false, 0x3 ),
-    /** Running before target time. */
-    SCORE_TIME( "Score Time", new Color( 0x008000 ), "SCORE_TIME.png", true, 0x2 ),
-    /** Running after target time before trial time. */
-    PENALTY_TIME( "Penalty Time", new Color( 0xFFF200 ), Color.black, "PENALTY_TIME.png", true, 0x6 ),
-    /** Running after trial time. */
-    FAILED_TIME( "Failed", new Color( 0xFF0000 ), "FAILED_TIME.png", true, 0x4 ),
+    LOADED( "Loaded", Color.white, Color.black, false, Relays.WHITE_LIGHT ),
+    /** The competition has been started.. */
+    RUNNING( "Running", new Color( 0x008000 ), true, Relays.GREEN_LIGHT ),
+    /** The rocket has been launched */
+    LAUNCHED( "Running", new Color( 0x008000 ), Color.white, true,
+        Relays.GREEN_LIGHT, true ),
+    /** The timer has reached the warning limit. */
+    WARNING( "Warning", Color.yellow, Color.black, true, Relays.YELLOW_LIGHT ),
     /** 2 runs completed. */
-    COMPLETE( "Complete", Color.black, new Color( 0x1F3FFF ), "COMPLETE.png", false, 0x1 );
+    COMPLETE( "Complete", Color.red, Color.black, false, Relays.RED_LIGHT ),
+    /** If for any reason the event supervisor pauses the timer. */
+    PAUSED( "Paused", new Color( 0xCC00CC ), false, Relays.PURPLE_LIGHT );
 
     /**  */
     public final String name;
@@ -35,37 +34,54 @@ public enum TrackState implements INamedItem
     /**  */
     public final Color foreground;
     /**  */
-    public final Icon icon;
-    /**  */
     public final boolean isRunning;
     /**  */
     public final int lights;
+    /**  */
+    public final boolean isFlashing;
 
     /***************************************************************************
      * @param name
-     * @param color
-     * @param iconName
+     * @param bg
+     * @param isRunning
+     * @param lights
      **************************************************************************/
-    private TrackState( String name, Color bg, String iconName,
-        boolean isRunning, int lights )
+    private TrackState( String name, Color bg, boolean isRunning, int lights )
     {
-        this( name, bg, Color.white, iconName, isRunning, lights );
+        this( name, bg, Color.white, isRunning, lights );
     }
 
     /***************************************************************************
      * @param name
+     * @param bg
+     * @param fg
+     * @param isRunning
+     * @param lights
      * @param color
-     * @param iconName
      **************************************************************************/
-    private TrackState( String name, Color bg, Color fg, String iconName,
-        boolean isRunning, int lights )
+    private TrackState( String name, Color bg, Color fg, boolean isRunning,
+        int lights )
+    {
+        this( name, bg, fg, isRunning, lights, false );
+    }
+
+    /***************************************************************************
+     * @param name
+     * @param bg
+     * @param fg
+     * @param isRunning
+     * @param lights
+     * @param isFlashing
+     **************************************************************************/
+    private TrackState( String name, Color bg, Color fg, boolean isRunning,
+        int lights, boolean isFlashing )
     {
         this.name = name;
         this.background = bg;
         this.foreground = fg;
-        this.icon = PppIcons.getResizedIcon( iconName, 0.65f );
         this.isRunning = isRunning;
-        this.lights = ( lights ^ 0x4 );
+        this.lights = lights;
+        this.isFlashing = isFlashing;
     }
 
     /***************************************************************************

@@ -37,12 +37,17 @@ public class EventView implements IDataView<PppEvent>
     /**  */
     private final JFrame frame;
     /**  */
+    private final JComponent content;
+
+    /**  */
     public final TrackView trackAView;
     /**  */
     public final TrackView trackBView;
 
     /**  */
-    private final JComponent content;
+    private final JLabel timerAField;
+    /**  */
+    private final JLabel timerSField;
 
     /**  */
     private PppEvent event;
@@ -60,6 +65,11 @@ public class EventView implements IDataView<PppEvent>
 
         this.trackAView = new TrackView( event.trackA );
         this.trackBView = new TrackView( event.trackB );
+
+        this.timerAField = UiUtils.createNumLabel( "--.- s",
+            TrackView.REG_FONT );
+        this.timerSField = UiUtils.createNumLabel( "--.- s",
+            TrackView.REG_FONT );
 
         this.content = createCompetitionPanel();
 
@@ -189,8 +199,7 @@ public class EventView implements IDataView<PppEvent>
         }
         else
         {
-            trackAView.disconnect();
-            trackBView.disconnect();
+            event.disconnect();
 
             // setFullScreen( false );
 

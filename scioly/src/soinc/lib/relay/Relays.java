@@ -39,7 +39,7 @@ public class Relays implements IRelays
 
     /**  */
     private static final File RELAY_EXE = IOUtils.getInstallFile(
-        "krelays.exe" );
+        "krelay.exe" );
     /**  */
     public static final int RELAY_COUNT = 8;
 

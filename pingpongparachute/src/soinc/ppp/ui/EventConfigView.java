@@ -1,5 +1,6 @@
 package soinc.ppp.ui;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -9,12 +10,14 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.border.EmptyBorder;
 
 import org.jutils.IconConstants;
 import org.jutils.OptionUtils;
 import org.jutils.SwingUtils;
-import org.jutils.io.options.OptionsSerializer;
 import org.jutils.ui.ItemListView;
 import org.jutils.ui.ListView;
 import org.jutils.ui.ListView.IItemListModel;
@@ -24,9 +27,10 @@ import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.fields.IntegerFormField;
 import org.jutils.ui.model.IDataView;
 
-import soinc.ppp.PppMain;
+import soinc.lib.ui.PhysicalKeyField;
+import soinc.lib.ui.Pi3InputPinField;
+import soinc.lib.ui.Pi3OutputPinField;
 import soinc.ppp.data.EventConfig;
-import soinc.ppp.data.PppOptions;
 import soinc.ppp.data.Team;
 
 /*******************************************************************************
@@ -39,9 +43,27 @@ public class EventConfigView implements IDataView<EventConfig>
     /**  */
     private final IntegerFormField periodTimeField;
     /**  */
+    private final IntegerFormField periodWarningField;
+
+    /**  */
+    private final Pi3OutputPinField timer1OutField;
+    /**  */
+    private final Pi3InputPinField timer1InField;
+    /**  */
+    private final PhysicalKeyField timer1ClearKeyField;
+
+    /**  */
+    private final Pi3OutputPinField timer2OutField;
+    /**  */
+    private final Pi3InputPinField timer2InField;
+    /**  */
+    private final PhysicalKeyField timer2ClearKeyField;
+
+    /**  */
     private final TrackConfigView trackAView;
     /**  */
     private final TrackConfigView trackBView;
+
     /**  */
     private final ItemListView<Team> teamsView;
 
@@ -55,6 +77,16 @@ public class EventConfigView implements IDataView<EventConfig>
     {
         this.periodTimeField = new IntegerFormField( "Period Time", "seconds",
             8, 10, 60 * 60 );
+        this.periodWarningField = new IntegerFormField( "Period Warning",
+            "seconds", 8, 5, 60 * 60 );
+
+        this.timer1OutField = new Pi3OutputPinField( "Timer 1 Output" );
+        this.timer1InField = new Pi3InputPinField( "Timer 1 Input" );
+        this.timer1ClearKeyField = new PhysicalKeyField( "Clear Timer 1 Key" );
+
+        this.timer2OutField = new Pi3OutputPinField( "Timer 2 Output" );
+        this.timer2InField = new Pi3InputPinField( "Timer 2 Input" );
+        this.timer2ClearKeyField = new PhysicalKeyField( "Clear Timer 2 Key" );
 
         this.trackAView = new TrackConfigView();
         this.trackBView = new TrackConfigView();
@@ -63,13 +95,20 @@ public class EventConfigView implements IDataView<EventConfig>
 
         this.view = createView();
 
-        OptionsSerializer<PppOptions> options = PppMain.getOptions();
-
-        this.config = options.getOptions().config;
+        this.config = new EventConfig( new EventConfig() );
 
         setData( config );
 
         periodTimeField.setUpdater( ( d ) -> config.periodTime = d );
+        periodWarningField.setUpdater( ( d ) -> config.periodWarning = d );
+
+        timer1OutField.setUpdater( ( d ) -> config.timer1Out.set( d ) );
+        timer1InField.setUpdater( ( d ) -> config.timer1In.set( d ) );
+        timer1ClearKeyField.setUpdater( ( d ) -> config.timer1ClearKey = d );
+
+        timer2OutField.setUpdater( ( d ) -> config.timer2Out.set( d ) );
+        timer2InField.setUpdater( ( d ) -> config.timer2In.set( d ) );
+        timer2ClearKeyField.setUpdater( ( d ) -> config.timer2ClearKey = d );
     }
 
     /***************************************************************************
@@ -153,18 +192,35 @@ public class EventConfigView implements IDataView<EventConfig>
     /***************************************************************************
      * @return
      **************************************************************************/
-    private JPanel createForm()
+    private JComponent createForm()
     {
         StandardFormView form = new StandardFormView();
 
         form.addField( periodTimeField );
+        form.addField( periodWarningField );
+
+        form.addField( timer1OutField );
+        form.addField( timer1InField );
+        form.addField( timer1ClearKeyField );
+
+        form.addField( timer2OutField );
+        form.addField( timer2InField );
+        form.addField( timer2ClearKeyField );
 
         form.addComponent(
             new TitleView( "Track A", trackAView.getView() ).getView() );
         form.addComponent(
             new TitleView( "Track B", trackBView.getView() ).getView() );
 
-        return form.getView();
+        JScrollPane pane = new JScrollPane( form.getView() );
+
+        pane.setBorder( new EmptyBorder( 0, 0, 0, 0 ) );
+        pane.getVerticalScrollBar().setUnitIncrement( 10 );
+
+        pane.setMinimumSize(
+            new Dimension( form.getView().getPreferredSize().width + 18, 0 ) );
+
+        return pane;
     }
 
     /***************************************************************************
@@ -194,6 +250,15 @@ public class EventConfigView implements IDataView<EventConfig>
         this.config = config;
 
         periodTimeField.setValue( config.periodTime );
+        periodWarningField.setValue( config.periodWarning );
+
+        timer1OutField.setValue( config.timer1Out );
+        timer1InField.setValue( config.timer1In );
+        timer1ClearKeyField.setValue( config.timer1ClearKey );
+
+        timer2OutField.setValue( config.timer2Out );
+        timer2InField.setValue( config.timer2In );
+        timer2ClearKeyField.setValue( config.timer2ClearKey );
 
         trackAView.setData( config.trackA );
         trackBView.setData( config.trackB );

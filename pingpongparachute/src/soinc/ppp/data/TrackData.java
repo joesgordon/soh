@@ -39,6 +39,9 @@ public class TrackData
         reset();
     }
 
+    /**
+     * @param data
+     */
     public TrackData( TrackData data )
     {
         this.team = data.team;

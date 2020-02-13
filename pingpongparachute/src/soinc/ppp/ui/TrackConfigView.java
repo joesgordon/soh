@@ -5,8 +5,7 @@ import javax.swing.JPanel;
 import org.jutils.ui.StandardFormView;
 import org.jutils.ui.model.IDataView;
 
-import soinc.lib.ui.Pi3InputPinField;
-import soinc.lib.ui.Pi3OutputPinField;
+import soinc.lib.ui.PhysicalKeyField;
 import soinc.ppp.data.TrackConfig;
 
 /*******************************************************************************
@@ -18,14 +17,15 @@ public class TrackConfigView implements IDataView<TrackConfig>
     private final JPanel view;
 
     /**  */
-    private final Pi3OutputPinField timer1OutField;
+    private final PhysicalKeyField loadKeyField;
     /**  */
-    private final Pi3InputPinField timer1InField;
-
+    private final PhysicalKeyField startPauseKeyField;
     /**  */
-    private final Pi3OutputPinField timer2OutField;
+    private final PhysicalKeyField goodKeyField;
     /**  */
-    private final Pi3InputPinField timer2InField;
+    private final PhysicalKeyField badKeyField;
+    /**  */
+    private final PhysicalKeyField clearTeamKeyField;
 
     /**  */
     private TrackConfig config;
@@ -35,21 +35,21 @@ public class TrackConfigView implements IDataView<TrackConfig>
      **************************************************************************/
     public TrackConfigView()
     {
-        this.timer1InField = new Pi3InputPinField( "Timer 1 Input" );
-        this.timer1OutField = new Pi3OutputPinField( "Timer 1 Output" );
-
-        this.timer2InField = new Pi3InputPinField( "Timer 2 Input" );
-        this.timer2OutField = new Pi3OutputPinField( "Timer 2 Output" );
+        this.loadKeyField = new PhysicalKeyField( "Load Key" );
+        this.startPauseKeyField = new PhysicalKeyField( "Start/Pause Key" );
+        this.goodKeyField = new PhysicalKeyField( "Good Key" );
+        this.badKeyField = new PhysicalKeyField( "Bad Key" );
+        this.clearTeamKeyField = new PhysicalKeyField( "Clear Team Key" );
 
         this.view = createView();
 
         setData( new TrackConfig() );
 
-        timer1InField.setUpdater( ( d ) -> config.timer1In.set( d ) );
-        timer1OutField.setUpdater( ( d ) -> config.timer1Out.set( d ) );
-
-        timer2InField.setUpdater( ( d ) -> config.timer2In.set( d ) );
-        timer2OutField.setUpdater( ( d ) -> config.timer2Out.set( d ) );
+        loadKeyField.setUpdater( ( d ) -> config.loadKey = d );
+        startPauseKeyField.setUpdater( ( d ) -> config.startPauseKey = d );
+        goodKeyField.setUpdater( ( d ) -> config.goodRunKey = d );
+        badKeyField.setUpdater( ( d ) -> config.badRunKey = d );
+        clearTeamKeyField.setUpdater( ( d ) -> config.clearTeamKey = d );
     }
 
     /***************************************************************************
@@ -59,11 +59,11 @@ public class TrackConfigView implements IDataView<TrackConfig>
     {
         StandardFormView form = new StandardFormView();
 
-        form.addField( timer1OutField );
-        form.addField( timer1InField );
-
-        form.addField( timer2OutField );
-        form.addField( timer2InField );
+        form.addField( loadKeyField );
+        form.addField( startPauseKeyField );
+        form.addField( goodKeyField );
+        form.addField( badKeyField );
+        form.addField( clearTeamKeyField );
 
         return form.getView();
     }
@@ -94,10 +94,10 @@ public class TrackConfigView implements IDataView<TrackConfig>
     {
         this.config = config;
 
-        timer1OutField.setValue( config.timer1Out );
-        timer1InField.setValue( config.timer1In );
-
-        timer2OutField.setValue( config.timer2Out );
-        timer2InField.setValue( config.timer2In );
+        loadKeyField.setValue( config.loadKey );
+        startPauseKeyField.setValue( config.startPauseKey );
+        goodKeyField.setValue( config.goodRunKey );
+        badKeyField.setValue( config.badRunKey );
+        clearTeamKeyField.setValue( config.clearTeamKey );
     }
 }

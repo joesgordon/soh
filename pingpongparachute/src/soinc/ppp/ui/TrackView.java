@@ -48,9 +48,9 @@ import soinc.ppp.tasks.Track;
 public class TrackView implements IView<JComponent>
 {
     /**  */
-    private static final float LRG_FONT = 64.0f;
+    public static final float LRG_FONT = 64.0f;
     /**  */
-    private static final float REG_FONT = UiUtils.DEFAULT_FONT_SIZE;
+    public static final float REG_FONT = UiUtils.DEFAULT_FONT_SIZE;
 
     /**  */
     private final JComponent view;
@@ -67,12 +67,6 @@ public class TrackView implements IView<JComponent>
     /**  */
     private final JLabel periodField;
     /**  */
-    private final JLabel timerAField;
-    /**  */
-    private final JLabel timerSField;
-    /**  */
-    private final JLabel timerDField;
-    /**  */
     private final JLabel officialField;
     /**  */
     private final JLabel stateField;
@@ -84,8 +78,6 @@ public class TrackView implements IView<JComponent>
     private final JLabel run2Field;
     /**  */
     private final JLabel run2Icon;
-    /**  */
-    private final JLabel scoreIconField;
 
     /**  */
     private Track track;
@@ -103,16 +95,12 @@ public class TrackView implements IView<JComponent>
 
         this.teamButton = new JButton( "No Teams Entered" );
         this.periodField = UiUtils.createNumLabel( "-:-- s", LRG_FONT );
-        this.timerAField = UiUtils.createNumLabel( "--.- s", REG_FONT );
-        this.timerSField = UiUtils.createNumLabel( "--.- s", REG_FONT );
-        this.timerDField = UiUtils.createNumLabel( "--.- s", REG_FONT );
         this.officialField = UiUtils.createNumLabel( "--.- s", REG_FONT );
         this.stateField = UiUtils.createTextLabel( "-----", REG_FONT );
         this.run1Field = UiUtils.createNumLabel( "-- s", REG_FONT );
         this.run1Icon = new JLabel( blankIcon );
         this.run2Field = UiUtils.createNumLabel( "-- s", REG_FONT );
         this.run2Icon = new JLabel( blankIcon );
-        this.scoreIconField = new JLabel();
 
         run1Icon.setPreferredSize( new Dimension( 38, 38 ) );
         run1Icon.setMinimumSize( new Dimension( 38, 38 ) );
@@ -174,7 +162,7 @@ public class TrackView implements IView<JComponent>
         Component runsPanel = createRunsPanel();
 
         constraints = new GridBagConstraints( 0, row, 1, 1, 0.5, 0.0,
-            GridBagConstraints.NORTHEAST, GridBagConstraints.NONE,
+            GridBagConstraints.EAST, GridBagConstraints.NONE,
             new Insets( 10, 20, 10, 0 ), 0, 0 );
         panel.add( timersPanel, constraints );
 
@@ -186,17 +174,11 @@ public class TrackView implements IView<JComponent>
         // ---------------------------------------------------------------------
 
         Component officialPanel = createOfficialPanel();
-        Component scorePanel = createScorePanel();
 
-        constraints = new GridBagConstraints( 0, row, 1, 1, 0.5, 1.0,
-            GridBagConstraints.NORTHEAST, GridBagConstraints.NONE,
+        constraints = new GridBagConstraints( 0, row, 2, 1, 0.0, 1.0,
+            GridBagConstraints.CENTER, GridBagConstraints.NONE,
             new Insets( 10, 20, 10, 0 ), 0, 0 );
         panel.add( officialPanel, constraints );
-
-        constraints = new GridBagConstraints( 1, row++, 1, 1, 0.5, 1.0,
-            GridBagConstraints.WEST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 10, 20 ), 0, 0 );
-        panel.add( scorePanel, constraints );
 
         // ---------------------------------------------------------------------
 
@@ -236,7 +218,7 @@ public class TrackView implements IView<JComponent>
             REG_FONT );
 
         constraints = new GridBagConstraints( 0, 1, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
+            GridBagConstraints.EAST, GridBagConstraints.NONE,
             new Insets( 0, 0, 0, 0 ), 0, 0 );
         panel.add( periodLabel, constraints );
 
@@ -263,7 +245,7 @@ public class TrackView implements IView<JComponent>
 
         // ---------------------------------------------------------------------
 
-        JLabel timer1Label = UiUtils.createTextLabel( "Timer A:", REG_FONT );
+        JLabel timer1Label = UiUtils.createTextLabel( "Timer 1:", REG_FONT );
 
         constraints = new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0,
             GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
@@ -277,7 +259,7 @@ public class TrackView implements IView<JComponent>
 
         // ---------------------------------------------------------------------
 
-        JLabel timer2Label = UiUtils.createTextLabel( "Timer S:", REG_FONT );
+        JLabel timer2Label = UiUtils.createTextLabel( "Timer 2:", REG_FONT );
 
         constraints = new GridBagConstraints( 0, 1, 1, 1, 0.0, 0.0,
             GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
@@ -288,20 +270,6 @@ public class TrackView implements IView<JComponent>
             GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
             new Insets( 10, 20, 0, 0 ), 0, 0 );
         panel.add( timerSField, constraints );
-
-        // ---------------------------------------------------------------------
-
-        JLabel timer3Label = UiUtils.createTextLabel( "Timer D:", REG_FONT );
-
-        constraints = new GridBagConstraints( 0, 2, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
-            new Insets( 10, 0, 0, 0 ), 0, 0 );
-        panel.add( timer3Label, constraints );
-
-        constraints = new GridBagConstraints( 1, 2, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 0, 0 ), 0, 0 );
-        panel.add( timerDField, constraints );
 
         return panel;
     }
@@ -401,28 +369,6 @@ public class TrackView implements IView<JComponent>
     }
 
     /***************************************************************************
-     * @return
-     **************************************************************************/
-    private Component createScorePanel()
-    {
-        JPanel panel = new JPanel( new GridBagLayout() );
-        GridBagConstraints constraints;
-
-        panel.setOpaque( false );
-
-        // ---------------------------------------------------------------------
-
-        scoreIconField.setIcon( track.getState().icon );
-
-        constraints = new GridBagConstraints( 0, 0, 1, 1, 1.0, 1.0,
-            GridBagConstraints.WEST, GridBagConstraints.NONE,
-            new Insets( 10, 0, 0, 0 ), 0, 0 );
-        panel.add( scoreIconField, constraints );
-
-        return panel;
-    }
-
-    /***************************************************************************
      * @param e
      **************************************************************************/
     private void showTeamPopup( MouseEvent e )
@@ -463,7 +409,7 @@ public class TrackView implements IView<JComponent>
     /***************************************************************************
      * 
      **************************************************************************/
-    private void showTeamChooser()
+    public void showTeamChooser()
     {
         if( track.isRunning() )
         {
@@ -574,14 +520,12 @@ public class TrackView implements IView<JComponent>
 
         setTimer( data, timerAField, 0 );
         setTimer( data, timerSField, 1 );
-        setTimer( data, timerDField, 2 );
 
         setDecisecondsTimeField( data.officialTime, officialField );
 
         stateField.setText( " " + data.state.name + " " );
         stateField.setBackground( data.state.background );
         stateField.setForeground( data.state.foreground );
-        scoreIconField.setIcon( data.state.icon );
 
         setSecondsTimeField( data.run1Time, run1Field );
 
@@ -704,14 +648,6 @@ public class TrackView implements IView<JComponent>
             teamButton.setText( "Select Team" );
             teamButton.setEnabled( true );
         }
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    public void disconnect()
-    {
-        track.disconnect();
     }
 
     /***************************************************************************

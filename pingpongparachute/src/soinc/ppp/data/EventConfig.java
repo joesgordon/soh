@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import soinc.lib.data.Pi3GpioPin;
+import soinc.lib.data.Pi3InputPin;
+import soinc.lib.data.Pi3OutputPin;
+import soinc.lib.data.PinLevel;
+import soinc.lib.data.PinResistance;
+import soinc.lib.ui.PhysicalKey;
 
 /*******************************************************************************
  * 
@@ -12,32 +17,68 @@ public class EventConfig
 {
     /** The number of seconds each team has to execute 2 launches. */
     public int periodTime;
+    /**  */
+    public int periodWarning;
 
     /**  */
-    public final List<Team> teams;
+    public final Pi3OutputPin timer1Out;
+    /**  */
+    public final Pi3InputPin timer1In;
+    /**  */
+    public PhysicalKey timer1StartStopKey;
+    /**  */
+    public PhysicalKey timer1ClearKey;
+
+    /**  */
+    public final Pi3OutputPin timer2Out;
+    /**  */
+    public final Pi3InputPin timer2In;
+    /**  */
+    public PhysicalKey timer2StartStopKey;
+    /**  */
+    public PhysicalKey timer2ClearKey;
+
+    /**  */
+    public PhysicalKey timer3StartStopKey;
+    /**  */
+    public PhysicalKey timer3ClearKey;
 
     /**  */
     public final TrackConfig trackA;
     /**  */
     public final TrackConfig trackB;
 
+    /**  */
+    public final List<Team> teams;
+
     /***************************************************************************
      * 
      **************************************************************************/
     public EventConfig()
     {
-        this.periodTime = 8 * 60;
+        this.periodTime = 5 * 60;
+        this.periodWarning = 4 * 60;
+
+        this.timer1Out = new Pi3OutputPin( Pi3GpioPin.GPIO_02, PinLevel.LOW );
+        this.timer1In = new Pi3InputPin( Pi3GpioPin.GPIO_03,
+            PinResistance.PULL_UP );
+        this.timer1ClearKey = PhysicalKey.A;
+
+        this.timer2Out = new Pi3OutputPin( Pi3GpioPin.GPIO_17, PinLevel.LOW );
+        this.timer2In = new Pi3InputPin( Pi3GpioPin.GPIO_27,
+            PinResistance.PULL_UP );
+        this.timer2ClearKey = PhysicalKey.S;
 
         this.trackA = new TrackConfig();
         this.trackB = new TrackConfig();
 
         this.teams = new ArrayList<>();
 
-        trackB.timer1Out.gpioPin = Pi3GpioPin.GPIO_14;
-        trackB.timer1In.gpioPin = Pi3GpioPin.GPIO_15;
-
-        trackB.timer2Out.gpioPin = Pi3GpioPin.GPIO_23;
-        trackB.timer2Out.gpioPin = Pi3GpioPin.GPIO_24;
+        trackB.loadKey = PhysicalKey.U;
+        trackB.startPauseKey = PhysicalKey.I;
+        trackB.goodRunKey = PhysicalKey.O;
+        trackB.badRunKey = PhysicalKey.P;
+        trackB.clearTeamKey = PhysicalKey.SEMICOLON;
     }
 
     /***************************************************************************
@@ -56,6 +97,15 @@ public class EventConfig
     public void set( EventConfig cfg )
     {
         this.periodTime = cfg.periodTime;
+        this.periodWarning = cfg.periodWarning;
+
+        this.timer1Out.set( cfg.timer1Out );
+        this.timer1In.set( cfg.timer1In );
+        this.timer1ClearKey = cfg.timer1ClearKey;
+
+        this.timer2Out.set( cfg.timer2Out );
+        this.timer2In.set( cfg.timer2In );
+        this.timer2ClearKey = cfg.timer2ClearKey;
 
         this.trackA.set( cfg.trackA );
         this.trackB.set( cfg.trackB );

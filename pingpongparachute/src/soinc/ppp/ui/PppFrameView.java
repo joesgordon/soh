@@ -36,7 +36,6 @@ import soinc.ppp.PppMain;
 import soinc.ppp.data.EventConfig;
 import soinc.ppp.data.PppOptions;
 import soinc.ppp.tasks.PppEvent;
-import soinc.ppp.tasks.TrackSignals;
 
 /*******************************************************************************
  *
@@ -72,6 +71,10 @@ public class PppFrameView implements IView<JFrame>
         view.setSize( 1280, 800 );
         view.setTitle( "Ping Pong Parachute" );
         view.getView().setLocation( 0, 0 );
+
+        OptionsSerializer<PppOptions> userio = PppMain.getOptions();
+        PppOptions options = new PppOptions( userio.getOptions() );
+        configView.setData( options.config );
     }
 
     /***************************************************************************
@@ -174,18 +177,12 @@ public class PppFrameView implements IView<JFrame>
                 GpioController gpio = SciolyGpio.startup();
                 IRelays relays = PppMain.getRelays();
 
-                TrackSignals signalsA = new TrackSignals( eventCfg.trackA, gpio,
-                    relays );
-                TrackSignals signalsB = new TrackSignals( eventCfg.trackB, gpio,
-                    relays );
-
-                PppEvent event = new PppEvent( eventCfg, signalsA, signalsB );
+                PppEvent event = new PppEvent( eventCfg, gpio, relays );
 
                 this.eventView = new EventView( event,
                     getView().getIconImages(), getView().getSize() );
 
-                event.trackA.connect( eventView.trackAView );
-                event.trackB.connect( eventView.trackBView );
+                event.connect( eventView );
 
                 JFrame frame = eventView.getView();
 
