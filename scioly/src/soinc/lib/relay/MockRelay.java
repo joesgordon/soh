@@ -108,4 +108,22 @@ public class MockRelay implements IRelays
             relays[i] = ( mask & m ) == m;
         }
     }
+
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
+    @Override
+    public int getRelays()
+    {
+        int mask = 0;
+
+        for( int i = 0; i < relays.length; i++ )
+        {
+            int m = 1 << i;
+
+            mask |= m;
+        }
+
+        return mask;
+    }
 }

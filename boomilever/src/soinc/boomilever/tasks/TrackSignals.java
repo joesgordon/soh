@@ -79,8 +79,22 @@ public class TrackSignals
         relays.turnAllOff();
     }
 
-    public void setStripEnabled( int strip, boolean enabled )
+    /***************************************************************************
+     * @param enabled
+     **************************************************************************/
+    public void setStripsEnabled( boolean enabled )
     {
+        int mask = relays.getRelays();
+
+        if( enabled )
+        {
+            mask |= 0x11;
+        }
+        else
+        {
+            mask &= ~0x11;
+        }
+        relays.setRelays( mask );
     }
 
     /***************************************************************************

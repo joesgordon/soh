@@ -184,4 +184,13 @@ public class Relays implements IRelays
         relaysMask = mask;
         runProcess( relaysMask );
     }
+
+    /***************************************************************************
+     * {@inheritDoc}
+     **************************************************************************/
+    @Override
+    public int getRelays()
+    {
+        return relaysMask;
+    }
 }
