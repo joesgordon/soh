@@ -27,13 +27,13 @@ public class Relays implements IRelays
     /**  */
     public static final int BLUE_LIGHT = BLUE_MASK;
     /**  */
-    public static final int WHITE_LIGHT = RED_MASK & GREEN_MASK & BLUE_MASK;
+    public static final int WHITE_LIGHT = RED_MASK | GREEN_MASK | BLUE_MASK;
     /**  */
-    public static final int PURPLE_LIGHT = RED_MASK & BLUE_MASK;
+    public static final int PURPLE_LIGHT = RED_MASK | BLUE_MASK;
     /**  */
-    public static final int YELLOW_LIGHT = RED_MASK & GREEN_MASK;
+    public static final int YELLOW_LIGHT = RED_MASK | GREEN_MASK;
     /** Looks washed out. */
-    public static final int CYAN_LIGHT = BLUE_MASK & GREEN_MASK;
+    public static final int CYAN_LIGHT = BLUE_MASK | GREEN_MASK;
     /** Not really black. Just off. */
     public static final int BLACK_LIGHT = 0;
 

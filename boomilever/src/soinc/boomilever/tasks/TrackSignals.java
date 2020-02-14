@@ -7,6 +7,7 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import org.jutils.SwingUtils;
+import org.jutils.io.LogUtils;
 
 import soinc.boomilever.data.TrackConfig;
 import soinc.boomilever.ui.TrackView;
@@ -80,33 +81,32 @@ public class TrackSignals
     }
 
     /***************************************************************************
-     * @param enabled
-     **************************************************************************/
-    public void setStripsEnabled( boolean enabled )
-    {
-        int mask = relays.getRelays();
-
-        if( enabled )
-        {
-            mask |= 0x11;
-        }
-        else
-        {
-            mask &= ~0x11;
-        }
-        relays.setRelays( mask );
-    }
-
-    /***************************************************************************
      * @param red
      * @param green
      * @param blue
      **************************************************************************/
     public void setLights( boolean red, boolean green, boolean blue )
     {
-        relays.setRelay( config.redRelay - 1, red );
-        relays.setRelay( config.greenRelay - 1, green );
-        relays.setRelay( config.blueRelay - 1, blue );
+
+        int redBit = config.redRelay - 1;
+        int greenBit = config.greenRelay - 1;
+        int blueBit = config.blueRelay - 1;
+
+        int redMask = 1 << redBit;
+        int greenMask = 1 << greenBit;
+        int blueMask = 1 << blueBit;
+
+        int mask = relays.getRelays();
+
+        mask = red ? ( mask | redMask ) : ( mask & ~redMask );
+        mask = green ? ( mask | greenMask ) : ( mask & ~greenMask );
+        mask = blue ? ( mask | blueMask ) : ( mask & ~blueMask );
+
+        LogUtils.printDebug(
+            "\t\t\tTrackSignals::setLights(): %s, %s, %s : mask = %02X", red,
+            green, blue, mask );
+
+        relays.setRelays( mask );
     }
 
     /***************************************************************************

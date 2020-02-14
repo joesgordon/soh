@@ -10,10 +10,13 @@ import org.jutils.utils.Stopwatch;
 
 import soinc.boomilever.data.BlEventConfig;
 import soinc.boomilever.data.Team;
+import soinc.boomilever.data.TrackConfig;
 import soinc.boomilever.data.TrackData;
 import soinc.boomilever.data.TrackState;
 import soinc.boomilever.ui.TrackView;
 import soinc.lib.RunnableTask;
+import soinc.lib.relay.IRelays;
+import soinc.lib.relay.Relays;
 
 /*******************************************************************************
  * 
@@ -37,12 +40,14 @@ public class Track
 
     /***************************************************************************
      * @param config
-     * @param signals
+     * @param trackConfig
+     * @param relays
      **************************************************************************/
-    public Track( BlEventConfig config, TrackSignals signals )
+    public Track( BlEventConfig config, TrackConfig trackConfig,
+        IRelays relays )
     {
         this.config = config;
-        this.signals = signals;
+        this.signals = new TrackSignals( relays, trackConfig );
         this.stateMachine = new StateMachine();
         this.data = new TrackData();
         this.timer = new Timer( "RC Competition" );
@@ -62,9 +67,14 @@ public class Track
     {
         this.data.state = state;
 
-        boolean red = ( state.lights & 0x4 ) == 0x4;
-        boolean green = ( state.lights & 0x2 ) == 0x2;
-        boolean blue = ( state.lights & 0x1 ) == 0x1;
+        boolean red = ( state.lights & Relays.RED_MASK ) == Relays.RED_MASK;
+        boolean green = ( state.lights &
+            Relays.GREEN_MASK ) == Relays.GREEN_MASK;
+        boolean blue = ( state.lights & Relays.BLUE_MASK ) == Relays.BLUE_MASK;
+
+        LogUtils.printDebug(
+            "\t\t\tTrack::handleStateUpdated(): %s -> 0x%X, %s", state.name,
+            state.lights, state.background.toString() );
 
         signals.setLights( red, green, blue );
     }
@@ -86,7 +96,7 @@ public class Track
                 signalPeriodElapsed();
             }
             else if( data.periodTime > config.periodWarning * 1000 &&
-                data.state.isRunning )
+                data.state.isRunning && data.state != TrackState.WARNING )
             {
                 signalPeriodWarning();
             }
@@ -107,8 +117,6 @@ public class Track
 
         timer.scheduleAtFixedRate( new RunnableTask( () -> updateState() ), 100,
             100 );
-
-        signals.setLights( true, true, true );
     }
 
     /***************************************************************************

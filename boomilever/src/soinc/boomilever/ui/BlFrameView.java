@@ -30,7 +30,6 @@ import soinc.boomilever.BlMain;
 import soinc.boomilever.data.BlEventConfig;
 import soinc.boomilever.data.BlOptions;
 import soinc.boomilever.tasks.BlEvent;
-import soinc.boomilever.tasks.TrackSignals;
 import soinc.lib.UiUtils;
 import soinc.lib.gpio.SciolyGpio;
 import soinc.lib.relay.IRelays;
@@ -174,17 +173,12 @@ public class BlFrameView implements IView<JFrame>
             try
             {
                 IRelays relays = BlMain.getRelays();
-
-                TrackSignals signalsA = new TrackSignals( relays, eventCfg.trackA );
-                TrackSignals signalsB = new TrackSignals( relays, eventCfg.trackB );
-
-                BlEvent event = new BlEvent( eventCfg, signalsA, signalsB );
+                BlEvent event = new BlEvent( eventCfg, relays );
 
                 this.eventView = new BlEventView( event,
                     getView().getIconImages(), getView().getSize() );
 
-                event.trackA.connect( eventView.trackAView );
-                event.trackB.connect( eventView.trackBView );
+                event.connect( eventView );
 
                 JFrame frame = eventView.getView();
 

@@ -60,7 +60,7 @@ public enum TrackState implements INamedItem
         this.background = bg;
         this.foreground = fg;
         this.isRunning = isRunning;
-        this.lights = ( lights ^ 0x4 ) & 0x7;
+        this.lights = lights;
     }
 
     /***************************************************************************

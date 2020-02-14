@@ -2,6 +2,8 @@ package soinc.lib.relay;
 
 import java.io.IOException;
 
+import org.jutils.io.LogUtils;
+
 /*******************************************************************************
  * 
  ******************************************************************************/
@@ -68,7 +70,19 @@ public class MockRelay implements IRelays
     @Override
     public void setRelay( int index, boolean isOn )
     {
-        relays[index] = isOn;
+        int mask = getRelays();
+        int m = 1 << index;
+
+        if( isOn )
+        {
+            mask |= m;
+        }
+        else
+        {
+            mask &= ~m;
+        }
+
+        setRelays( mask );
     }
 
     /***************************************************************************
@@ -77,10 +91,7 @@ public class MockRelay implements IRelays
     @Override
     public void turnAllOn()
     {
-        for( int i = 0; i < relays.length; i++ )
-        {
-            relays[i] = true;
-        }
+        setRelays( 0xFF );
     }
 
     /***************************************************************************
@@ -89,10 +100,7 @@ public class MockRelay implements IRelays
     @Override
     public void turnAllOff()
     {
-        for( int i = 0; i < relays.length; i++ )
-        {
-            relays[i] = true;
-        }
+        setRelays( 0 );
     }
 
     /***************************************************************************
@@ -107,6 +115,21 @@ public class MockRelay implements IRelays
 
             relays[i] = ( mask & m ) == m;
         }
+
+        String relayStr = "";
+        for( int i = relays.length - 1; i > -1; i-- )
+        {
+            if( relayStr.length() > 0 )
+            {
+                relayStr += ", ";
+            }
+            relayStr += relays[i];
+        }
+
+        LogUtils.printDebug(
+            "MockRelay::setRelays(int): Set relays to %02X : %s\n", mask,
+            relayStr );
+        // Utils.printStackTrace();
     }
 
     /***************************************************************************
@@ -119,9 +142,12 @@ public class MockRelay implements IRelays
 
         for( int i = 0; i < relays.length; i++ )
         {
-            int m = 1 << i;
+            if( relays[i] )
+            {
+                int m = 1 << i;
 
-            mask |= m;
+                mask |= m;
+            }
         }
 
         return mask;
