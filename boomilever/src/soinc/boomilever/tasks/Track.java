@@ -72,9 +72,9 @@ public class Track
             Relays.GREEN_MASK ) == Relays.GREEN_MASK;
         boolean blue = ( state.lights & Relays.BLUE_MASK ) == Relays.BLUE_MASK;
 
-        LogUtils.printDebug(
-            "\t\t\tTrack::handleStateUpdated(): %s -> 0x%X, %s", state.name,
-            state.lights, state.background.toString() );
+        // LogUtils.printDebug(
+        // "\t\t\tTrack::handleStateUpdated(): %s -> 0x%X, %s", state.name,
+        // state.lights, state.background.toString() );
 
         signals.setLights( red, green, blue );
     }
@@ -175,7 +175,7 @@ public class Track
      **************************************************************************/
     private void setPeriodComplete()
     {
-        LogUtils.printDebug( "Setting Period Complete" );
+        // LogUtils.printDebug( "Setting Period Complete" );
         periodTimer.stop();
 
         data.team.complete = true;
@@ -215,7 +215,7 @@ public class Track
      **************************************************************************/
     public void signalPeriodStartPause()
     {
-        LogUtils.printDebug( "Signalling period start/pause" );
+        // LogUtils.printDebug( "Signalling period start/pause" );
 
         if( periodTimer.isStopped() )
         {

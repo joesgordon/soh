@@ -35,7 +35,7 @@ import soinc.boomilever.data.TrackData;
 import soinc.boomilever.data.TrackState;
 import soinc.boomilever.tasks.Track;
 import soinc.lib.UiUtils;
-import soinc.lib.data.TimeDuration;
+import soinc.lib.ui.MinSecLabel;
 
 /***************************************************************************
  * 
@@ -52,7 +52,7 @@ public class TrackView implements IView<JComponent>
     /**  */
     private final JButton teamButton;
     /**  */
-    private final JLabel periodField;
+    private final MinSecLabel periodField;
     /**  */
     private final JLabel stateField;
 
@@ -66,7 +66,7 @@ public class TrackView implements IView<JComponent>
     {
         this.track = track;
         this.teamButton = new JButton( "No Teams Entered" );
-        this.periodField = UiUtils.createNumLabel( "-:-- s", LRG_FONT );
+        this.periodField = new MinSecLabel( "-:-- s", LRG_FONT );
         this.stateField = UiUtils.createTextLabel( "-----", REG_FONT );
 
         this.view = createView();
@@ -145,13 +145,10 @@ public class TrackView implements IView<JComponent>
             new Insets( 0, 0, 0, 0 ), 0, 0 );
         panel.add( periodLabel, constraints );
 
-        periodField.setOpaque( true );
-        periodField.setBackground( Color.black );
-
         constraints = new GridBagConstraints( 0, 2, 1, 1, 0.0, 1.0,
             GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
             new Insets( 0, 20, 0, 0 ), 0, 0 );
-        panel.add( periodField, constraints );
+        panel.add( periodField.view, constraints );
 
         return panel;
     }
@@ -316,36 +313,33 @@ public class TrackView implements IView<JComponent>
             // LogUtils.printDebug( "Time %d of %d", data.periodTime,
             // competition.config.periodTime );
             long millis = track.config.periodTime * 1000 - data.periodTime;
-            TimeDuration d = new TimeDuration( millis );
-            String time = String.format( " %1d:%02d ", d.totalMinutes,
-                d.seconds );
-            periodField.setText( time );
+            periodField.setTime( millis );
         }
         else
         {
-            periodField.setText( " -:-- " );
+            periodField.reset();
         }
 
         if( data.state == TrackState.WARNING )
         {
-            if( periodField.getBackground() != Color.orange )
+            if( periodField.view.getBackground() != Color.orange )
             {
-                periodField.setBackground( Color.orange );
-                periodField.setForeground( Color.black );
+                periodField.view.setBackground( Color.orange );
+                periodField.view.setForeground( Color.black );
             }
         }
         else if( data.state == TrackState.COMPLETE )
         {
-            if( periodField.getBackground() != Color.red )
+            if( periodField.view.getBackground() != Color.red )
             {
-                periodField.setBackground( Color.red );
-                periodField.setForeground( Color.white );
+                periodField.view.setBackground( Color.red );
+                periodField.view.setForeground( Color.white );
             }
         }
-        else if( periodField.getBackground() != Color.black )
+        else if( periodField.view.getBackground() != Color.black )
         {
-            periodField.setBackground( Color.black );
-            periodField.setForeground( Color.white );
+            periodField.view.setBackground( Color.black );
+            periodField.view.setForeground( Color.white );
         }
 
         stateField.setText( " " + data.state.name + " " );

@@ -24,6 +24,7 @@ import org.jutils.io.options.OptionsSerializer;
 import org.jutils.ui.model.IDataView;
 
 import soinc.lib.UiUtils;
+import soinc.lib.ui.MinSecLabel;
 import soinc.ppp.PppIcons;
 import soinc.ppp.PppMain;
 import soinc.ppp.data.PppOptions;
@@ -45,17 +46,19 @@ public class EventView implements IDataView<PppEvent>
     public final TrackView trackBView;
 
     /**  */
-    private final JLabel timerAField;
+    private final MinSecLabel timer1Field;
     /**  */
-    private final JLabel timerSField;
+    private final MinSecLabel timer2Field;
+    /**  */
+    private final MinSecLabel timer3Field;
 
     /**  */
     private PppEvent event;
 
     /***************************************************************************
-     * @param competition
+     * @param event
      * @param icons
-     * @param dimension
+     * @param size
      **************************************************************************/
     public EventView( PppEvent event, List<Image> icons, Dimension size )
     {
@@ -66,10 +69,9 @@ public class EventView implements IDataView<PppEvent>
         this.trackAView = new TrackView( event.trackA );
         this.trackBView = new TrackView( event.trackB );
 
-        this.timerAField = UiUtils.createNumLabel( "--.- s",
-            TrackView.REG_FONT );
-        this.timerSField = UiUtils.createNumLabel( "--.- s",
-            TrackView.REG_FONT );
+        this.timer1Field = new MinSecLabel( "-:-- s", TrackView.REG_FONT );
+        this.timer2Field = new MinSecLabel( "--.- s", TrackView.REG_FONT );
+        this.timer3Field = new MinSecLabel( "--.- s", TrackView.REG_FONT );
 
         this.content = createCompetitionPanel();
 
@@ -93,6 +95,7 @@ public class EventView implements IDataView<PppEvent>
 
         panel.add( createBannerPanel(), BorderLayout.NORTH );
         panel.add( createTracksPanel(), BorderLayout.CENTER );
+        panel.add( createTimersPanel(), BorderLayout.SOUTH );
 
         // ---------------------------------------------------------------------
 
@@ -132,6 +135,13 @@ public class EventView implements IDataView<PppEvent>
 
         // ---------------------------------------------------------------------
 
+        constraints = new GridBagConstraints( 0, 1, 3, 1, 1.0, 0.0,
+            GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+            new Insets( 0, 10, 10, 10 ), 0, 0 );
+        panel.add( new JSeparator( JSeparator.HORIZONTAL ), constraints );
+
+        // ---------------------------------------------------------------------
+
         return panel;
     }
 
@@ -144,6 +154,64 @@ public class EventView implements IDataView<PppEvent>
         JLabel soLabel = new JLabel( bannerIcon );
 
         return soLabel;
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    private Component createTimersPanel()
+    {
+        JPanel panel = new JPanel( new GridBagLayout() );
+        GridBagConstraints constraints;
+
+        panel.setOpaque( false );
+
+        // ---------------------------------------------------------------------
+
+        JLabel timer1Label = UiUtils.createTextLabel( "Timer 1:",
+            TrackView.REG_FONT );
+
+        constraints = new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0,
+            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
+            new Insets( 0, 0, 20, 0 ), 0, 0 );
+        panel.add( timer1Label, constraints );
+
+        constraints = new GridBagConstraints( 1, 0, 1, 1, 0.0, 0.0,
+            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
+            new Insets( 0, 20, 20, 0 ), 0, 0 );
+        panel.add( timer1Field.view, constraints );
+
+        // ---------------------------------------------------------------------
+
+        JLabel timer2Label = UiUtils.createTextLabel( "Timer 2:",
+            TrackView.REG_FONT );
+
+        constraints = new GridBagConstraints( 2, 0, 1, 1, 0.0, 0.0,
+            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
+            new Insets( 10, 40, 20, 0 ), 0, 0 );
+        panel.add( timer2Label, constraints );
+
+        constraints = new GridBagConstraints( 3, 0, 1, 1, 0.0, 0.0,
+            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
+            new Insets( 10, 20, 20, 0 ), 0, 0 );
+        panel.add( timer2Field.view, constraints );
+
+        // ---------------------------------------------------------------------
+
+        JLabel timer3Label = UiUtils.createTextLabel( "Timer 3:",
+            TrackView.REG_FONT );
+
+        constraints = new GridBagConstraints( 4, 0, 1, 1, 0.0, 0.0,
+            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
+            new Insets( 10, 40, 20, 0 ), 0, 0 );
+        panel.add( timer3Label, constraints );
+
+        constraints = new GridBagConstraints( 5, 0, 1, 1, 0.0, 0.0,
+            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
+            new Insets( 10, 20, 20, 0 ), 0, 0 );
+        panel.add( timer3Field.view, constraints );
+
+        return panel;
     }
 
     /***************************************************************************
@@ -165,6 +233,10 @@ public class EventView implements IDataView<PppEvent>
 
         trackAView.setData( event.trackA );
         trackBView.setData( event.trackB );
+
+        timer1Field.setTime( event.timers.getTimeElapsed( 0 ) );
+        timer2Field.setTime( event.timers.getTimeElapsed( 1 ) );
+        timer3Field.setTime( event.timers.getTimeElapsed( 2 ) );
     }
 
     /***************************************************************************

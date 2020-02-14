@@ -36,7 +36,7 @@ import org.jutils.ui.model.LabelListCellRenderer.IListCellLabelDecorator;
 
 import soinc.lib.SciolyIcons;
 import soinc.lib.UiUtils;
-import soinc.lib.data.TimeDuration;
+import soinc.lib.ui.MinSecLabel;
 import soinc.ppp.data.Team;
 import soinc.ppp.data.TrackData;
 import soinc.ppp.data.TrackData.RunState;
@@ -65,17 +65,17 @@ public class TrackView implements IView<JComponent>
     /**  */
     private final JButton teamButton;
     /**  */
-    private final JLabel periodField;
+    private final MinSecLabel periodField;
     /**  */
-    private final JLabel officialField;
+    private final MinSecLabel officialField;
     /**  */
     private final JLabel stateField;
     /**  */
-    private final JLabel run1Field;
+    private final MinSecLabel run1Field;
     /**  */
     private final JLabel run1Icon;
     /**  */
-    private final JLabel run2Field;
+    private final MinSecLabel run2Field;
     /**  */
     private final JLabel run2Icon;
 
@@ -94,12 +94,12 @@ public class TrackView implements IView<JComponent>
         this.xIcon = SciolyIcons.getXIcon( 36 );
 
         this.teamButton = new JButton( "No Teams Entered" );
-        this.periodField = UiUtils.createNumLabel( "-:-- s", LRG_FONT );
-        this.officialField = UiUtils.createNumLabel( "--.- s", REG_FONT );
+        this.periodField = new MinSecLabel( "-:-- s", LRG_FONT );
+        this.officialField = new MinSecLabel( "--.- s", REG_FONT );
         this.stateField = UiUtils.createTextLabel( "-----", REG_FONT );
-        this.run1Field = UiUtils.createNumLabel( "-- s", REG_FONT );
+        this.run1Field = new MinSecLabel( "-- s", REG_FONT );
         this.run1Icon = new JLabel( blankIcon );
-        this.run2Field = UiUtils.createNumLabel( "-- s", REG_FONT );
+        this.run2Field = new MinSecLabel( "-- s", REG_FONT );
         this.run2Icon = new JLabel( blankIcon );
 
         run1Icon.setPreferredSize( new Dimension( 38, 38 ) );
@@ -158,13 +158,7 @@ public class TrackView implements IView<JComponent>
 
         // ---------------------------------------------------------------------
 
-        Component timersPanel = createTimersPanel();
         Component runsPanel = createRunsPanel();
-
-        constraints = new GridBagConstraints( 0, row, 1, 1, 0.5, 0.0,
-            GridBagConstraints.EAST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 10, 0 ), 0, 0 );
-        panel.add( timersPanel, constraints );
 
         constraints = new GridBagConstraints( 1, row++, 1, 1, 0.5, 0.0,
             GridBagConstraints.WEST, GridBagConstraints.NONE,
@@ -222,54 +216,10 @@ public class TrackView implements IView<JComponent>
             new Insets( 0, 0, 0, 0 ), 0, 0 );
         panel.add( periodLabel, constraints );
 
-        periodField.setOpaque( true );
-        periodField.setBackground( Color.black );
-
         constraints = new GridBagConstraints( 1, 1, 1, 1, 0.0, 0.0,
             GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
             new Insets( 0, 20, 0, 0 ), 0, 0 );
-        panel.add( periodField, constraints );
-
-        return panel;
-    }
-
-    /***************************************************************************
-     * @return
-     **************************************************************************/
-    private Component createTimersPanel()
-    {
-        JPanel panel = new JPanel( new GridBagLayout() );
-        GridBagConstraints constraints;
-
-        panel.setOpaque( false );
-
-        // ---------------------------------------------------------------------
-
-        JLabel timer1Label = UiUtils.createTextLabel( "Timer 1:", REG_FONT );
-
-        constraints = new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
-            new Insets( 0, 0, 0, 0 ), 0, 0 );
-        panel.add( timer1Label, constraints );
-
-        constraints = new GridBagConstraints( 1, 0, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
-            new Insets( 0, 20, 0, 0 ), 0, 0 );
-        panel.add( timerAField, constraints );
-
-        // ---------------------------------------------------------------------
-
-        JLabel timer2Label = UiUtils.createTextLabel( "Timer 2:", REG_FONT );
-
-        constraints = new GridBagConstraints( 0, 1, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
-            new Insets( 10, 0, 0, 0 ), 0, 0 );
-        panel.add( timer2Label, constraints );
-
-        constraints = new GridBagConstraints( 1, 1, 1, 1, 0.0, 0.0,
-            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 0, 0 ), 0, 0 );
-        panel.add( timerSField, constraints );
+        panel.add( periodField.view, constraints );
 
         return panel;
     }
@@ -298,7 +248,7 @@ public class TrackView implements IView<JComponent>
         constraints = new GridBagConstraints( 1, 0, 1, 1, 0.0, 0.0,
             GridBagConstraints.WEST, GridBagConstraints.NONE,
             new Insets( 10, 20, 0, 0 ), 0, 0 );
-        panel.add( run1Field, constraints );
+        panel.add( run1Field.view, constraints );
 
         constraints = new GridBagConstraints( 2, 0, 1, 1, 0.0, 0.0,
             GridBagConstraints.WEST, GridBagConstraints.NONE,
@@ -317,7 +267,7 @@ public class TrackView implements IView<JComponent>
         constraints = new GridBagConstraints( 1, 1, 1, 1, 0.0, 0.0,
             GridBagConstraints.WEST, GridBagConstraints.NONE,
             new Insets( 10, 20, 0, 0 ), 0, 0 );
-        panel.add( run2Field, constraints );
+        panel.add( run2Field.view, constraints );
 
         constraints = new GridBagConstraints( 2, 1, 1, 1, 0.0, 0.0,
             GridBagConstraints.WEST, GridBagConstraints.NONE,
@@ -350,7 +300,7 @@ public class TrackView implements IView<JComponent>
         constraints = new GridBagConstraints( 1, 0, 1, 1, 0.0, 0.0,
             GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
             new Insets( 30, 20, 0, 0 ), 0, 0 );
-        panel.add( officialField, constraints );
+        panel.add( officialField.view, constraints );
 
         // ---------------------------------------------------------------------
 
@@ -485,51 +435,39 @@ public class TrackView implements IView<JComponent>
 
         if( data.periodTime > -1 )
         {
-            TimeDuration d = new TimeDuration( data.periodTime );
-            String time = String.format( " %1d:%02d ", d.totalMinutes,
-                d.seconds );
-            periodField.setText( time );
+            periodField.setTime( data.periodTime );
         }
         else
         {
-            periodField.setText( " -:-- " );
+            periodField.reset();
         }
 
         if( data.periodTime > track.config.periodTime * 7000 / 8 &&
             data.periodTime > track.config.periodTime )
         {
-            if( periodField.getBackground() != Color.orange )
+            if( periodField.view.getBackground() != Color.orange )
             {
-                periodField.setBackground( Color.orange );
-                periodField.setForeground( Color.black );
+                periodField.view.setBackground( Color.orange );
+                periodField.view.setForeground( Color.black );
             }
         }
         else if( data.periodTime > track.config.periodTime * 1000 )
         {
-            if( periodField.getBackground() != Color.red )
+            if( periodField.view.getBackground() != Color.red )
             {
-                periodField.setBackground( Color.red );
-                periodField.setForeground( Color.white );
+                periodField.view.setBackground( Color.red );
+                periodField.view.setForeground( Color.white );
             }
         }
-        else if( periodField.getBackground() != Color.black )
+        else if( periodField.view.getBackground() != Color.black )
         {
-            periodField.setBackground( Color.black );
-            periodField.setForeground( Color.white );
+            periodField.view.setBackground( Color.black );
+            periodField.view.setForeground( Color.white );
         }
-
-        setTimer( data, timerAField, 0 );
-        setTimer( data, timerSField, 1 );
-
-        setDecisecondsTimeField( data.officialTime, officialField );
 
         stateField.setText( " " + data.state.name + " " );
         stateField.setBackground( data.state.background );
         stateField.setForeground( data.state.foreground );
-
-        setSecondsTimeField( data.run1Time, run1Field );
-
-        setSecondsTimeField( data.run2Time, run2Field );
 
         setFieldIcon( data.run1State, run1Icon );
 
@@ -568,62 +506,6 @@ public class TrackView implements IView<JComponent>
         }
 
         iconField.setIcon( icon );
-    }
-
-    /***************************************************************************
-     * @param data
-     * @param timerField
-     * @param index
-     **************************************************************************/
-    private void setTimer( TrackData data, JLabel timerField, int index )
-    {
-        if( data.timers[index] != data.timers[index] )
-        {
-            setDecisecondsTimeField( data.timers[index], timerField );
-        }
-    }
-
-    /***************************************************************************
-     * @param duration
-     * @param timeField
-     **************************************************************************/
-    private void setDecisecondsTimeField( long duration, JLabel timeField )
-    {
-        String time = null;
-
-        if( duration < 0 )
-        {
-            time = "--.- s";
-        }
-        else
-        {
-            TimeDuration d = new TimeDuration( duration );
-            time = String.format( "%02d.%1d s", d.totalSeconds,
-                d.millis / 100 );
-        }
-
-        timeField.setText( time );
-    }
-
-    /***************************************************************************
-     * @param duration
-     * @param timeField
-     **************************************************************************/
-    private void setSecondsTimeField( long duration, JLabel timeField )
-    {
-        String time = null;
-
-        if( duration < 0 )
-        {
-            time = "-- s";
-        }
-        else
-        {
-            TimeDuration d = new TimeDuration( duration );
-            time = String.format( "%02d s", d.totalSeconds );
-        }
-
-        timeField.setText( time );
     }
 
     /***************************************************************************
