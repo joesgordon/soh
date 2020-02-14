@@ -137,13 +137,10 @@ public class StateMachine
      **************************************************************************/
     public String signalPeriodTimeElapsed()
     {
-        if( this.state == TrackState.RUNNING )
+        if( this.state.isRunning )
         {
             setState( TrackState.COMPLETE );
-            return null;
-        }
-        else if( this.state.isRunning )
-        {
+
             return null;
         }
 

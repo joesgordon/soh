@@ -77,9 +77,9 @@ public class Track
             Relays.GREEN_MASK ) == Relays.GREEN_MASK;
         boolean blue = ( state.lights & Relays.BLUE_MASK ) == Relays.BLUE_MASK;
 
-        // LogUtils.printDebug(
-        // "\t\t\tTrack::handleStateUpdated(): %s -> 0x%X, %s", state.name,
-        // state.lights, state.background.toString() );
+        LogUtils.printDebug(
+            "\t\t\tTrack::handleStateUpdated(): %s -> 0x%X, %s", state.name,
+            state.lights, state.background.toString() );
 
         signals.setLights( red, green, blue );
     }
@@ -111,7 +111,7 @@ public class Track
     }
 
     /***************************************************************************
-     * @param trackView
+     * @param view
      * @throws IOException
      **************************************************************************/
     public void connect( TrackView view ) throws IOException
