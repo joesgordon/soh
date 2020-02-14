@@ -15,14 +15,30 @@ import soinc.lib.SciolyIcons;
 public class GvIcons
 {
     /**  */
-    private static final IconLoader loader = new IconLoader(
-        GvIcons.class, "icons" );
+    private static final IconLoader loader = new IconLoader( GvIcons.class,
+        "icons" );
 
     /***************************************************************************
      * Private constructor to prevent instantiation.
      **************************************************************************/
     private GvIcons()
     {
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    public static List<? extends Image> getRollercoasterIcons()
+    {
+        return loader.getImages( IconLoader.buildNameList( "rc_" ) );
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    public static Icon getRollercoaster16()
+    {
+        return loader.getIcon( "rc_016.png" );
     }
 
     /***************************************************************************
@@ -38,18 +54,20 @@ public class GvIcons
     }
 
     /***************************************************************************
+     * @param name
      * @return
      **************************************************************************/
-    public static List<? extends Image> getHovercraftIcons()
+    public static Icon getIcon( String name )
     {
-        return loader.getImages( IconLoader.buildNameList( "fan" ) );
+        return loader.getIcon( name );
     }
 
-    /***************************************************************************
-     * @return
-     **************************************************************************/
-    public static Icon getHovercraft16()
+    public static Icon getResizedIcon( String iconName, float percent )
     {
-        return loader.getIcon( "fan016.png" );
+        Image img = loader.getImage( iconName );
+        int w = Math.round( img.getWidth( null ) * percent );
+        float scale = w / ( float )img.getWidth( null );
+        int h = Math.round( img.getHeight( null ) * scale );
+        return SciolyIcons.getScaledIcon( img, w, h );
     }
 }

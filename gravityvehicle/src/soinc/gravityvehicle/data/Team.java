@@ -1,35 +1,33 @@
-package soinc.gravityvehicle;
-
-import javax.swing.JFrame;
-
-import org.jutils.ui.app.IFrameApp;
-
-import soinc.gravityvehicle.ui.GvFrameView;
+package soinc.gravityvehicle.data;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class GvApp implements IFrameApp
+public class Team
 {
-    private GvFrameView frameView = null;
+    /**  */
+    public String name;
+    /**  */
+    public boolean loaded;
+    /**  */
+    public boolean complete;
 
     /***************************************************************************
-     * {@inheritDoc}
+     * @param name
      **************************************************************************/
-    @Override
-    public JFrame createFrame()
+    public Team( String name )
     {
-        frameView = new GvFrameView();
+        this.name = name;
 
-        return frameView.getView();
+        reset();
     }
 
     /***************************************************************************
-     * {@inheritDoc}
+     * 
      **************************************************************************/
-    @Override
-    public void finalizeGui()
+    public void reset()
     {
-        frameView.getView().setLocation( 0, 0 );
+        this.loaded = false;
+        this.complete = false;
     }
 }

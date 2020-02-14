@@ -145,7 +145,10 @@ public class Relays implements IRelays
 
         if( isOn )
         {
-            relaysMask |= mask;
+            synchronized( this )
+            {
+                relaysMask |= mask;
+            }
         }
         else
         {
@@ -161,7 +164,10 @@ public class Relays implements IRelays
     @Override
     public void turnAllOn()
     {
-        relaysMask = 0xFF;
+        synchronized( this )
+        {
+            relaysMask = 0xFF;
+        }
         runProcess( relaysMask );
     }
 
@@ -171,7 +177,10 @@ public class Relays implements IRelays
     @Override
     public void turnAllOff()
     {
-        relaysMask = 0;
+        synchronized( this )
+        {
+            relaysMask = 0;
+        }
         runProcess( relaysMask );
     }
 
@@ -181,7 +190,10 @@ public class Relays implements IRelays
     @Override
     public void setRelays( int mask )
     {
-        relaysMask = mask;
+        synchronized( this )
+        {
+            relaysMask = mask;
+        }
         runProcess( relaysMask );
     }
 

@@ -3,32 +3,29 @@ package soinc.gravityvehicle.data;
 /*******************************************************************************
  * 
  ******************************************************************************/
-public class DivisionConfig
+public class GvOptions
 {
     /**  */
-    public final Division div;
-    /** The targetTime in tenths of a second. */
-    public int targetTime;
-    /** Target length in cm. */
-    public int targetLength;
+    public final GvEventConfig config;
+    /**  */
+    public boolean useFauxGpio;
 
     /***************************************************************************
-     * @param div
+     * 
      **************************************************************************/
-    public DivisionConfig( Division div )
+    public GvOptions()
     {
-        this.div = div;
-        this.targetTime = div.defaultTargetTime;
-        this.targetLength = 130;
+        this.config = new GvEventConfig();
+        this.useFauxGpio = false;
     }
 
     /***************************************************************************
-     * @param div
+     * @param data
      **************************************************************************/
-    public DivisionConfig( DivisionConfig div )
+    public GvOptions( GvOptions data )
     {
-        this.div = div.div;
-        this.targetTime = div.targetTime;
-        this.targetLength = div.targetLength;
+        this.config = data.config == null ? new GvEventConfig()
+            : new GvEventConfig( data.config );
+        this.useFauxGpio = data.useFauxGpio;
     }
 }

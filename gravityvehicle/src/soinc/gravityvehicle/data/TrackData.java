@@ -1,142 +1,42 @@
 package soinc.gravityvehicle.data;
 
-/*******************************************************************************
+/***************************************************************************
  * 
- ******************************************************************************/
+ **************************************************************************/
 public class TrackData
 {
     /**  */
+    public Team team;
+    /**  */
     public TrackState state;
-    /**  */
-    public HcTeam team;
-    /**  */
-    public int targetTime;
-    /**  */
-    public int periodTime;
-    /**  */
-    public int run1Time;
-    /**  */
-    public int run2Time;
-    /**  */
-    public int failedCount;
-    /**  */
-    public String errorMsg;
+    /** Milliseconds */
+    public long periodTime;
 
     /***************************************************************************
-     * 
+     * @param timerCount
      **************************************************************************/
     public TrackData()
     {
-        clearTrack();
+        reset();
     }
 
     /***************************************************************************
-     * @param td
+     * @param data
      **************************************************************************/
-    public TrackData( TrackData td )
+    public TrackData( TrackData data )
     {
-        this.state = td.state;
-        this.team = td.team;
-        this.targetTime = td.targetTime;
-        this.periodTime = td.periodTime;
-        this.run1Time = td.run1Time;
-        this.run2Time = td.run2Time;
-        this.failedCount = td.failedCount;
-        this.errorMsg = td.errorMsg;
-    }
-
-    /***************************************************************************
-     * @param team
-     * @param div
-     **************************************************************************/
-    public void loadTrack( HcTeam team, DivisionConfig div )
-    {
-        this.state = TrackState.INITIALIZED;
-        this.team = team;
-        this.targetTime = div.targetTime;
-        this.failedCount = team.failedCount;
-        this.run1Time = team.run1Time;
-        this.run2Time = team.run2Time;
-        this.errorMsg = "";
+        this.team = data.team;
+        this.state = data.state;
+        this.periodTime = data.periodTime;
     }
 
     /***************************************************************************
      * 
      **************************************************************************/
-    public void clearTrack()
+    public void reset()
     {
-        this.state = TrackState.UNINITIALIZED;
         this.team = null;
-        this.targetTime = -1;
-        this.failedCount = 0;
-        this.run1Time = -1;
-        this.run2Time = -1;
-        this.errorMsg = "";
-    }
-
-    /***************************************************************************
-     * Returns the school code of the currently loaded team or "N/A".
-     **************************************************************************/
-    public String getTeamCode()
-    {
-        return team == null ? "N/A" : team.schoolCode;
-    }
-
-    /***************************************************************************
-     * @param runTime
-     **************************************************************************/
-    public void setRunTime( int runTime )
-    {
-        if( state == TrackState.RUNNING_A )
-        {
-            run1Time = runTime;
-        }
-        else if( state == TrackState.RUNNING_B )
-        {
-            run2Time = runTime;
-        }
-        else
-        {
-            if( !state.runaComplete )
-            {
-                run1Time = -1;
-            }
-
-            if( !state.runbComplete )
-            {
-                run2Time = -1;
-            }
-        }
-    }
-
-    /***************************************************************************
-     * @return
-     **************************************************************************/
-    public boolean checkTimeFail()
-    {
-        int runTime = -1;
-
-        if( state == TrackState.RUNNING_A )
-        {
-            runTime = run1Time;
-        }
-        else if( state == TrackState.RUNNING_B )
-        {
-            runTime = run2Time;
-        }
-
-        return runTime >= ( 3 * targetTime );
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    public void completeTrack()
-    {
-        state = TrackState.FINISHED;
-
-        team.run1Time = run1Time;
-        team.run2Time = run2Time;
-        team.failedCount = failedCount;
+        this.state = TrackState.NO_TEAM;
+        this.periodTime = -1L;
     }
 }

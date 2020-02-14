@@ -1,74 +1,45 @@
 package soinc.gravityvehicle.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
-import javax.swing.Action;
-import javax.swing.Icon;
 import javax.swing.JPanel;
-import javax.swing.JToolBar;
 
-import org.jutils.IconConstants;
-import org.jutils.SwingUtils;
 import org.jutils.ui.StandardFormView;
-import org.jutils.ui.event.ActionAdapter;
 import org.jutils.ui.fields.BooleanFormField;
-import org.jutils.ui.fields.ComboFormField;
-import org.jutils.ui.fields.IntegerFormField;
-import org.jutils.ui.fields.NamedItemDescriptor;
 import org.jutils.ui.fields.StringFormField;
 import org.jutils.ui.model.IDataView;
 
-import soinc.gravityvehicle.data.Division;
-import soinc.gravityvehicle.data.HcTeam;
+import soinc.gravityvehicle.data.Team;
 
-/*******************************************************************************
- * 
- ******************************************************************************/
-public class TeamView implements IDataView<HcTeam>
+public class TeamView implements IDataView<Team>
 {
-    /**  */
-    private final JPanel view;
-    /**  */
-    private final StringFormField nameField;
-    /**  */
-    private final ComboFormField<Division> divField;
-    /**  */
-    private final IntegerFormField failedCountField;
-    /**  */
-    private final IntegerFormField time1Field;
-    /**  */
-    private final IntegerFormField time2Field;
-    /**  */
-    private final BooleanFormField loadedField;
+    private final JPanel panel;
 
-    /**  */
-    private HcTeam team;
+    private final StringFormField nameField;
+    private final BooleanFormField loadedField;
+    private final BooleanFormField completeField;
+
+    private Team team;
 
     /***************************************************************************
      * 
      **************************************************************************/
     public TeamView()
     {
-        this.nameField = new StringFormField( "School Code", 15, 1, null );
-        this.divField = new ComboFormField<>( "Division", Division.values(),
-            new NamedItemDescriptor<>() );
-        this.failedCountField = new IntegerFormField( "Failed Count" );
-        this.time1Field = new IntegerFormField( "Time 1", "0.1 seconds", 15, -1,
-            null );
-        this.time2Field = new IntegerFormField( "Time 2", "0.1 seconds", 15, -1,
-            null );
+        this.nameField = new StringFormField( "Name", 2, null );
         this.loadedField = new BooleanFormField( "Loaded" );
-        this.view = createView();
+        this.completeField = new BooleanFormField( "Complete" );
 
-        setData( new HcTeam() );
+        this.panel = createView();
 
-        nameField.setUpdater( ( d ) -> team.schoolCode = d );
-        divField.setUpdater( ( d ) -> team.div = d );
-        failedCountField.setUpdater( ( d ) -> team.failedCount = d );
-        time1Field.setUpdater( ( d ) -> team.run1Time = d );
-        time2Field.setUpdater( ( d ) -> team.run2Time = d );
+        setData( new Team( "Test" ) );
+
+        nameField.setUpdater( ( d ) -> team.name = d );
         loadedField.setUpdater( ( d ) -> team.loaded = d );
+        completeField.setUpdater( ( d ) -> team.complete = d );
     }
 
     /***************************************************************************
@@ -76,89 +47,56 @@ public class TeamView implements IDataView<HcTeam>
      **************************************************************************/
     private JPanel createView()
     {
-        JPanel panel = new JPanel( new BorderLayout() );
+        JPanel panel = new JPanel( new GridBagLayout() );
+        GridBagConstraints constraints;
 
-        panel.add( createToolbar(), BorderLayout.NORTH );
-        panel.add( createForm(), BorderLayout.CENTER );
+        constraints = new GridBagConstraints( 0, 0, 1, 1, 1.0, 1.0,
+            GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,
+            new Insets( 0, 0, 0, 0 ), 0, 0 );
+        panel.add( createForm(), constraints );
 
         return panel;
     }
 
-    /***************************************************************************
-     * @return
-     **************************************************************************/
-    private Component createToolbar()
-    {
-        JToolBar toolbar = new JToolBar();
-        Action action;
-        Icon icon;
-
-        SwingUtils.setToolbarDefaults( toolbar );
-
-        icon = IconConstants.getIcon( IconConstants.UNDO_16 );
-        action = new ActionAdapter( ( e ) -> initTeam(), "Initialize", icon );
-        SwingUtils.addActionToToolbar( toolbar, action );
-
-        return toolbar;
-    }
-
-    /***************************************************************************
-     * 
-     **************************************************************************/
-    private void initTeam()
-    {
-        team.initTrials();
-        setData( team );
-    }
-
-    /***************************************************************************
-     * @return
-     **************************************************************************/
-    private Component createForm()
+    private JPanel createForm()
     {
         StandardFormView form = new StandardFormView();
 
         form.addField( nameField );
-        form.addField( divField );
-        form.addField( failedCountField );
-        form.addField( time1Field );
-        form.addField( time2Field );
         form.addField( loadedField );
+        form.addField( completeField );
 
         return form.getView();
     }
 
     /***************************************************************************
-     * 
+     * {@inheritDoc}
      **************************************************************************/
     @Override
     public Component getView()
     {
-        return view;
+        return panel;
     }
 
     /***************************************************************************
-     * 
+     * {@inheritDoc}
      **************************************************************************/
     @Override
-    public HcTeam getData()
+    public Team getData()
     {
         return team;
     }
 
     /***************************************************************************
-     * 
+     * {@inheritDoc}
      **************************************************************************/
     @Override
-    public void setData( HcTeam data )
+    public void setData( Team team )
     {
-        this.team = data;
+        this.team = team;
 
-        nameField.setValue( team.schoolCode );
-        divField.setValue( team.div );
-        failedCountField.setValue( team.failedCount );
-        time1Field.setValue( team.run1Time );
-        time2Field.setValue( team.run2Time );
+        nameField.setValue( team.name );
         loadedField.setValue( team.loaded );
+        completeField.setValue( team.complete );
     }
 }
