@@ -1,0 +1,91 @@
+export HISTTIMEFORMAT="%04y-%02m-%02d %02H:%02M:%02S "
+export PS1='\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n[\d \t] $ '
+export PS2='> '
+export PS4='+ '
+
+alias edit="gedit"
+alias wm='diff'
+alias ec='edit $(cygpath -w ~/.bashrc)'
+alias h='history'
+
+alias goapp="go ../app"
+alias gogui="go ../gui"
+
+alias gitdi='git difftool -y'
+alias gitcfg='git config -l --show-origin | sort'
+alias gitci='git commit -m '
+alias gitad='git add'
+alias gitst='git status -s'
+alias gitup='git pull -v --progress;git submodule update --recursive --remote'
+alias gitlc='git config -l --show-origin'
+
+alias rs='. ~/.bashrc'
+alias rss='bash'
+
+alias ll='ls -l'
+alias lla='ls -la'
+alias lld='ls -ld'
+alias uls='ls'
+
+function go()
+{
+    todir=$1
+
+    if (( "$#" > 1 )) ; then
+        echo "ERROR: go takes only either 0 or 1 arguments"
+        return
+    elif (( "$#" == 0 )) ; then
+        todir=$HOME
+    fi
+    
+    if [[ ! -d $todir ]] ; then
+        echo "ERROR: $1 is not a directory"
+        return
+    fi
+
+    cd $1
+    uls
+}
+
+function finddup()
+{
+    if (( "$#" < 1 )) ; then
+        find . -mindepth 1 -type f -name '*.hpp' -o -name '*.C' -o -name '*.c' -o -name '*.cpp' -o -name '*.h' -printf '%p %f\n' | sort -t ' ' -k 2,2 | uniq -f 1 --all-repeated=separate | cut -d' ' -f1
+    else
+        find $* -mindepth 1 -type f -name '*.hpp' -o -name '*.C' -o -name '*.c' -o -name '*.cpp' -o -name '*.h' -printf '%p %f\n' | sort -t ' ' -k 2,2 | uniq -f 1 --all-repeated=separate | cut -d' ' -f1
+    fi
+}
+
+function up()
+{
+    upcnt=0
+    
+    if [[ -z "$#" ]] ; then
+        echo "ERROR: How'd you even do that?"
+        return
+    elif (( "$#" < 1 )) ; then
+        upcnt=1
+    else
+        upcnt=$1
+    fi
+
+    ups=""
+    for i in `seq 1 $upcnt` ; do
+        ups="$ups../"
+    done
+
+    go $ups
+}
+
+function findf()
+{
+    findf_dir=$1
+    findf_pattern=$2
+    
+    if (( "$#" != 2 )) ; then
+        echo "ERROR: findf requires 2 arguments"
+        return
+    fi
+    
+    find ${findf_dir} -type f -name "${findf_pattern}"
+}
