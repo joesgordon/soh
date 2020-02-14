@@ -62,12 +62,11 @@ public class EventView implements IDataView<PppEvent>
      **************************************************************************/
     public EventView( PppEvent event, List<Image> icons, Dimension size )
     {
+        this.event = event;
         this.frame = new JFrame( "Ping Pong Parachute Event" );
 
-        this.event = event;
-
-        this.trackAView = new TrackView( event.trackA );
-        this.trackBView = new TrackView( event.trackB );
+        this.trackAView = new TrackView( event.config, event.trackA );
+        this.trackBView = new TrackView( event.config, event.trackB );
 
         this.timer1Field = new MinSecLabel( "-:-- s", TrackView.REG_FONT );
         this.timer2Field = new MinSecLabel( "--.- s", TrackView.REG_FONT );
@@ -234,9 +233,32 @@ public class EventView implements IDataView<PppEvent>
         trackAView.setData( event.trackA );
         trackBView.setData( event.trackB );
 
-        timer1Field.setTime( event.timers.getTimeElapsed( 0 ) );
-        timer2Field.setTime( event.timers.getTimeElapsed( 1 ) );
-        timer3Field.setTime( event.timers.getTimeElapsed( 2 ) );
+        if( event.timers.hasStarted( 0 ) )
+        {
+            timer1Field.setTime( event.timers.getTimeElapsed( 0 ) );
+        }
+        else
+        {
+            timer1Field.reset();
+        }
+
+        if( event.timers.hasStarted( 1 ) )
+        {
+            timer2Field.setTime( event.timers.getTimeElapsed( 1 ) );
+        }
+        else
+        {
+            timer2Field.reset();
+        }
+
+        if( event.timers.hasStarted( 2 ) )
+        {
+            timer3Field.setTime( event.timers.getTimeElapsed( 2 ) );
+        }
+        else
+        {
+            timer3Field.reset();
+        }
     }
 
     /***************************************************************************

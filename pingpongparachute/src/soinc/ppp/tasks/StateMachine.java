@@ -55,7 +55,7 @@ public class StateMachine
     /***************************************************************************
      * @return
      **************************************************************************/
-    public String signalPeriodStarted()
+    public String signalPeriodStartPause()
     {
         if( this.state == TrackState.LOADED ||
             this.state == TrackState.RUNNING )
@@ -157,7 +157,7 @@ public class StateMachine
     {
         if( this.state.isRunning )
         {
-            TrackData data = competition.getData();
+            TrackData data = competition.data;
             if( data.run1State.isComplete )
             {
                 setState( TrackState.COMPLETE );

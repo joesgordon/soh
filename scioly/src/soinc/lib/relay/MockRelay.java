@@ -127,7 +127,7 @@ public class MockRelay implements IRelays
         }
 
         LogUtils.printDebug(
-            "MockRelay::setRelays(int): Set relays to %02X : %s\n", mask,
+            "MockRelay::setRelays(int): Set relays to %02X : %s", mask,
             relayStr );
         // Utils.printStackTrace();
     }

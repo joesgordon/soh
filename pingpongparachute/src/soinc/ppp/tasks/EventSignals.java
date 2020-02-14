@@ -32,15 +32,19 @@ public class EventSignals
     public final TrackSignals trackB;
 
     /**  */
-    public final TimerPins timer1;
+    private final TimerPins timer1;
     /**  */
-    public final TimerPins timer2;
+    private final TimerPins timer2;
     /**  */
-    public final List<TimerPins> timerPins;
+    private final List<TimerPins> timerPins;
+
+    /**  */
+    private ITimerCallback timer3Callback;
+
+    private boolean timer3Started;
 
     /***************************************************************************
      * @param eventCfg
-     * @param gpio
      * @param relays
      **************************************************************************/
     public EventSignals( EventConfig eventCfg, IRelays relays )
@@ -48,13 +52,16 @@ public class EventSignals
         this.eventCfg = eventCfg;
 
         this.trackA = new TrackSignals( eventCfg.trackA, relays );
-        this.trackB = new TrackSignals( eventCfg.trackA, relays );
+        this.trackB = new TrackSignals( eventCfg.trackB, relays );
 
         this.timer1 = new TimerPins(
             eventCfg.timer1In.resistance == PinResistance.PULL_UP );
         this.timer2 = new TimerPins(
             eventCfg.timer2In.resistance == PinResistance.PULL_UP );
         this.timerPins = new ArrayList<>();
+
+        this.timer3Callback = null;
+        this.timer3Started = false;
 
         timerPins.add( timer1 );
         timerPins.add( timer2 );
@@ -76,20 +83,38 @@ public class EventSignals
         // ---------------------------------------------------------------------
 
         callback = ( e ) -> timer1.togglePin();
-        SwingUtils.addKeyListener( jview, "J", callback, "TimerA toggle",
-            true );
+        SwingUtils.addKeyListener( jview, eventCfg.timer1StartStopKey.keystroke,
+            callback, "Timer 1 Toggle", true );
 
         callback = ( e ) -> clearTimer( event, timer1, 0 );
         SwingUtils.addKeyListener( jview, eventCfg.timer1ClearKey.keystroke,
-            callback, "Timer 1 clear", true );
+            callback, "Timer 1 Clear", true );
+
+        // ---------------------------------------------------------------------
 
         callback = ( e ) -> timer2.togglePin();
-        SwingUtils.addKeyListener( jview, "K", callback, "TimerS toggle",
-            true );
+        SwingUtils.addKeyListener( jview, eventCfg.timer2StartStopKey.keystroke,
+            callback, "Timer 2 Toggle", true );
 
         callback = ( e ) -> clearTimer( event, timer2, 1 );
         SwingUtils.addKeyListener( jview, eventCfg.timer2ClearKey.keystroke,
-            callback, "Timer 2 clear", true );
+            callback, "Timer 2 Clear", true );
+
+        // ---------------------------------------------------------------------
+
+        callback = ( e ) -> {
+            timer3Started = !timer3Started;
+            if( timer3Callback != null )
+            {
+                timer3Callback.setTimerStarted( timer3Started );
+            }
+        };
+        SwingUtils.addKeyListener( jview, eventCfg.timer3StartStopKey.keystroke,
+            callback, "Timer 3 Toggle", true );
+
+        callback = ( e ) -> timer3Started = false;
+        SwingUtils.addKeyListener( jview, eventCfg.timer3ClearKey.keystroke,
+            callback, "Timer 3 Clear", true );
 
         // ---------------------------------------------------------------------
 
@@ -115,7 +140,14 @@ public class EventSignals
      **************************************************************************/
     public void setTimerCallback( int index, ITimerCallback callback )
     {
-        timerPins.get( index ).setCallback( callback );
+        if( index < 2 )
+        {
+            timerPins.get( index ).setCallback( callback );
+        }
+        else
+        {
+            this.timer3Callback = callback;
+        }
     }
 
     /***************************************************************************
@@ -130,7 +162,7 @@ public class EventSignals
     }
 
     /***************************************************************************
-     * @param competition
+     * @param event
      * @param timer
      * @param index
      **************************************************************************/
@@ -138,5 +170,13 @@ public class EventSignals
     {
         timer.clear();
         event.signalTimerClear( index );
+    }
+
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    public int getTimerCount()
+    {
+        return 3;
     }
 }

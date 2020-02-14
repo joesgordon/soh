@@ -4,7 +4,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
 
 import org.jutils.SwingUtils;
 
@@ -21,9 +20,6 @@ public class TrackSignals
     private final IRelays relays;
     /**  */
     private final TrackConfig trackCfg;
-
-    /**  */
-    private TrackView view;
 
     /***************************************************************************
      * @param trackCfg
@@ -44,8 +40,6 @@ public class TrackSignals
      **************************************************************************/
     public void connect( Track track, TrackView view ) throws IOException
     {
-        this.view = view;
-
         relays.initialize();
 
         JComponent jview = view.getView();
@@ -91,13 +85,5 @@ public class TrackSignals
         relays.setRelay( 0, red );
         relays.setRelay( 1, green );
         relays.setRelay( 2, blue );
-    }
-
-    /***************************************************************************
-     * @param data
-     **************************************************************************/
-    public void updateUI( Track data )
-    {
-        SwingUtilities.invokeLater( () -> view.setData( data ) );
     }
 }

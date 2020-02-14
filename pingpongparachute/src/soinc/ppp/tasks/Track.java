@@ -3,12 +3,13 @@ package soinc.ppp.tasks;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
+
+import javax.swing.SwingUtilities;
 
 import org.jutils.io.LogUtils;
+import org.jutils.ui.event.updater.IUpdater;
 import org.jutils.utils.Stopwatch;
 
-import soinc.lib.RunnableTask;
 import soinc.ppp.data.EventConfig;
 import soinc.ppp.data.Team;
 import soinc.ppp.data.TrackData;
@@ -25,29 +26,33 @@ public class Track
     public final EventConfig config;
     /**  */
     private final TrackSignals signals;
+    /**  */
+    private final IUpdater<Track> runCompleteCallback;
 
     /** The state of the competition. It should never be {@code null}. */
     private final StateMachine stateMachine;
     /**  */
-    private final TrackData data;
-    /**  */
-    private final Timer timer;
+    public final TrackData data;
 
     /**  */
     private final Stopwatch periodTimer;
+    /**  */
+    private TrackView view;
 
     /***************************************************************************
      * @param config
      * @param signals
      * @param timerCount
+     * @param runCompleteCallback
      **************************************************************************/
-    public Track( EventConfig config, TrackSignals signals, int timerCount )
+    public Track( EventConfig config, TrackSignals signals, int timerCount,
+        IUpdater<Track> runCompleteCallback )
     {
         this.config = config;
         this.signals = signals;
+        this.runCompleteCallback = runCompleteCallback;
         this.stateMachine = new StateMachine( this );
         this.data = new TrackData( timerCount );
-        this.timer = new Timer( "RC Competition" );
         this.periodTimer = new Stopwatch();
 
         this.periodTimer.stop();
@@ -74,7 +79,7 @@ public class Track
     /***************************************************************************
      * 
      **************************************************************************/
-    private void updateState()
+    public void updateState()
     {
         // LogUtils.printDebug( "updating" );
 
@@ -88,27 +93,26 @@ public class Track
                 signalPeriodElapsed();
             }
             else if( data.periodTime > config.periodWarning * 1000 &&
-                data.state.isRunning )
+                data.state.isRunning && data.state != TrackState.WARNING )
             {
                 signalPeriodWarning();
             }
         }
 
-        signals.updateUI( this );
+        updateUI();
     }
 
     /***************************************************************************
      * @param trackView
      * @throws IOException
      **************************************************************************/
-    public void connect( TrackView trackView ) throws IOException
+    public void connect( TrackView view ) throws IOException
     {
-        signals.connect( this, trackView );
+        this.view = view;
+
+        signals.connect( this, view );
 
         signalClearTeam();
-
-        timer.scheduleAtFixedRate( new RunnableTask( () -> updateState() ), 100,
-            100 );
     }
 
     /***************************************************************************
@@ -116,7 +120,8 @@ public class Track
      **************************************************************************/
     public void disconnect()
     {
-        timer.cancel();
+        // timer.cancel();
+        // signals.disconnect();
     }
 
     /***************************************************************************
@@ -150,14 +155,6 @@ public class Track
     public TrackState getState()
     {
         return stateMachine.getState();
-    }
-
-    /***************************************************************************
-     * @return
-     **************************************************************************/
-    public TrackData getData()
-    {
-        return new TrackData( data );
     }
 
     /***************************************************************************
@@ -252,7 +249,7 @@ public class Track
         if( periodTimer.isStopped() )
         {
             long now = System.currentTimeMillis();
-            String msg = stateMachine.signalPeriodStarted();
+            String msg = stateMachine.signalPeriodStartPause();
 
             if( msg == null )
             {
@@ -330,6 +327,8 @@ public class Track
                 data.run2State = rs;
             }
 
+            runCompleteCallback.update( this );
+
             if( data.state == TrackState.COMPLETE )
             {
                 setPeriodComplete();
@@ -391,5 +390,13 @@ public class Track
         {
             showErrorMessage( msg );
         }
+    }
+
+    /***************************************************************************
+     * @param data
+     **************************************************************************/
+    public void updateUI()
+    {
+        SwingUtilities.invokeLater( () -> view.setData( this ) );
     }
 }

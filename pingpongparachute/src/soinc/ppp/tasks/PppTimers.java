@@ -64,12 +64,11 @@ public class PppTimers
      **************************************************************************/
     public void setData( TrackData data )
     {
-        long now = System.currentTimeMillis();
         for( int i = 0; i < timers.length; i++ )
         {
             if( used[i] )
             {
-                data.timers[i] = timers[i].getElapsed( now );
+                data.timers[i] = timers[i].getElapsed();
             }
             else
             {
@@ -77,7 +76,7 @@ public class PppTimers
             }
         }
 
-        data.officialTime = getOfficialDuration( now );
+        data.officialTime = getOfficialDuration();
     }
 
     /***************************************************************************

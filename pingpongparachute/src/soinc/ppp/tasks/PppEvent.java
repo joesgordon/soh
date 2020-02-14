@@ -1,13 +1,18 @@
 package soinc.ppp.tasks;
 
 import java.io.IOException;
+import java.util.Timer;
+
+import javax.swing.SwingUtilities;
 
 import org.jutils.io.LogUtils;
 
 import com.pi4j.io.gpio.GpioController;
 
+import soinc.lib.RunnableTask;
 import soinc.lib.relay.IRelays;
 import soinc.ppp.data.EventConfig;
+import soinc.ppp.data.TrackData;
 import soinc.ppp.ui.EventView;
 
 /*******************************************************************************
@@ -32,9 +37,13 @@ public class PppEvent
 
     /**  */
     public final PppTimers timers;
+    /**  */
+    private final Timer timer;
 
     /**  */
     public Track selectedTrack;
+    /**  */
+    private EventView view;
 
     /***************************************************************************
      * @param config
@@ -49,14 +58,38 @@ public class PppEvent
 
         this.signals = new EventSignals( config, relays );
 
-        int timerCount = signals.timerPins.size();
-
-        this.trackA = new Track( config, signals.trackA, timerCount );
-        this.trackB = new Track( config, signals.trackB, timerCount );
+        int timerCount = signals.getTimerCount();
 
         this.timers = new PppTimers( timerCount );
 
+        this.trackA = new Track( config, signals.trackA, timerCount,
+            ( t ) -> handleRunComplete( t ) );
+        this.trackB = new Track( config, signals.trackB, timerCount,
+            ( t ) -> handleRunComplete( t ) );
+
+        this.timer = new Timer( "PPP Event" );
+
         this.selectedTrack = trackA;
+    }
+
+    /***************************************************************************
+     * @param track
+     **************************************************************************/
+    private void handleRunComplete( Track track )
+    {
+        TrackData data = track.data;
+
+        timers.setData( data );
+        timers.clear();
+
+        if( data.run1State.isComplete )
+        {
+            data.run1Time = ( int )data.officialTime;
+        }
+        else if( data.run2State.isComplete )
+        {
+            data.run2Time = ( int )data.officialTime;
+        }
     }
 
     /***************************************************************************
@@ -68,13 +101,15 @@ public class PppEvent
     }
 
     /***************************************************************************
-     * @param eventView
+     * @param view
      * @param gpio
      * @throws IOException
      **************************************************************************/
-    public void connect( EventView eventView ) throws IOException
+    public void connect( EventView view ) throws IOException
     {
-        signals.connect( this, eventView, gpio );
+        this.view = view;
+
+        signals.connect( this, view, gpio );
 
         for( int i = 0; i < timers.getSize(); i++ )
         {
@@ -82,6 +117,32 @@ public class PppEvent
             signals.setTimerCallback( i,
                 ( b ) -> signalTimerStart( index, b ) );
         }
+
+        trackA.connect( view.trackAView );
+        trackB.connect( view.trackBView );
+
+        timer.scheduleAtFixedRate( new RunnableTask( () -> updateState() ), 100,
+            100 );
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    private void updateState()
+    {
+        if( trackA.data.isRunning() )
+        {
+            timers.setData( trackA.data );
+        }
+        else if( trackB.data.isRunning() )
+        {
+            timers.setData( trackB.data );
+        }
+
+        updateUI();
+
+        trackA.updateState();
+        trackB.updateState();
     }
 
     /***************************************************************************
@@ -89,6 +150,7 @@ public class PppEvent
      **************************************************************************/
     public void disconnect()
     {
+        timer.cancel();
         trackA.disconnect();
         trackB.disconnect();
         signals.disconnect( gpio );
@@ -103,6 +165,9 @@ public class PppEvent
     {
         boolean started = timers.hasStarted( index );
 
+        LogUtils.printDebug( "PppEvent::signalTimerStart( %d, %s )", index,
+            start );
+
         if( start && !timers.hasStarted() )
         {
             if( selectedTrack.signalTimerStart( index, start ) )
@@ -114,8 +179,11 @@ public class PppEvent
         else
         {
             boolean timerHasStopped = timers.hasStopped( index );
-
             boolean timerHasStarted = timers.hasStarted( index );
+
+            LogUtils.printDebug(
+                "PppEvent::signalTimerStart( %d, %s ): stopped: %s, started: %s",
+                index, start, timerHasStopped, timerHasStarted );
 
             if( start && !timerHasStarted )
             {
@@ -171,5 +239,13 @@ public class PppEvent
     public boolean areTimersComplete()
     {
         return timers.areComplete();
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    public void updateUI()
+    {
+        SwingUtilities.invokeLater( () -> view.setData( this ) );
     }
 }

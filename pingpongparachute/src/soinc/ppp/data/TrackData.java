@@ -30,18 +30,18 @@ public class TrackData
     /**  */
     public RunState run2State;
 
-    /**
+    /***************************************************************************
      * @param timerCount
-     */
+     **************************************************************************/
     public TrackData( int timerCount )
     {
         this.timers = new long[timerCount];
         reset();
     }
 
-    /**
+    /***************************************************************************
      * @param data
-     */
+     **************************************************************************/
     public TrackData( TrackData data )
     {
         this.team = data.team;
@@ -55,6 +55,17 @@ public class TrackData
         this.run2State = data.run2State;
     }
 
+    /***************************************************************************
+     * @return
+     **************************************************************************/
+    public boolean isRunning()
+    {
+        return run1State == RunState.RUNNING || run2State == RunState.RUNNING;
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
     public void reset()
     {
         this.team = null;
@@ -71,11 +82,18 @@ public class TrackData
         this.run2State = RunState.NOT_RUN;
     }
 
+    /***************************************************************************
+     * 
+     **************************************************************************/
     public static enum RunState
     {
+        /**  */
         NOT_RUN( false ),
+        /**  */
         RUNNING( false ),
+        /**  */
         FAILED( true ),
+        /**  */
         SUCCESS( true );
 
         public final boolean isComplete;

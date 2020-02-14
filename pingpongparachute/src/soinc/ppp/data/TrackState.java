@@ -18,7 +18,7 @@ public enum TrackState implements INamedItem
     /** The competition has been started.. */
     RUNNING( "Running", new Color( 0x008000 ), true, Relays.GREEN_LIGHT ),
     /** The rocket has been launched */
-    LAUNCHED( "Running", new Color( 0x008000 ), Color.white, true,
+    LAUNCHED( "Launched", new Color( 0x008000 ), Color.white, true,
         Relays.GREEN_LIGHT, true ),
     /** The timer has reached the warning limit. */
     WARNING( "Warning", Color.yellow, Color.black, true, Relays.YELLOW_LIGHT ),

@@ -1,7 +1,5 @@
 package soinc.lib.gpio;
 
-import org.jutils.io.LogUtils;
-
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
@@ -74,7 +72,7 @@ public class TimerPins
     {
         this.started = !started;
 
-        LogUtils.printDebug( "Toggling pin " + inPin.getPin().getName() );
+        // LogUtils.printDebug( "Toggling pin " + inPin.getPin().getName() );
 
         if( callback != null )
         {

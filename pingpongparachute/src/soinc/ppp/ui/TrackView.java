@@ -37,6 +37,7 @@ import org.jutils.ui.model.LabelListCellRenderer.IListCellLabelDecorator;
 import soinc.lib.SciolyIcons;
 import soinc.lib.UiUtils;
 import soinc.lib.ui.MinSecLabel;
+import soinc.ppp.data.EventConfig;
 import soinc.ppp.data.Team;
 import soinc.ppp.data.TrackData;
 import soinc.ppp.data.TrackData.RunState;
@@ -80,13 +81,17 @@ public class TrackView implements IView<JComponent>
     private final JLabel run2Icon;
 
     /**  */
+    private final EventConfig eventCfg;
+    /**  */
     private Track track;
 
     /***************************************************************************
+     * @param eventCfg
      * @param track
      **************************************************************************/
-    public TrackView( Track track )
+    public TrackView( EventConfig eventCfg, Track track )
     {
+        this.eventCfg = eventCfg;
         this.track = track;
 
         this.blankIcon = new ColorIcon( new Color( 20, 20, 20 ), 36 );
@@ -97,9 +102,9 @@ public class TrackView implements IView<JComponent>
         this.periodField = new MinSecLabel( "-:-- s", LRG_FONT );
         this.officialField = new MinSecLabel( "--.- s", REG_FONT );
         this.stateField = UiUtils.createTextLabel( "-----", REG_FONT );
-        this.run1Field = new MinSecLabel( "-- s", REG_FONT );
+        this.run1Field = new MinSecLabel( "-:-- s", REG_FONT );
         this.run1Icon = new JLabel( blankIcon );
-        this.run2Field = new MinSecLabel( "-- s", REG_FONT );
+        this.run2Field = new MinSecLabel( "-:-- s", REG_FONT );
         this.run2Icon = new JLabel( blankIcon );
 
         run1Icon.setPreferredSize( new Dimension( 38, 38 ) );
@@ -135,8 +140,8 @@ public class TrackView implements IView<JComponent>
 
         // ---------------------------------------------------------------------
 
-        constraints = new GridBagConstraints( 0, row++, 1, 1, 1.0, 0.0,
-            GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        constraints = new GridBagConstraints( 0, row++, 1, 1, 1.0, 1.0,
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
             new Insets( 10, 0, 0, 0 ), 0, 0 );
         panel.add( createUpperPanel(), constraints );
 
@@ -160,8 +165,8 @@ public class TrackView implements IView<JComponent>
 
         Component runsPanel = createRunsPanel();
 
-        constraints = new GridBagConstraints( 1, row++, 1, 1, 0.5, 0.0,
-            GridBagConstraints.WEST, GridBagConstraints.NONE,
+        constraints = new GridBagConstraints( 0, row++, 1, 1, 0.0, 0.0,
+            GridBagConstraints.CENTER, GridBagConstraints.NONE,
             new Insets( 10, 20, 10, 20 ), 0, 0 );
         panel.add( runsPanel, constraints );
 
@@ -169,8 +174,8 @@ public class TrackView implements IView<JComponent>
 
         Component officialPanel = createOfficialPanel();
 
-        constraints = new GridBagConstraints( 0, row, 2, 1, 0.0, 1.0,
-            GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        constraints = new GridBagConstraints( 0, row++, 1, 1, 1.0, 1.0,
+            GridBagConstraints.CENTER, GridBagConstraints.BOTH,
             new Insets( 10, 20, 10, 0 ), 0, 0 );
         panel.add( officialPanel, constraints );
 
@@ -292,12 +297,12 @@ public class TrackView implements IView<JComponent>
         JLabel officialLabel = UiUtils.createTextLabel( "Official Time:",
             REG_FONT );
 
-        constraints = new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0,
+        constraints = new GridBagConstraints( 0, 0, 1, 1, 0.5, 0.0,
             GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
             new Insets( 40, 0, 0, 0 ), 0, 0 );
         panel.add( officialLabel, constraints );
 
-        constraints = new GridBagConstraints( 1, 0, 1, 1, 0.0, 0.0,
+        constraints = new GridBagConstraints( 1, 0, 1, 1, 0.5, 0.0,
             GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
             new Insets( 30, 20, 0, 0 ), 0, 0 );
         panel.add( officialField.view, constraints );
@@ -308,9 +313,9 @@ public class TrackView implements IView<JComponent>
         stateField.setOpaque( true );
         stateField.setBackground( Color.black );
 
-        constraints = new GridBagConstraints( 0, 1, 2, 1, 0.0, 0.0,
+        constraints = new GridBagConstraints( 0, 1, 2, 1, 1.0, 1.0,
             GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
-            new Insets( 10, 20, 0, 0 ), 0, 0 );
+            new Insets( 10, 20, 10, 20 ), 0, 0 );
         panel.add( stateField, constraints );
 
         // ---------------------------------------------------------------------
@@ -416,7 +421,7 @@ public class TrackView implements IView<JComponent>
     {
         this.track = track;
 
-        TrackData data = track.getData();
+        TrackData data = track.data;
 
         boolean enabled = data.team == null ? true : false;
         String name = data.team == null ? "Select Team" : data.team.name;
@@ -435,7 +440,9 @@ public class TrackView implements IView<JComponent>
 
         if( data.periodTime > -1 )
         {
-            periodField.setTime( data.periodTime );
+            long curTime = data.periodTime;
+            long time = eventCfg.periodTime * 1000 - curTime;
+            periodField.setTime( time );
         }
         else
         {
@@ -469,8 +476,33 @@ public class TrackView implements IView<JComponent>
         stateField.setBackground( data.state.background );
         stateField.setForeground( data.state.foreground );
 
-        setFieldIcon( data.run1State, run1Icon );
+        if( data.isRunning() )
+        {
+            officialField.setTime( data.officialTime );
+        }
+        else
+        {
+            officialField.reset();
+        }
 
+        if( data.run1State.isComplete )
+        {
+            run1Field.setTime( data.run1Time );
+        }
+        else
+        {
+            run1Field.reset();
+        }
+
+        if( data.run2State.isComplete )
+        {
+            run2Field.setTime( data.run2Time );
+        }
+        else
+        {
+            run2Field.reset();
+        }
+        setFieldIcon( data.run1State, run1Icon );
         setFieldIcon( data.run2State, run2Icon );
     }
 

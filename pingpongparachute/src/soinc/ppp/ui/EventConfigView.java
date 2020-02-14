@@ -50,6 +50,8 @@ public class EventConfigView implements IDataView<EventConfig>
     /**  */
     private final Pi3InputPinField timer1InField;
     /**  */
+    private final PhysicalKeyField timer1StartStopKeyField;
+    /**  */
     private final PhysicalKeyField timer1ClearKeyField;
 
     /**  */
@@ -57,7 +59,14 @@ public class EventConfigView implements IDataView<EventConfig>
     /**  */
     private final Pi3InputPinField timer2InField;
     /**  */
+    private final PhysicalKeyField timer2StartStopKeyField;
+    /**  */
     private final PhysicalKeyField timer2ClearKeyField;
+
+    /**  */
+    private final PhysicalKeyField timer3StartStopKeyField;
+    /**  */
+    private final PhysicalKeyField timer3ClearKeyField;
 
     /**  */
     private final TrackConfigView trackAView;
@@ -82,11 +91,19 @@ public class EventConfigView implements IDataView<EventConfig>
 
         this.timer1OutField = new Pi3OutputPinField( "Timer 1 Output" );
         this.timer1InField = new Pi3InputPinField( "Timer 1 Input" );
-        this.timer1ClearKeyField = new PhysicalKeyField( "Clear Timer 1 Key" );
+        this.timer1StartStopKeyField = new PhysicalKeyField(
+            "Timer 1 Start/Stop Key" );
+        this.timer1ClearKeyField = new PhysicalKeyField( "Timer 1 Clear Key" );
 
         this.timer2OutField = new Pi3OutputPinField( "Timer 2 Output" );
         this.timer2InField = new Pi3InputPinField( "Timer 2 Input" );
-        this.timer2ClearKeyField = new PhysicalKeyField( "Clear Timer 2 Key" );
+        this.timer2StartStopKeyField = new PhysicalKeyField(
+            "Timer 2 Start/Stop Key" );
+        this.timer2ClearKeyField = new PhysicalKeyField( "Timer 2 Clear Key" );
+
+        this.timer3StartStopKeyField = new PhysicalKeyField(
+            "Timer 3 Start/Stop Key" );
+        this.timer3ClearKeyField = new PhysicalKeyField( "Timer 3 Clear Key" );
 
         this.trackAView = new TrackConfigView();
         this.trackBView = new TrackConfigView();
@@ -104,11 +121,19 @@ public class EventConfigView implements IDataView<EventConfig>
 
         timer1OutField.setUpdater( ( d ) -> config.timer1Out.set( d ) );
         timer1InField.setUpdater( ( d ) -> config.timer1In.set( d ) );
+        timer1StartStopKeyField.setUpdater(
+            ( d ) -> config.timer1StartStopKey = d );
         timer1ClearKeyField.setUpdater( ( d ) -> config.timer1ClearKey = d );
 
         timer2OutField.setUpdater( ( d ) -> config.timer2Out.set( d ) );
         timer2InField.setUpdater( ( d ) -> config.timer2In.set( d ) );
+        timer2StartStopKeyField.setUpdater(
+            ( d ) -> config.timer2StartStopKey = d );
         timer2ClearKeyField.setUpdater( ( d ) -> config.timer2ClearKey = d );
+
+        timer3StartStopKeyField.setUpdater(
+            ( d ) -> config.timer3StartStopKey = d );
+        timer3ClearKeyField.setUpdater( ( d ) -> config.timer3ClearKey = d );
     }
 
     /***************************************************************************
@@ -201,11 +226,16 @@ public class EventConfigView implements IDataView<EventConfig>
 
         form.addField( timer1OutField );
         form.addField( timer1InField );
+        form.addField( timer1StartStopKeyField );
         form.addField( timer1ClearKeyField );
 
         form.addField( timer2OutField );
         form.addField( timer2InField );
+        form.addField( timer2StartStopKeyField );
         form.addField( timer2ClearKeyField );
+
+        form.addField( timer3StartStopKeyField );
+        form.addField( timer3ClearKeyField );
 
         form.addComponent(
             new TitleView( "Track A", trackAView.getView() ).getView() );

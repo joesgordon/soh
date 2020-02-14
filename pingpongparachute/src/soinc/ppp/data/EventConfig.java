@@ -62,12 +62,17 @@ public class EventConfig
         this.timer1Out = new Pi3OutputPin( Pi3GpioPin.GPIO_02, PinLevel.LOW );
         this.timer1In = new Pi3InputPin( Pi3GpioPin.GPIO_03,
             PinResistance.PULL_UP );
+        this.timer1StartStopKey = PhysicalKey.Z;
         this.timer1ClearKey = PhysicalKey.A;
 
         this.timer2Out = new Pi3OutputPin( Pi3GpioPin.GPIO_17, PinLevel.LOW );
         this.timer2In = new Pi3InputPin( Pi3GpioPin.GPIO_27,
             PinResistance.PULL_UP );
+        this.timer2StartStopKey = PhysicalKey.X;
         this.timer2ClearKey = PhysicalKey.S;
+
+        this.timer3StartStopKey = PhysicalKey.C;
+        this.timer3ClearKey = PhysicalKey.D;
 
         this.trackA = new TrackConfig();
         this.trackB = new TrackConfig();
@@ -101,11 +106,16 @@ public class EventConfig
 
         this.timer1Out.set( cfg.timer1Out );
         this.timer1In.set( cfg.timer1In );
+        this.timer1StartStopKey = cfg.timer1StartStopKey;
         this.timer1ClearKey = cfg.timer1ClearKey;
 
         this.timer2Out.set( cfg.timer2Out );
         this.timer2In.set( cfg.timer2In );
+        this.timer2StartStopKey = cfg.timer2StartStopKey;
         this.timer2ClearKey = cfg.timer2ClearKey;
+
+        this.timer3StartStopKey = cfg.timer3StartStopKey;
+        this.timer3ClearKey = cfg.timer3ClearKey;
 
         this.trackA.set( cfg.trackA );
         this.trackB.set( cfg.trackB );
