@@ -24,7 +24,7 @@ import org.jutils.io.options.OptionsSerializer;
 import org.jutils.ui.model.IDataView;
 
 import soinc.lib.UiUtils;
-import soinc.lib.ui.MinSecLabel;
+import soinc.lib.ui.SecondsLabel;
 import soinc.ppp.PppIcons;
 import soinc.ppp.PppMain;
 import soinc.ppp.data.PppOptions;
@@ -46,11 +46,11 @@ public class EventView implements IDataView<PppEvent>
     public final TrackView trackBView;
 
     /**  */
-    private final MinSecLabel timer1Field;
+    private final SecondsLabel timer1Field;
     /**  */
-    private final MinSecLabel timer2Field;
+    private final SecondsLabel timer2Field;
     /**  */
-    private final MinSecLabel timer3Field;
+    private final SecondsLabel timer3Field;
 
     /**  */
     private PppEvent event;
@@ -68,9 +68,9 @@ public class EventView implements IDataView<PppEvent>
         this.trackAView = new TrackView( event.config, event.trackA );
         this.trackBView = new TrackView( event.config, event.trackB );
 
-        this.timer1Field = new MinSecLabel( "-:-- s", TrackView.REG_FONT );
-        this.timer2Field = new MinSecLabel( "--.- s", TrackView.REG_FONT );
-        this.timer3Field = new MinSecLabel( "--.- s", TrackView.REG_FONT );
+        this.timer1Field = new SecondsLabel( " --.-- s ", TrackView.REG_FONT );
+        this.timer2Field = new SecondsLabel( " --.-- s ", TrackView.REG_FONT );
+        this.timer3Field = new SecondsLabel( " --.-- s ", TrackView.REG_FONT );
 
         this.content = createCompetitionPanel();
 

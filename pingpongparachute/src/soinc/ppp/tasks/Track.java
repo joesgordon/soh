@@ -38,6 +38,8 @@ public class Track
     private final Stopwatch periodTimer;
     /**  */
     private TrackView view;
+    /**  */
+    public boolean isSelected;
 
     /***************************************************************************
      * @param config

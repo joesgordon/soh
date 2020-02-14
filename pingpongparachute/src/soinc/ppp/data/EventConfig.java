@@ -21,6 +21,9 @@ public class EventConfig
     public int periodWarning;
 
     /**  */
+    public PhysicalKey fireToggleKey;
+
+    /**  */
     public final Pi3OutputPin timer1Out;
     /**  */
     public final Pi3InputPin timer1In;
@@ -58,6 +61,8 @@ public class EventConfig
     {
         this.periodTime = 5 * 60;
         this.periodWarning = 4 * 60;
+
+        this.fireToggleKey = PhysicalKey.SPACE;
 
         this.timer1Out = new Pi3OutputPin( Pi3GpioPin.GPIO_02, PinLevel.LOW );
         this.timer1In = new Pi3InputPin( Pi3GpioPin.GPIO_03,
@@ -103,6 +108,8 @@ public class EventConfig
     {
         this.periodTime = cfg.periodTime;
         this.periodWarning = cfg.periodWarning;
+
+        this.fireToggleKey = cfg.fireToggleKey;
 
         this.timer1Out.set( cfg.timer1Out );
         this.timer1In.set( cfg.timer1In );

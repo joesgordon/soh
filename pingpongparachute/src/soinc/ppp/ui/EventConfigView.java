@@ -46,6 +46,9 @@ public class EventConfigView implements IDataView<EventConfig>
     private final IntegerFormField periodWarningField;
 
     /**  */
+    private final PhysicalKeyField fireToggleKeyField;
+
+    /**  */
     private final Pi3OutputPinField timer1OutField;
     /**  */
     private final Pi3InputPinField timer1InField;
@@ -89,6 +92,8 @@ public class EventConfigView implements IDataView<EventConfig>
         this.periodWarningField = new IntegerFormField( "Period Warning",
             "seconds", 8, 5, 60 * 60 );
 
+        this.fireToggleKeyField = new PhysicalKeyField( "Fire Toggle Key" );
+
         this.timer1OutField = new Pi3OutputPinField( "Timer 1 Output" );
         this.timer1InField = new Pi3InputPinField( "Timer 1 Input" );
         this.timer1StartStopKeyField = new PhysicalKeyField(
@@ -118,6 +123,8 @@ public class EventConfigView implements IDataView<EventConfig>
 
         periodTimeField.setUpdater( ( d ) -> config.periodTime = d );
         periodWarningField.setUpdater( ( d ) -> config.periodWarning = d );
+
+        fireToggleKeyField.setUpdater( ( d ) -> config.fireToggleKey = d );
 
         timer1OutField.setUpdater( ( d ) -> config.timer1Out.set( d ) );
         timer1InField.setUpdater( ( d ) -> config.timer1In.set( d ) );
@@ -224,6 +231,8 @@ public class EventConfigView implements IDataView<EventConfig>
         form.addField( periodTimeField );
         form.addField( periodWarningField );
 
+        form.addField( fireToggleKeyField );
+
         form.addField( timer1OutField );
         form.addField( timer1InField );
         form.addField( timer1StartStopKeyField );
@@ -282,13 +291,20 @@ public class EventConfigView implements IDataView<EventConfig>
         periodTimeField.setValue( config.periodTime );
         periodWarningField.setValue( config.periodWarning );
 
+        fireToggleKeyField.setValue( config.fireToggleKey );
+
         timer1OutField.setValue( config.timer1Out );
         timer1InField.setValue( config.timer1In );
+        timer1StartStopKeyField.setValue( config.timer1StartStopKey );
         timer1ClearKeyField.setValue( config.timer1ClearKey );
 
         timer2OutField.setValue( config.timer2Out );
         timer2InField.setValue( config.timer2In );
+        timer2StartStopKeyField.setValue( config.timer2StartStopKey );
         timer2ClearKeyField.setValue( config.timer2ClearKey );
+
+        timer3StartStopKeyField.setValue( config.timer3StartStopKey );
+        timer3ClearKeyField.setValue( config.timer3ClearKey );
 
         trackAView.setData( config.trackA );
         trackBView.setData( config.trackB );

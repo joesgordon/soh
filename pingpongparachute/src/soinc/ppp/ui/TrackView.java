@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -26,6 +27,7 @@ import javax.swing.border.LineBorder;
 
 import org.jutils.OptionUtils;
 import org.jutils.ui.ColorIcon;
+import org.jutils.ui.LedLabel;
 import org.jutils.ui.OkDialogView;
 import org.jutils.ui.OkDialogView.OkDialogButtons;
 import org.jutils.ui.event.ActionAdapter;
@@ -37,6 +39,7 @@ import org.jutils.ui.model.LabelListCellRenderer.IListCellLabelDecorator;
 import soinc.lib.SciolyIcons;
 import soinc.lib.UiUtils;
 import soinc.lib.ui.MinSecLabel;
+import soinc.lib.ui.SecondsLabel;
 import soinc.ppp.data.EventConfig;
 import soinc.ppp.data.Team;
 import soinc.ppp.data.TrackData;
@@ -68,17 +71,19 @@ public class TrackView implements IView<JComponent>
     /**  */
     private final MinSecLabel periodField;
     /**  */
-    private final MinSecLabel officialField;
+    private final SecondsLabel officialField;
     /**  */
     private final JLabel stateField;
     /**  */
-    private final MinSecLabel run1Field;
+    private final SecondsLabel run1Field;
     /**  */
     private final JLabel run1Icon;
     /**  */
-    private final MinSecLabel run2Field;
+    private final SecondsLabel run2Field;
     /**  */
     private final JLabel run2Icon;
+    /**  */
+    private final LedLabel selectedLabel;
 
     /**  */
     private final EventConfig eventCfg;
@@ -100,12 +105,14 @@ public class TrackView implements IView<JComponent>
 
         this.teamButton = new JButton( "No Teams Entered" );
         this.periodField = new MinSecLabel( "-:-- s", LRG_FONT );
-        this.officialField = new MinSecLabel( "--.- s", REG_FONT );
+        this.officialField = new SecondsLabel( " --.-- s ", REG_FONT );
         this.stateField = UiUtils.createTextLabel( "-----", REG_FONT );
-        this.run1Field = new MinSecLabel( "-:-- s", REG_FONT );
+        this.run1Field = new SecondsLabel( " --.-- s ", REG_FONT );
         this.run1Icon = new JLabel( blankIcon );
-        this.run2Field = new MinSecLabel( "-:-- s", REG_FONT );
+        this.run2Field = new SecondsLabel( " --.-- s ", REG_FONT );
         this.run2Icon = new JLabel( blankIcon );
+        this.selectedLabel = new LedLabel( Color.green, Color.red, 24,
+            "Clear to Fire" );
 
         run1Icon.setPreferredSize( new Dimension( 38, 38 ) );
         run1Icon.setMinimumSize( new Dimension( 38, 38 ) );
@@ -299,21 +306,37 @@ public class TrackView implements IView<JComponent>
 
         constraints = new GridBagConstraints( 0, 0, 1, 1, 0.5, 0.0,
             GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
-            new Insets( 40, 0, 0, 0 ), 0, 0 );
+            new Insets( 40, 20, 0, 10 ), 0, 0 );
         panel.add( officialLabel, constraints );
 
         constraints = new GridBagConstraints( 1, 0, 1, 1, 0.5, 0.0,
             GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
-            new Insets( 30, 20, 0, 0 ), 0, 0 );
+            new Insets( 30, 10, 0, 20 ), 0, 0 );
         panel.add( officialField.view, constraints );
 
         // ---------------------------------------------------------------------
+
+        constraints = new GridBagConstraints( 0, 1, 2, 1, 1.0, 1.0,
+            GridBagConstraints.SOUTHWEST, GridBagConstraints.BOTH,
+            new Insets( 0, 0, 0, 0 ), 0, 0 );
+        panel.add( Box.createHorizontalStrut( 1 ), constraints );
+
+        // ---------------------------------------------------------------------
+
+        selectedLabel.getView().setForeground( Color.white );
+        ( ( JLabel )selectedLabel.getView() ).setFont(
+            officialLabel.getFont().deriveFont( 18.0f ) );
+
+        constraints = new GridBagConstraints( 0, 2, 1, 1, 0.0, 0.0,
+            GridBagConstraints.SOUTHWEST, GridBagConstraints.NONE,
+            new Insets( 10, 20, 10, 20 ), 0, 0 );
+        panel.add( selectedLabel.getView(), constraints );
 
         stateField.setText( track.getState().name );
         stateField.setOpaque( true );
         stateField.setBackground( Color.black );
 
-        constraints = new GridBagConstraints( 0, 1, 2, 1, 1.0, 1.0,
+        constraints = new GridBagConstraints( 1, 2, 1, 1, 0.0, 0.0,
             GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE,
             new Insets( 10, 20, 10, 20 ), 0, 0 );
         panel.add( stateField, constraints );
@@ -502,8 +525,15 @@ public class TrackView implements IView<JComponent>
         {
             run2Field.reset();
         }
+
         setFieldIcon( data.run1State, run1Icon );
         setFieldIcon( data.run2State, run2Icon );
+
+        // selectedLabel.setStatus( track.isSelected,
+        // track.isSelected ? "Clear to Fire" : "Fire not Granted" );
+
+        selectedLabel.setLit( track.isSelected );
+        selectedLabel.getView().setVisible( track.isSelected );
     }
 
     /***************************************************************************

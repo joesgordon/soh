@@ -69,7 +69,20 @@ public class PppEvent
 
         this.timer = new Timer( "PPP Event" );
 
-        this.selectedTrack = trackA;
+        this.selectedTrack = null;
+
+        setSelected( trackA );
+    }
+
+    /***************************************************************************
+     * @param track
+     **************************************************************************/
+    private void setSelected( Track track )
+    {
+        this.selectedTrack = track;
+
+        trackA.isSelected = trackA == track;
+        trackB.isSelected = trackB == track;
     }
 
     /***************************************************************************
@@ -82,13 +95,17 @@ public class PppEvent
         timers.setData( data );
         timers.clear();
 
-        if( data.run1State.isComplete )
-        {
-            data.run1Time = ( int )data.officialTime;
-        }
-        else if( data.run2State.isComplete )
+        LogUtils.printDebug( "Official time is %d: Runs complete %s, %s",
+            data.officialTime, data.run1State.isComplete,
+            data.run2State.isComplete );
+
+        if( data.run2State.isComplete )
         {
             data.run2Time = ( int )data.officialTime;
+        }
+        else if( data.run1State.isComplete )
+        {
+            data.run1Time = ( int )data.officialTime;
         }
     }
 
@@ -247,5 +264,16 @@ public class PppEvent
     public void updateUI()
     {
         SwingUtilities.invokeLater( () -> view.setData( this ) );
+    }
+
+    /***************************************************************************
+     * 
+     **************************************************************************/
+    public void toggleFire()
+    {
+        if( !selectedTrack.data.isRunning() )
+        {
+            setSelected( selectedTrack == trackA ? trackB : trackA );
+        }
     }
 }

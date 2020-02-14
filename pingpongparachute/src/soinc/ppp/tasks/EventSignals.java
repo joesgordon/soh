@@ -82,6 +82,12 @@ public class EventSignals
 
         // ---------------------------------------------------------------------
 
+        callback = ( e ) -> event.toggleFire();
+        SwingUtils.addKeyListener( jview, eventCfg.fireToggleKey.keystroke,
+            callback, "Event Fire Toggle", true );
+
+        // ---------------------------------------------------------------------
+
         callback = ( e ) -> timer1.togglePin();
         SwingUtils.addKeyListener( jview, eventCfg.timer1StartStopKey.keystroke,
             callback, "Timer 1 Toggle", true );
