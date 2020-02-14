@@ -207,7 +207,8 @@ public class BlFrameView implements IView<JFrame>
                 return;
             }
         }
-        else if( !show && eventView != null )
+        else if( !show && eventView != null &&
+            !eventView.getData().isRunning() )
         {
             eventView.setVisible( false );
             eventView = null;

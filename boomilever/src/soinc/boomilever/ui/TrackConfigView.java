@@ -25,6 +25,7 @@ public class TrackConfigView implements IDataView<TrackConfig>
     private final IntegerFormField greenRelayField;
     /**  */
     private final IntegerFormField blueRelayField;
+
     /**  */
     private final PhysicalKeyField loadKeyField;
     /**  */

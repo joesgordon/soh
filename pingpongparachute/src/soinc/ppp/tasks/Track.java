@@ -10,6 +10,7 @@ import org.jutils.io.LogUtils;
 import org.jutils.ui.event.updater.IUpdater;
 import org.jutils.utils.Stopwatch;
 
+import soinc.lib.relay.Relays;
 import soinc.ppp.data.EventConfig;
 import soinc.ppp.data.Team;
 import soinc.ppp.data.TrackData;
@@ -71,9 +72,14 @@ public class Track
     {
         this.data.state = state;
 
-        boolean red = ( state.lights & 0x4 ) == 0x4;
-        boolean green = ( state.lights & 0x2 ) == 0x2;
-        boolean blue = ( state.lights & 0x1 ) == 0x1;
+        boolean red = ( state.lights & Relays.RED_MASK ) == Relays.RED_MASK;
+        boolean green = ( state.lights &
+            Relays.GREEN_MASK ) == Relays.GREEN_MASK;
+        boolean blue = ( state.lights & Relays.BLUE_MASK ) == Relays.BLUE_MASK;
+
+        // LogUtils.printDebug(
+        // "\t\t\tTrack::handleStateUpdated(): %s -> 0x%X, %s", state.name,
+        // state.lights, state.background.toString() );
 
         signals.setLights( red, green, blue );
     }
@@ -123,7 +129,7 @@ public class Track
     public void disconnect()
     {
         // timer.cancel();
-        // signals.disconnect();
+        signals.disconnect();
     }
 
     /***************************************************************************
@@ -210,6 +216,7 @@ public class Track
             data.reset();
             data.team = team;
             data.state = TrackState.LOADED;
+            data.team.loaded = true;
         }
         else
         {
@@ -263,7 +270,6 @@ public class Track
                 {
                     periodTimer.pauseResume( now );
                 }
-                data.team.loaded = true;
             }
             else
             {
@@ -381,10 +387,15 @@ public class Track
      **************************************************************************/
     public void signalClearTeam()
     {
+        TrackState state = this.data.state;
         String msg = stateMachine.signalClearTeam();
 
         if( msg == null )
         {
+            if( state == TrackState.LOADED )
+            {
+                data.team.loaded = false;
+            }
             periodTimer.stop();
             data.reset();
         }

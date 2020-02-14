@@ -1,6 +1,5 @@
 package soinc.boomilever.data;
 
-import soinc.lib.relay.Relays;
 import soinc.lib.ui.PhysicalKey;
 
 /*******************************************************************************
@@ -32,9 +31,9 @@ public class TrackConfig
      **************************************************************************/
     public TrackConfig()
     {
-        this.redRelay = Relays.RED_MASK;
-        this.greenRelay = Relays.GREEN_MASK;
-        this.blueRelay = Relays.BLUE_MASK;
+        this.redRelay = 2;
+        this.greenRelay = 3;
+        this.blueRelay = 4;
         this.powerRelay = 1;
 
         this.loadKey = PhysicalKey.F1;

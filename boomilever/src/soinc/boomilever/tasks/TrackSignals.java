@@ -66,6 +66,8 @@ public class TrackSignals
         SwingUtils.addKeyListener( jview, config.clearKey.keystroke, callback,
             "Clear Team", true );
 
+        // ---------------------------------------------------------------------
+
         if( config.enablePower )
         {
             relays.setRelay( config.powerRelay - 1, true );
@@ -87,7 +89,6 @@ public class TrackSignals
      **************************************************************************/
     public void setLights( boolean red, boolean green, boolean blue )
     {
-
         int redBit = config.redRelay - 1;
         int greenBit = config.greenRelay - 1;
         int blueBit = config.blueRelay - 1;

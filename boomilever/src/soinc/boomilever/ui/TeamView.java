@@ -14,12 +14,19 @@ import org.jutils.ui.model.IDataView;
 
 import soinc.boomilever.data.Team;
 
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 public class TeamView implements IDataView<Team>
 {
+    /**  */
     private final JPanel panel;
 
+    /**  */
     private final StringFormField nameField;
+    /**  */
     private final BooleanFormField loadedField;
+    /**  */
     private final BooleanFormField completeField;
 
     private Team team;

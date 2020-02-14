@@ -126,7 +126,6 @@ public class Track
     {
         timer.cancel();
         signals.disconnect();
-
     }
 
     /***************************************************************************
@@ -225,7 +224,6 @@ public class Track
             if( msg == null )
             {
                 periodTimer.start( now );
-                data.team.loaded = true;
             }
             else
             {
