@@ -7,6 +7,7 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import org.jutils.SwingUtils;
+import org.jutils.io.LogUtils;
 
 import soinc.gravityvehicle.data.TrackConfig;
 import soinc.gravityvehicle.ui.TrackView;
@@ -65,10 +66,8 @@ public class TrackSignals
         SwingUtils.addKeyListener( jview, config.clearKey.keystroke, callback,
             "Clear Team", true );
 
-        if( config.enablePower )
-        {
-            relays.setRelay( config.powerRelay - 1, true );
-        }
+        relays.setRelay( config.powerRelay - 1, true );
+        relays.setRelay( config.powerRelay + 3, true );
     }
 
     /***************************************************************************
@@ -112,9 +111,9 @@ public class TrackSignals
         mask = green ? ( mask | greenMask ) : ( mask & ~greenMask );
         mask = blue ? ( mask | blueMask ) : ( mask & ~blueMask );
 
-        // LogUtils.printDebug(
-        // "\t\t\tTrackSignals::setLights(): %s, %s, %s : mask = %02X", red,
-        // green, blue, mask );
+        LogUtils.printDebug(
+            "\t\t\tTrackSignals::setLights(): %s, %s, %s : mask = %02X", red,
+            green, blue, mask );
 
         relays.setRelays( mask );
     }

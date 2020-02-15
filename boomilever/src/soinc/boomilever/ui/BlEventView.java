@@ -57,7 +57,7 @@ public class BlEventView implements IDataView<BlEvent>
      **************************************************************************/
     public BlEventView( BlEvent event, List<Image> icons, Dimension size )
     {
-        this.frame = new JFrame( "Roller Coaster Competition" );
+        this.frame = new JFrame( "Boomilever" );
 
         this.event = event;
 

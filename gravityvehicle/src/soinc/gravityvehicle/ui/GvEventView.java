@@ -54,7 +54,7 @@ public class GvEventView implements IDataView<GvEvent>
      **************************************************************************/
     public GvEventView( GvEvent event, List<Image> icons, Dimension size )
     {
-        this.frame = new JFrame( "Roller Coaster Competition" );
+        this.frame = new JFrame( "Gravity Vehicle" );
 
         this.event = event;
 
@@ -235,7 +235,7 @@ public class GvEventView implements IDataView<GvEvent>
         }
         else
         {
-            trackAView.disconnect();
+            event.disconnect();
 
             // setFullScreen( false );
 
