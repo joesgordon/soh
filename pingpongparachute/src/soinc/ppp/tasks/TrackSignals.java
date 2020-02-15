@@ -6,7 +6,6 @@ import java.io.IOException;
 import javax.swing.JComponent;
 
 import org.jutils.SwingUtils;
-import org.jutils.io.LogUtils;
 
 import soinc.lib.relay.IRelays;
 import soinc.ppp.data.TrackConfig;
@@ -108,9 +107,9 @@ public class TrackSignals
         mask = green ? ( mask | greenMask ) : ( mask & ~greenMask );
         mask = blue ? ( mask | blueMask ) : ( mask & ~blueMask );
 
-        LogUtils.printDebug(
-            "\t\t\tTrackSignals::setLights(): %s, %s, %s : mask = %02X", red,
-            green, blue, mask );
+        // LogUtils.printDebug(
+        // "\t\t\tTrackSignals::setLights(): %s, %s, %s : mask = %02X", red,
+        // green, blue, mask );
 
         relays.setRelays( mask );
     }

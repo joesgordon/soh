@@ -7,7 +7,6 @@ import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 
 import org.jutils.SwingUtils;
-import org.jutils.io.LogUtils;
 
 import soinc.gravityvehicle.data.TrackConfig;
 import soinc.gravityvehicle.ui.TrackView;
@@ -87,6 +86,7 @@ public class TrackSignals
      **************************************************************************/
     public void setLights( boolean red, boolean green, boolean blue )
     {
+        int mask = relays.getRelays();
 
         int redBit = config.redRelay - 1;
         int greenBit = config.greenRelay - 1;
@@ -96,15 +96,25 @@ public class TrackSignals
         int greenMask = 1 << greenBit;
         int blueMask = 1 << blueBit;
 
-        int mask = relays.getRelays();
+        mask = red ? ( mask | redMask ) : ( mask & ~redMask );
+        mask = green ? ( mask | greenMask ) : ( mask & ~greenMask );
+        mask = blue ? ( mask | blueMask ) : ( mask & ~blueMask );
+
+        redBit = config.redRelay + 3;
+        greenBit = config.greenRelay + 3;
+        blueBit = config.blueRelay + 3;
+
+        redMask = 1 << redBit;
+        greenMask = 1 << greenBit;
+        blueMask = 1 << blueBit;
 
         mask = red ? ( mask | redMask ) : ( mask & ~redMask );
         mask = green ? ( mask | greenMask ) : ( mask & ~greenMask );
         mask = blue ? ( mask | blueMask ) : ( mask & ~blueMask );
 
-        LogUtils.printDebug(
-            "\t\t\tTrackSignals::setLights(): %s, %s, %s : mask = %02X", red,
-            green, blue, mask );
+        // LogUtils.printDebug(
+        // "\t\t\tTrackSignals::setLights(): %s, %s, %s : mask = %02X", red,
+        // green, blue, mask );
 
         relays.setRelays( mask );
     }
